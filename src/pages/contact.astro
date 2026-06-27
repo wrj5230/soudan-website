@@ -1,0 +1,234 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="お問い合わせ | SOUDAN" description="SOUDANへのお問い合わせ・ご相談はこちらから。">
+  <Header />
+
+  <main>
+    <div class="contact-wrap">
+      <p class="section-label">Contact</p>
+      <h1 class="page-title">ご相談はこちら。</h1>
+      <div class="divider"></div>
+      <p class="lead">まずはお気軽にご連絡ください。<br />内容を確認のうえ、担当者よりご連絡いたします。</p>
+
+      <form class="contact-form" id="contact-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">お名前 <span class="required">*</span></label>
+            <input type="text" id="name" name="name" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">メールアドレス <span class="required">*</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phone">電話番号</label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel" />
+        </div>
+        <div class="form-group">
+          <label for="message">ご相談内容 <span class="required">*</span></label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </div>
+        <button type="submit" id="submit-btn">送信する</button>
+      </form>
+
+      <div class="success-msg" id="success-msg" hidden>
+        <p class="success-icon">—</p>
+        <p class="success-title">送信が完了しました。</p>
+        <p class="success-sub">内容を確認のうえ、担当者よりご連絡いたします。</p>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const form       = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn  = document.getElementById('submit-btn') as HTMLButtonElement;
+  const successMsg = document.getElementById('success-msg') as HTMLElement;
+
+  // コンフィグ情報をURLパラメータから読み取り（表示はしない・Supabaseに保存のみ）
+  const params = new URLSearchParams(window.location.search);
+  const configParam = params.get('config');
+  let configData: object | null = null;
+  if (configParam) {
+    try { configData = JSON.parse(decodeURIComponent(configParam)); } catch (_) {}
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    submitBtn.textContent = '送信中...';
+    submitBtn.disabled = true;
+
+    const { error } = await supabase.from('contacts').insert({
+      name:    (document.getElementById('name')    as HTMLInputElement).value,
+      email:   (document.getElementById('email')   as HTMLInputElement).value,
+      phone:   (document.getElementById('phone')   as HTMLInputElement).value || null,
+      message: (document.getElementById('message') as HTMLTextAreaElement).value,
+      config:  configData,
+    });
+
+    if (error) {
+      submitBtn.textContent = '送信する';
+      submitBtn.disabled = false;
+      alert('送信に失敗しました。しばらく経ってから再度お試しください。');
+      return;
+    }
+
+    form.hidden = true;
+    successMsg.hidden = false;
+  });
+</script>
+
+<style>
+  main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+  }
+
+  .contact-wrap {
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 0;
+  }
+
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: #c9a84c;
+    margin: 24px 0;
+  }
+
+  .lead {
+    font-size: 0.9rem;
+    color: #8a8a9a;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    margin-bottom: 48px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: #8a8a9a;
+  }
+
+  .required { color: #c9a84c; }
+
+  input, textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+    color: #f5f0e8;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    padding: 10px 0;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus {
+    border-bottom-color: #c9a84c;
+  }
+
+  textarea { resize: none; }
+
+  button[type="submit"] {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid #c9a84c;
+    color: #c9a84c;
+    cursor: pointer;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    padding: 14px 48px;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+
+  button[type="submit"]:hover:not(:disabled) {
+    background: #c9a84c;
+    color: #080814;
+  }
+
+  button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .success-msg {
+    text-align: center;
+    padding: 48px 0;
+  }
+
+  .success-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: #c9a84c;
+    margin-bottom: 24px;
+  }
+
+  .success-title {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+
+  .success-sub {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    letter-spacing: 0.08em;
+    line-height: 2;
+  }
+
+  @media (max-width: 768px) {
+    main { padding: 100px 20px 60px; align-items: flex-start; }
+    .form-row { grid-template-columns: 1fr; }
+    button[type="submit"] { width: 100%; text-align: center; }
+  }
+</style>

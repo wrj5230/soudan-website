@@ -1,0 +1,1739 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout title="仏壇コンフィギュレーター | SOUDAN">
+  <Header />
+
+  <div class="page-curtain" id="page-curtain"></div>
+  <main class="cfg-page">
+    <div class="cfg-header">
+      <p class="section-label">Configurator</p>
+      <h1>あなたの仏壇を、創る。</h1>
+      <p class="cfg-sub">パーツを選んで色をカスタマイズ。ドラッグで3Dモデルを回転できます。</p>
+    </div>
+
+    <div class="cfg-body">
+
+      <!-- Left: Customizer -->
+      <div class="form-panel">
+
+        <div class="step-nav">
+          <div class="step-dot active" data-step="1"><span>01</span></div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="2"><span>02</span></div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="3"><span>03</span></div>
+        </div>
+
+        <!-- Step 1: Color customization -->
+        <div class="form-step active" id="step-1">
+          <h2 class="step-title">カラーを選んでください。</h2>
+
+          <!-- タブバー -->
+          <div class="tab-bar">
+            <button class="tab-btn active" data-tab="template">テンプレート</button>
+            <button class="tab-btn" data-tab="palette">パレット</button>
+          </div>
+
+          <!-- スクロール領域 -->
+          <div class="palette-scroll">
+
+            <!-- テンプレートタブ -->
+            <div class="tab-panel active" id="tab-template">
+              <div class="preset-list" id="preset-list">
+                <button class="preset-card selected" data-preset="0">
+                  <div class="preset-swatches">
+                    <span style="background:#0c0c0c"></span>
+                    <span style="background:#090909"></span>
+                    <span style="background:#2a1a08"></span>
+                    <span style="background:#181520"></span>
+                    <span style="background:#3b1f0a"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="1">
+                  <div class="preset-swatches">
+                    <span style="background:#0a0808"></span>
+                    <span style="background:#8b1a1a"></span>
+                    <span style="background:#4a0e0e"></span>
+                    <span style="background:#2a1008"></span>
+                    <span style="background:#7a1515"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="2">
+                  <div class="preset-swatches">
+                    <span style="background:#080810"></span>
+                    <span style="background:#1e3a6e"></span>
+                    <span style="background:#0e1c3a"></span>
+                    <span style="background:#0a0e28"></span>
+                    <span style="background:#1a2e5c"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="3">
+                  <div class="preset-swatches">
+                    <span style="background:#0a0810"></span>
+                    <span style="background:#4e3660"></span>
+                    <span style="background:#2a1848"></span>
+                    <span style="background:#1a0e2a"></span>
+                    <span style="background:#3a2850"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="4">
+                  <div class="preset-swatches">
+                    <span style="background:#3a2008"></span>
+                    <span style="background:#7a5030"></span>
+                    <span style="background:#5c3818"></span>
+                    <span style="background:#8b6a3a"></span>
+                    <span style="background:#9b7a40"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="5">
+                  <div class="preset-swatches">
+                    <span style="background:#6e5a50"></span>
+                    <span style="background:#c8a0a8"></span>
+                    <span style="background:#e8d0c8"></span>
+                    <span style="background:#b8b0d0"></span>
+                    <span style="background:#d0b8b0"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="6">
+                  <div class="preset-swatches">
+                    <span style="background:#6a5868"></span>
+                    <span style="background:#c0a0b8"></span>
+                    <span style="background:#9880a0"></span>
+                    <span style="background:#504858"></span>
+                    <span style="background:#b090a8"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="7">
+                  <div class="preset-swatches">
+                    <span style="background:#485848"></span>
+                    <span style="background:#889878"></span>
+                    <span style="background:#607060"></span>
+                    <span style="background:#384838"></span>
+                    <span style="background:#789070"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="8">
+                  <div class="preset-swatches">
+                    <span style="background:#485868"></span>
+                    <span style="background:#8098b0"></span>
+                    <span style="background:#607890"></span>
+                    <span style="background:#384858"></span>
+                    <span style="background:#6888a0"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="9">
+                  <div class="preset-swatches">
+                    <span style="background:#2a0018"></span>
+                    <span style="background:#e8006a"></span>
+                    <span style="background:#a80050"></span>
+                    <span style="background:#180010"></span>
+                    <span style="background:#ff4090"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="10">
+                  <div class="preset-swatches">
+                    <span style="background:#000820"></span>
+                    <span style="background:#0050e8"></span>
+                    <span style="background:#0030b0"></span>
+                    <span style="background:#000510"></span>
+                    <span style="background:#2070ff"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="11">
+                  <div class="preset-swatches">
+                    <span style="background:#080020"></span>
+                    <span style="background:#8000ff"></span>
+                    <span style="background:#5800c0"></span>
+                    <span style="background:#040010"></span>
+                    <span style="background:#a030ff"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="12">
+                  <div class="preset-swatches">
+                    <span style="background:#e8e2d0"></span>
+                    <span style="background:#c9a84c"></span>
+                    <span style="background:#a07030"></span>
+                    <span style="background:#d4b84a"></span>
+                    <span style="background:#c0a840"></span>
+                  </div>
+                </button>
+                <button class="preset-card" data-preset="13">
+                  <div class="preset-swatches">
+                    <span style="background:#1a2a4a"></span>
+                    <span style="background:#c0401a"></span>
+                    <span style="background:#8b1a08"></span>
+                    <span style="background:#c84010"></span>
+                    <span style="background:#101828"></span>
+                  </div>
+                </button>
+                <button class="preset-card preset-shuffle" id="btn-shuffle">
+                  <span class="shuffle-icon">⟳</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- パレットタブ -->
+            <div class="tab-panel" id="tab-palette">
+              <div class="accordion" id="accordion">
+                <div class="acc-item" data-part="outer">
+                  <button class="acc-header">
+                    <span class="acc-swatch" id="swatch-outer"></span>
+                    <span class="acc-label">外枠・台</span>
+                    <span class="acc-tech-badge" id="techbadge-outer"></span>
+                    <span class="acc-arrow">›</span>
+                  </button>
+                </div>
+                <div class="acc-item" data-part="door-front">
+                  <button class="acc-header">
+                    <span class="acc-swatch" id="swatch-door-front"></span>
+                    <span class="acc-label">扉（表）</span>
+                    <span class="acc-tech-badge" id="techbadge-door-front"></span>
+                    <span class="acc-arrow">›</span>
+                  </button>
+                </div>
+                <div class="acc-item" data-part="door-back">
+                  <button class="acc-header">
+                    <span class="acc-swatch" id="swatch-door-back"></span>
+                    <span class="acc-label">扉（裏）</span>
+                    <span class="acc-tech-badge" id="techbadge-door-back"></span>
+                    <span class="acc-arrow">›</span>
+                  </button>
+                </div>
+                <div class="acc-item" data-part="back">
+                  <button class="acc-header">
+                    <span class="acc-swatch" id="swatch-back"></span>
+                    <span class="acc-label">背板（内側）</span>
+                    <span class="acc-tech-badge" id="techbadge-back"></span>
+                    <span class="acc-arrow">›</span>
+                  </button>
+                </div>
+                <div class="acc-item" data-part="curtain">
+                  <button class="acc-header">
+                    <span class="acc-swatch" id="swatch-curtain"></span>
+                    <span class="acc-label">垂れ幕</span>
+                    <span class="acc-tech-badge" id="techbadge-curtain"></span>
+                    <span class="acc-arrow">›</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 共通パネル（選択パーツの直下に移動して表示） -->
+              <div class="acc-panel" id="acc-panel">
+                <div class="pal-grid">
+                  <button class="pal-opt" data-hex="#0c0c0c"><span class="pal-sw" style="background:#0c0c0c"></span></button>
+                  <button class="pal-opt" data-hex="#8b1a1a"><span class="pal-sw" style="background:#8b1a1a"></span></button>
+                  <button class="pal-opt" data-hex="#7a1f2e"><span class="pal-sw" style="background:#7a1f2e"></span></button>
+                  <button class="pal-opt" data-hex="#1e3a6e"><span class="pal-sw" style="background:#1e3a6e"></span></button>
+                  <button class="pal-opt" data-hex="#2e5e38"><span class="pal-sw" style="background:#2e5e38"></span></button>
+                  <button class="pal-opt" data-hex="#4e3660"><span class="pal-sw" style="background:#4e3660"></span></button>
+                  <button class="pal-opt" data-hex="#5c3d22"><span class="pal-sw" style="background:#5c3d22"></span></button>
+                  <button class="pal-opt" data-hex="#1a2a4a"><span class="pal-sw" style="background:#1a2a4a"></span></button>
+                  <button class="pal-opt" data-hex="#c9a84c"><span class="pal-sw" style="background:#c9a84c"></span></button>
+                  <button class="pal-opt" data-hex="#5e3a0a"><span class="pal-sw" style="background:#5e3a0a"></span></button>
+                  <button class="pal-opt" data-hex="#2a1a08"><span class="pal-sw" style="background:#2a1a08"></span></button>
+                  <button class="pal-opt custom-pal" data-name="カスタム">
+                    <span class="pal-sw pal-sw-custom"><input type="color" id="custom-color" value="#c9a84c" /></span>
+                  </button>
+                </div>
+                <div class="tech-section">
+                  <p class="palette-label">技法</p>
+                  <div class="tech-grid">
+                    <button class="tech-opt selected" data-tech="none">なし</button>
+                    <button class="tech-opt" data-tech="makie">蒔絵</button>
+                    <button class="tech-opt" data-tech="raptopaint">ラップ塗り</button>
+                  </div>
+                  <div class="rapto-color" id="rapto-color">
+                    <p class="palette-label">重ねる色</p>
+                    <div class="pal-grid">
+                      <button class="rapto-opt" data-hex="#0c0c0c"><span class="pal-sw" style="background:#0c0c0c"></span></button>
+                      <button class="rapto-opt" data-hex="#8b1a1a"><span class="pal-sw" style="background:#8b1a1a"></span></button>
+                      <button class="rapto-opt" data-hex="#7a1f2e"><span class="pal-sw" style="background:#7a1f2e"></span></button>
+                      <button class="rapto-opt" data-hex="#1e3a6e"><span class="pal-sw" style="background:#1e3a6e"></span></button>
+                      <button class="rapto-opt" data-hex="#2e5e38"><span class="pal-sw" style="background:#2e5e38"></span></button>
+                      <button class="rapto-opt" data-hex="#4e3660"><span class="pal-sw" style="background:#4e3660"></span></button>
+                      <button class="rapto-opt" data-hex="#c9a84c"><span class="pal-sw" style="background:#c9a84c"></span></button>
+                      <button class="rapto-opt" data-hex="#e8e8e8"><span class="pal-sw" style="background:#e8e8e8"></span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.palette-scroll -->
+
+          <div class="btn-row">
+            <button class="btn-next" data-next="2">仏壇を確認する →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: 仏壇プレビュー -->
+        <div class="form-step step-preview" id="step-2">
+          <div class="btn-row">
+            <button class="btn-next" data-next="3">概算を見る →</button>
+            <button class="btn-back" data-back="1">戻る</button>
+          </div>
+        </div>
+
+        <!-- Step 3: 概算見積もり -->
+        <div class="form-step" id="step-3">
+          <h2 class="step-title">概算見積もり</h2>
+          <p class="step-desc">選んだ内容をもとにした目安の金額です。</p>
+          <div class="palette-scroll">
+            <div class="estimate-body" id="estimate-body"></div>
+            <p class="estimate-note">※職人技法・仕様により前後します。詳細はご相談ください。</p>
+          </div>
+          <div id="estimate-total"></div>
+          <div class="btn-row">
+            <a href="/contact" class="btn-contact" id="btn-contact-link">このイメージで相談する</a>
+            <button class="btn-back" data-back="2">戻る</button>
+          </div>
+        </div>
+
+      </div><!-- /.form-panel -->
+
+      <!-- Right: 3D Preview -->
+      <div class="preview-panel">
+        <div class="preview-header">
+          <p class="preview-label">3D Preview</p>
+          <p class="preview-hint">ドラッグで回転 / スクロールでズーム</p>
+        </div>
+
+        <div class="altar-wrap" id="altar-wrap">
+          <canvas id="three-canvas"></canvas>
+          <div id="three-loading" class="three-loading">
+            <span class="ai-spinner"></span>
+            <span class="ai-loading-text">モデルを読み込み中…</span>
+          </div>
+        </div>
+
+        <!-- 仏壇下エリア：カラードット -->
+        <div class="preview-footer">
+          <div class="color-dots">
+            <div class="cd-item"><span class="cd-dot" id="dot-outer"></span><span class="cd-lbl">外枠・台</span></div>
+            <div class="cd-item"><span class="cd-dot" id="dot-door-front"></span><span class="cd-lbl">扉（表）</span></div>
+            <div class="cd-item"><span class="cd-dot" id="dot-door-back"></span><span class="cd-lbl">扉（裏）</span></div>
+            <div class="cd-item"><span class="cd-dot" id="dot-back"></span><span class="cd-lbl">背板</span></div>
+            <div class="cd-item"><span class="cd-dot" id="dot-curtain"></span><span class="cd-lbl">垂れ幕</span></div>
+          </div>
+        </div>
+
+      </div><!-- /.preview-panel -->
+
+    </div>
+  </main>
+
+</Layout>
+
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+  // ─── State ────────────────────────────────────────────────────────────────
+  type Part = 'outer' | 'door-front' | 'door-back' | 'back' | 'curtain';
+  type Technique = 'none' | 'makie' | 'raptopaint' | 'raden';
+
+  const PART_LABELS: Record<Part, string> = {
+    outer:        '外枠・台',
+    'door-front': '扉（表）',
+    'door-back':  '扉（裏）',
+    back:         '背板（内側）',
+    curtain:      '垂れ幕',
+  };
+
+  const state = {
+    part: null as Part | null,
+    colors: {
+      outer:        '#0c0c0c',
+      'door-front': '#090909',
+      'door-back':  '#2a1a08',
+      back:         '#181520',
+      curtain:      '#3b1f0a',
+    } as Record<Part, string>,
+    techniques: {
+      outer: 'none', 'door-front': 'none', 'door-back': 'none', back: 'none', curtain: 'none',
+    } as Record<Part, Technique>,
+    raptoColors: {
+      outer: '#c9a84c', 'door-front': '#c9a84c', 'door-back': '#c9a84c', back: '#c9a84c', curtain: '#c9a84c',
+    } as Record<Part, string>,
+  };
+
+  // ─── Three.js セットアップ ────────────────────────────────────────────────
+  const canvas  = document.getElementById('three-canvas') as HTMLCanvasElement;
+  const wrapper = document.getElementById('altar-wrap')!;
+  const loading = document.getElementById('three-loading')!;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.8;
+
+  function resize() {
+    const w = wrapper.clientWidth;
+    const h = wrapper.clientHeight || Math.round(w * 0.85);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+  camera.position.set(0, 0.05, 2.2);
+
+  const scene = new THREE.Scene();
+
+  // 環境マップ（漆の艶反射用）
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  pmrem.compileEquirectangularShader();
+  const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+  scene.environment = envTexture;
+
+  // ライト
+  const ambient = new THREE.AmbientLight(0xffffff, 0.05);
+  scene.add(ambient);
+
+  const dirLight = new THREE.DirectionalLight(0xfff5e0, 0.25);
+  dirLight.position.set(1.5, 4, 2.5);
+  dirLight.castShadow = true;
+  scene.add(dirLight);
+
+  // OrbitControls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 0.8;
+  controls.maxDistance = 4;
+  controls.maxPolarAngle = Math.PI * 0.75;
+  controls.target.set(0, 0.05, 0);
+  controls.update();
+  controls.addEventListener('start', () => {
+    camPosTarget = camLookTarget = null;
+  });
+
+  // ─── メッシュ管理 ─────────────────────────────────────────────────────────
+  const meshes: Record<string, THREE.Mesh[]> = {
+    outer_frame:    [],
+    back_panel:     [],
+    door_L:         [],
+    door_R:         [],
+    inner_curtain:  [],
+  };
+
+  const hingeMat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color('#c9a84c'),
+    metalness: 0.85,
+    roughness: 0.18,
+    envMapIntensity: 1.2,
+  });
+
+  let doorLObj: THREE.Object3D | null = null;
+  let doorRObj: THREE.Object3D | null = null;
+  let doorTargetL = 0;
+  let doorTargetR = 0;
+  let doorIsOpen = false;
+
+  let deskObj: THREE.Object3D | null = null;
+  let deskBaseZ = 0;
+  let deskTarget = 0;
+  let deskOpen = false;
+
+  // ─── テクスチャ生成 ───────────────────────────────────────────────────────
+  let _makieTexture: THREE.CanvasTexture | null = null;
+  function getMakieTexture(): THREE.CanvasTexture {
+    if (_makieTexture) return _makieTexture;
+    const size = 512;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d')!;
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, size, size);
+
+    const FINE_COUNT = 3900, FINE_SIZE = 0.9;
+    const BIG_COUNT  = 190,  BIG_SIZE  = 2.5;
+    const GLOW = 0.5, GLOW_ALPHA = 0.27;
+    const VARIATION = 0.59, VAR_SCALE = 7.9;
+    const gold = { r: 201, g: 168, b: 76 };
+
+    const densityAt = (x: number, y: number) => {
+      const n = (_fbm((x / size) * VAR_SCALE, (y / size) * VAR_SCALE) + 1) / 2;
+      return Math.pow(n, VARIATION * 2);
+    };
+
+    const drawParticle = (x: number, y: number, r: number, alpha: number, bright: number) => {
+      const gr = Math.round(gold.r + (255 - gold.r) * bright * 0.4);
+      const gg = Math.round(gold.g + (255 - gold.g) * bright * 0.4);
+      const gb = Math.round(gold.b + (255 - gold.b) * bright * 0.4);
+      if (GLOW > 0.1) {
+        const gr2 = ctx.createRadialGradient(x, y, 0, x, y, r + GLOW * 2);
+        gr2.addColorStop(0, `rgba(${gr},${gg},${gb},${(alpha * GLOW_ALPHA).toFixed(3)})`);
+        gr2.addColorStop(1, `rgba(${gr},${gg},${gb},0)`);
+        ctx.beginPath(); ctx.arc(x, y, r + GLOW * 2, 0, Math.PI * 2);
+        ctx.fillStyle = gr2; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${gr},${gg},${gb},${alpha.toFixed(3)})`; ctx.fill();
+    };
+
+    for (let i = 0; i < FINE_COUNT; i++) {
+      const x = Math.random() * size, y = Math.random() * size;
+      if (Math.random() > densityAt(x, y)) continue;
+      drawParticle(x, y, FINE_SIZE * (0.5 + Math.random() * 0.8), 0.4 + Math.random() * 0.6, 0.3 + Math.random() * 0.7);
+    }
+    for (let i = 0; i < BIG_COUNT; i++) {
+      const x = Math.random() * size, y = Math.random() * size;
+      if (Math.random() > densityAt(x, y) * 0.8) continue;
+      drawParticle(x, y, BIG_SIZE * (0.5 + Math.random() * 1.0), 0.7 + Math.random() * 0.3, 0.6 + Math.random() * 0.4);
+    }
+
+    _makieTexture = new THREE.CanvasTexture(cv);
+    _makieTexture.wrapS = THREE.RepeatWrapping;
+    _makieTexture.wrapT = THREE.RepeatWrapping;
+    _makieTexture.repeat.set(5, 5);
+    return _makieTexture;
+  }
+
+  // ─── Perlinノイズ (ラップ塗り用) ─────────────────────────────────────────
+  const _perm = (() => {
+    const p = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
+    const arr = new Uint8Array(512);
+    for (let i = 0; i < 256; i++) arr[i] = arr[i + 256] = p[i];
+    return arr;
+  })();
+  function _fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
+  function _grad2(h: number, x: number, y: number) {
+    const g = h & 3;
+    return (g & 1 ? -( g < 2 ? x : y) : (g < 2 ? x : y)) + (g & 2 ? -(g < 2 ? y : x) : (g < 2 ? y : x));
+  }
+  function _noise2(x: number, y: number) {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+    x -= Math.floor(x); y -= Math.floor(y);
+    const u = _fade(x), v = _fade(y);
+    const a = _perm[X] + Y, b = _perm[X + 1] + Y;
+    return (1-v)*((1-u)*_grad2(_perm[a],   x,   y) + u*_grad2(_perm[b],   x-1, y))
+         +    v *((1-u)*_grad2(_perm[a+1], x,   y-1) + u*_grad2(_perm[b+1], x-1, y-1));
+  }
+  function _fbm(x: number, y: number) {
+    let v = 0, amp = 1.0, freq = 1.0, max = 0;
+    for (let i = 0; i < 5; i++) { v += _noise2(x*freq, y*freq)*amp; max += amp; amp *= 0.5; freq *= 2.0; }
+    return v / max;
+  }
+
+  function createRaptoTexture(baseHex: string, raptoHex: string): THREE.CanvasTexture {
+    const size = 512;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d')!;
+    const ph = (h: string) => ({ r: parseInt(h.slice(1,3),16), g: parseInt(h.slice(3,5),16), b: parseInt(h.slice(5,7),16) });
+    const base = ph(baseHex), rapto = ph(raptoHex);
+    const img = ctx.createImageData(size, size);
+    const d = img.data;
+    const SCALE = 3.3, FREQ = 0.19, DIST = 5.0, POW = 2.2;
+    const SX = 69.876, SY = 69.876 * 1.7;
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const nx = (x / size) * SCALE + SX, ny = (y / size) * SCALE + SY;
+        const n = _fbm(nx, ny);
+        const marble = Math.abs(Math.sin((nx * FREQ + n * DIST) * Math.PI));
+        const t = Math.pow(marble, POW);
+        const i = (y * size + x) * 4;
+        d[i]   = Math.round(base.r + (rapto.r - base.r) * t);
+        d[i+1] = Math.round(base.g + (rapto.g - base.g) * t);
+        d[i+2] = Math.round(base.b + (rapto.b - base.b) * t);
+        d[i+3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return new THREE.CanvasTexture(cv);
+  }
+
+  function makeMaterial(hex: string, tech: Technique = 'none', raptoHex = '#c9a84c') {
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(hex),
+      roughness: 0.35,
+      metalness: 0.0,
+      clearcoat: 0.08,
+      clearcoatRoughness: 0.6,
+      reflectivity: 0.0,
+      envMapIntensity: 0.0,
+    });
+    if (tech === 'raptopaint') {
+      mat.map = createRaptoTexture(hex, raptoHex);
+      mat.color.set('#ffffff');
+      mat.clearcoat = 0.3;
+      mat.clearcoatRoughness = 0.4;
+      mat.roughness = 0.3;
+    } else if (tech === 'makie') {
+      mat.emissiveMap = getMakieTexture();
+      mat.emissive.set('#c9a84c');
+      mat.emissiveIntensity = 0.8;
+      mat.metalness = 0.25;
+      mat.roughness = 0.2;
+    } else if (tech === 'raden') {
+      mat.iridescence = 1.0;
+      mat.iridescenceIOR = 1.5;
+      mat.roughness = 0.1;
+      mat.metalness = 0.2;
+    }
+    return mat;
+  }
+
+  function applyTechnique(part: Part, tech: Technique, raptoHex: string) {
+    console.log('applyTechnique', part, tech, raptoHex);
+    state.techniques[part] = tech;
+    state.raptoColors[part] = raptoHex;
+    const hex = state.colors[part];
+    const target =
+      part === 'outer'   ? meshes.outer_frame :
+      part === 'back'    ? meshes.back_panel :
+      part === 'curtain' ? meshes.inner_curtain :
+      [...meshes.door_L, ...meshes.door_R];
+    console.log('target meshes:', target.length);
+    target.forEach(m => {
+      console.log('mesh:', m.name, 'material:', Array.isArray(m.material) ? 'array' : 'single');
+      if (Array.isArray(m.material)) {
+        m.material = (m.material as THREE.MeshPhysicalMaterial[]).map((mat, i) => {
+          if (part === 'door-front' && i === 1) return mat;
+          if (part === 'door-back'  && i !== 1) return mat;
+          return makeMaterial(hex, tech, raptoHex);
+        });
+      } else {
+        m.material = makeMaterial(hex, tech, raptoHex);
+      }
+    });
+    const badge = document.getElementById(`techbadge-${part}`);
+    if (badge) badge.textContent = tech === 'none' ? '' : { makie: '蒔絵', raptopaint: 'ラップ', raden: '螺鈿' }[tech] ?? '';
+  }
+
+  // 扉メッシュに表（frontHex）と裏（backHex）の2マテリアルを設定
+  function applyDoorMaterial(mesh: THREE.Mesh, frontHex: string, backHex: string) {
+    const geo = mesh.geometry;
+    const normal = geo.attributes.normal;
+    const index = geo.index;
+    geo.clearGroups();
+    if (index) {
+      for (let i = 0; i < index.count; i += 3) {
+        const nz = normal.getZ(index.getX(i));
+        const matIdx = nz < -0.5 ? 0 : nz > 0.5 ? 1 : 2;
+        geo.addGroup(i, 3, matIdx);
+      }
+    }
+    (mesh as any).material = [
+      makeMaterial(frontHex),
+      makeMaterial(backHex),
+      makeMaterial(frontHex),
+    ];
+  }
+
+  // ─── GLB読み込み ─────────────────────────────────────────────────────────
+  const loader = new GLTFLoader();
+  loader.load('/altar.glb', (gltf) => {
+    const model = gltf.scene;
+
+    model.traverse((obj) => {
+      if (!(obj instanceof THREE.Mesh)) return;
+      console.log('mesh:', obj.name);
+      obj.castShadow = true;
+      obj.receiveShadow = true;
+
+      if (obj.name === 'outer_frame') {
+        obj.material = makeMaterial(state.colors['outer']);
+        meshes.outer_frame.push(obj);
+      } else if (obj.name === 'back_panel') {
+        obj.material = makeMaterial(state.colors['back']);
+        meshes.back_panel.push(obj);
+      } else if (obj.name === 'door_L') {
+        applyDoorMaterial(obj, state.colors['door-front'], state.colors['door-back']);
+        meshes.door_L.push(obj);
+        doorLObj = obj;
+      } else if (obj.name === 'door_R') {
+        applyDoorMaterial(obj, state.colors['door-front'], state.colors['door-back']);
+        meshes.door_R.push(obj);
+        doorRObj = obj;
+      } else if (obj.name === 'inner_curtain') {
+        obj.material = makeMaterial(state.colors['curtain']);
+        meshes.inner_curtain.push(obj);
+      } else if (obj.name === 'inner_stage') {
+        obj.material = makeMaterial(state.colors['outer']);
+        meshes.outer_frame.push(obj);
+      } else if (obj.name === 'front_desk') {
+        obj.material = makeMaterial(state.colors['outer']);
+        meshes.outer_frame.push(obj);
+        deskObj = obj;
+        deskBaseZ = obj.position.z;
+        deskTarget = deskBaseZ;
+      } else if (obj.name.startsWith('hinge')) {
+        obj.material = hingeMat;
+      }
+    });
+
+    // モデルを中央に配置
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    model.position.sub(center);
+    model.position.y += (box.max.y - box.min.y) / 2 - center.y + box.min.y;
+    model.rotation.y = Math.PI;
+
+    scene.add(model);
+    loading.style.display = 'none';
+
+    // モデル描画後にカーテンを外す
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('page-curtain')?.classList.add('hidden');
+      });
+    });
+  });
+
+  // ─── カラー適用 ───────────────────────────────────────────────────────────
+  function applyColor(part: Part, hex: string) {
+    state.colors[part] = hex;
+
+    // UIスウォッチ・ドット更新
+    const sw = document.getElementById(`swatch-${part}`);
+    const dt = document.getElementById(`dot-${part}`);
+    if (sw) sw.style.background = hex;
+    if (dt) dt.style.background = hex;
+
+    // 技法あり（テクスチャ持ち）はマテリアルを作り直す
+    if (state.techniques[part] !== 'none') {
+      applyTechnique(part, state.techniques[part], state.raptoColors[part]);
+      return;
+    }
+
+    // Three.jsマテリアル更新
+    const color = new THREE.Color(hex);
+    if (part === 'outer') {
+      meshes.outer_frame.forEach(m => (m.material as THREE.MeshPhysicalMaterial).color.set(color));
+    } else if (part === 'back') {
+      meshes.back_panel.forEach(m => (m.material as THREE.MeshPhysicalMaterial).color.set(color));
+    } else if (part === 'curtain') {
+      meshes.inner_curtain.forEach(m => (m.material as THREE.MeshPhysicalMaterial).color.set(color));
+    } else if (part === 'door-front') {
+      meshes.door_L.forEach(m => {
+        const mats = Array.isArray(m.material) ? m.material : [m.material];
+        (mats[0] as THREE.MeshPhysicalMaterial).color.set(color);
+        if (mats[2]) (mats[2] as THREE.MeshPhysicalMaterial).color.set(color);
+      });
+      meshes.door_R.forEach(m => {
+        const mats = Array.isArray(m.material) ? m.material : [m.material];
+        (mats[0] as THREE.MeshPhysicalMaterial).color.set(color);
+        if (mats[2]) (mats[2] as THREE.MeshPhysicalMaterial).color.set(color);
+      });
+    } else if (part === 'door-back') {
+      meshes.door_L.forEach(m => {
+        const mats = Array.isArray(m.material) ? m.material : [m.material];
+        if (mats[1]) (mats[1] as THREE.MeshPhysicalMaterial).color.set(color);
+      });
+      meshes.door_R.forEach(m => {
+        const mats = Array.isArray(m.material) ? m.material : [m.material];
+        if (mats[1]) (mats[1] as THREE.MeshPhysicalMaterial).color.set(color);
+      });
+    }
+  }
+
+  // ─── ハイライト ───────────────────────────────────────────────────────────
+  function setHighlight(targetPart: Part | null) {
+    const allMeshes = [
+      ...meshes.outer_frame,
+      ...meshes.back_panel,
+      ...meshes.door_L,
+      ...meshes.door_R,
+      ...meshes.inner_curtain,
+    ];
+    allMeshes.forEach(m => {
+      const mats = Array.isArray(m.material) ? m.material : [m.material];
+      mats.forEach(mat => {
+        (mat as THREE.MeshPhysicalMaterial).emissive?.set(0x000000);
+      });
+    });
+    if (!targetPart) return;
+    const target =
+      targetPart === 'outer'      ? meshes.outer_frame :
+      targetPart === 'back'       ? meshes.back_panel :
+      targetPart === 'curtain'    ? meshes.inner_curtain :
+      [...meshes.door_L, ...meshes.door_R];
+    target.forEach(m => {
+      const mats = Array.isArray(m.material) ? m.material : [m.material];
+      mats.forEach(mat => {
+        (mat as THREE.MeshPhysicalMaterial).emissive?.set(0x444444);
+      });
+    });
+  }
+
+  // ─── パーツ選択（アコーディオン）────────────────────────────────────────
+  const accPanel = document.getElementById('acc-panel')!;
+
+  function switchTab(tab: 'template' | 'palette') {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', (b as HTMLElement).dataset.tab === tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${tab}`)!.classList.add('active');
+  }
+
+  function selectPart(part: Part | null, silent = false) {
+    if (part === null || state.part === part) {
+      // 同じパーツをクリック → 閉じる
+      state.part = null;
+      document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+      accPanel.remove();
+      return;
+    }
+    state.part = part;
+    if (!silent) switchTab('palette');
+    setDoorOpen(part === 'door-back' || part === 'back' || part === 'curtain');
+
+    // アコーディオン開閉：選択パーツの直後にパネルを挿入
+    document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+    const targetItem = document.querySelector<HTMLElement>(`.acc-item[data-part="${part}"]`)!;
+    targetItem.classList.add('open');
+    targetItem.after(accPanel);
+
+    // カラー・技法UIを現在のパーツ状態に同期
+    const currentHex = state.colors[part];
+    document.querySelectorAll<HTMLElement>('.pal-opt').forEach(opt => {
+      opt.classList.toggle('selected', opt.dataset.hex === currentHex);
+    });
+    const currentTech = state.techniques[part];
+    document.querySelectorAll<HTMLElement>('.tech-opt').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.tech === currentTech);
+    });
+    const techAllowed = part === 'door-front' || part === 'door-back' || part === 'back';
+    (document.querySelector<HTMLElement>('.tech-section')!).style.display = techAllowed ? '' : 'none';
+    raptoColorEl.style.display = techAllowed && currentTech === 'raptopaint' ? 'block' : 'none';
+  }
+
+  // ─── 扉開閉 ───────────────────────────────────────────────────────────────
+  function setDoorOpen(open: boolean) {
+    doorIsOpen = open;
+    doorTargetL = open ?  Math.PI * 0.85 : 0;
+    doorTargetR = open ? -Math.PI * 0.85 : 0;
+    // 扉開閉に台を連動
+    if (open) {
+      deskOpen = true;
+      deskTarget = deskBaseZ - 0.20;
+    } else {
+      deskOpen = false;
+      deskTarget = deskBaseZ;
+    }
+  }
+
+  // ─── カメラアニメーション ─────────────────────────────────────────────────
+  let camPosTarget: THREE.Vector3 | null = null;
+  let camLookTarget: THREE.Vector3 | null = null;
+
+  function animateCameraTo(px: number, py: number, pz: number, lx: number, ly: number, lz: number) {
+    camPosTarget  = new THREE.Vector3(px, py, pz);
+    camLookTarget = new THREE.Vector3(lx, ly, lz);
+    controls.enabled = false;
+  }
+
+  // ─── ドアタップ開閉（レイキャスト） ────────────────────────────────────────
+  const raycaster = new THREE.Raycaster();
+  let tapStartX = 0, tapStartY = 0;
+
+  canvas.addEventListener('pointerdown', e => { tapStartX = e.clientX; tapStartY = e.clientY; });
+  canvas.addEventListener('pointerup', e => {
+    const dx = e.clientX - tapStartX, dy = e.clientY - tapStartY;
+    if (Math.sqrt(dx*dx + dy*dy) > 8) return; // ドラッグは無視
+    const rect = canvas.getBoundingClientRect();
+    const x =  ((e.clientX - rect.left)  / rect.width)  * 2 - 1;
+    const y = -((e.clientY - rect.top)   / rect.height) * 2 + 1;
+    raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+    // 扉タップ：開閉トグル
+    const doorMeshes: THREE.Object3D[] = [];
+    if (doorLObj) doorLObj.traverse(o => doorMeshes.push(o));
+    if (doorRObj) doorRObj.traverse(o => doorMeshes.push(o));
+    if (raycaster.intersectObjects(doorMeshes, true).length > 0) {
+      setDoorOpen(!doorIsOpen);
+      return;
+    }
+
+    // 台タップ：引き出し/収納トグル（扉が開いているときのみ）
+    if (doorIsOpen && deskObj) {
+      const deskMeshes: THREE.Object3D[] = [];
+      deskObj.traverse(o => deskMeshes.push(o));
+      if (raycaster.intersectObjects(deskMeshes, true).length > 0) {
+        deskOpen = !deskOpen;
+        deskTarget = deskOpen ? deskBaseZ - 0.20 : deskBaseZ;
+      }
+    }
+  });
+
+  // ─── レンダーループ ───────────────────────────────────────────────────────
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update(); // ユーザー操作を先に処理
+    if (camPosTarget && camLookTarget) {
+      // controls.update()の後に上書きすることで操作しながらでも補間が効く
+      camera.position.lerp(camPosTarget, 0.06);
+      controls.target.lerp(camLookTarget, 0.06);
+      if (camera.position.distanceTo(camPosTarget) < 0.005) {
+        camera.position.copy(camPosTarget);
+        controls.target.copy(camLookTarget);
+        camPosTarget = camLookTarget = null;
+        controls.enabled = true;
+      }
+    }
+    if (doorLObj) doorLObj.rotation.y += (doorTargetL - doorLObj.rotation.y) * 0.08;
+    if (doorRObj) doorRObj.rotation.y += (doorTargetR - doorRObj.rotation.y) * 0.08;
+    if (deskObj) deskObj.position.z += (deskTarget - deskObj.position.z) * 0.08;
+    renderer.render(scene, camera);
+  }
+
+  // ─── イベント ─────────────────────────────────────────────────────────────
+  document.querySelectorAll<HTMLElement>('.acc-item').forEach(item => {
+    item.querySelector('.acc-header')!.addEventListener('click', () => {
+      selectPart(item.dataset.part as Part);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('.pal-opt:not(.custom-pal)').forEach(opt => {
+    opt.addEventListener('click', () => {
+      applyColor(state.part, opt.dataset.hex!);
+      document.querySelectorAll('.pal-opt').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  const customInput = document.getElementById('custom-color') as HTMLInputElement;
+  const customPal   = document.querySelector<HTMLElement>('.custom-pal')!;
+  customPal.addEventListener('click', () => customInput.click());
+  customInput.addEventListener('click', e => e.stopPropagation());
+  customInput.addEventListener('input', () => {
+    applyColor(state.part, customInput.value);
+    document.querySelectorAll('.pal-opt').forEach(o => o.classList.remove('selected'));
+    customPal.classList.add('selected');
+  });
+
+  const PALETTE = ['#0c0c0c','#8b1a1a','#7a1f2e','#1e3a6e','#2e5e38','#4e3660','#5c3d22','#1a2a4a','#c9a84c','#5e3a0a','#2a1a08'];
+  function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  // ─── 技法選択 ─────────────────────────────────────────────────────────────
+  const raptoColorEl = document.getElementById('rapto-color')!;
+  raptoColorEl.style.display = 'none';
+
+  document.querySelectorAll<HTMLElement>('.tech-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tech = btn.dataset.tech as Technique;
+      document.querySelectorAll('.tech-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      raptoColorEl.style.display = tech === 'raptopaint' ? 'block' : 'none';
+      applyTechnique(state.part, tech, state.raptoColors[state.part]);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('.rapto-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rapto-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      applyTechnique(state.part, 'raptopaint', btn.dataset.hex!);
+    });
+  });
+
+  document.getElementById('btn-shuffle')!.addEventListener('click', () => {
+    (['outer', 'door-front', 'door-back', 'back', 'curtain'] as Part[]).forEach(part => {
+      applyColor(part, pick(PALETTE));
+    });
+    const currentHex = state.colors[state.part];
+    document.querySelectorAll<HTMLElement>('.pal-opt').forEach(opt => {
+      opt.classList.toggle('selected', opt.dataset.hex === currentHex);
+    });
+    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+  });
+
+  // ─── タブ切り替え ─────────────────────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab!;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${tab}`)!.classList.add('active');
+    });
+  });
+
+  // ─── カラーテンプレート ───────────────────────────────────────────────────
+  const PRESETS: Array<{ name: string; colors: Record<Part, string> }> = [
+    { name: '漆黒',   colors: { outer: '#0c0c0c', 'door-front': '#090909', 'door-back': '#2a1a08', back: '#181520', curtain: '#3b1f0a' } },
+    { name: '朱と黒', colors: { outer: '#0a0808', 'door-front': '#8b1a1a', 'door-back': '#4a0e0e', back: '#2a1008', curtain: '#7a1515' } },
+    { name: '群青',   colors: { outer: '#080810', 'door-front': '#1e3a6e', 'door-back': '#0e1c3a', back: '#0a0e28', curtain: '#1a2e5c' } },
+    { name: '紫苑',   colors: { outer: '#0a0810', 'door-front': '#4e3660', 'door-back': '#2a1848', back: '#1a0e2a', curtain: '#3a2850' } },
+    { name: '白木',   colors: { outer: '#3a2008', 'door-front': '#7a5030', 'door-back': '#5c3818', back: '#8b6a3a', curtain: '#9b7a40' } },
+    { name: 'パステル',   colors: { outer: '#6e5a50', 'door-front': '#c8a0a8', 'door-back': '#e8d0c8', back: '#b8b0d0', curtain: '#d0b8b0' } },
+    { name: 'モーヴ',    colors: { outer: '#6a5868', 'door-front': '#c0a0b8', 'door-back': '#9880a0', back: '#504858', curtain: '#b090a8' } },
+    { name: 'セージ',    colors: { outer: '#485848', 'door-front': '#889878', 'door-back': '#607060', back: '#384838', curtain: '#789070' } },
+    { name: 'スモーキーブルー', colors: { outer: '#485868', 'door-front': '#8098b0', 'door-back': '#607890', back: '#384858', curtain: '#6888a0' } },
+    { name: 'ショッキングピンク', colors: { outer: '#2a0018', 'door-front': '#e8006a', 'door-back': '#a80050', back: '#180010', curtain: '#ff4090' } },
+    { name: 'エレクトリックブルー', colors: { outer: '#000820', 'door-front': '#0050e8', 'door-back': '#0030b0', back: '#000510', curtain: '#2070ff' } },
+    { name: 'ネオンパープル',  colors: { outer: '#080020', 'door-front': '#8000ff', 'door-back': '#5800c0', back: '#040010', curtain: '#a030ff' } },
+    { name: '白漆×金',       colors: { outer: '#e8e2d0', 'door-front': '#c9a84c', 'door-back': '#a07030', back: '#d4b84a', curtain: '#c0a840' } },
+    { name: '鉄紺×朱',       colors: { outer: '#1a2a4a', 'door-front': '#c0401a', 'door-back': '#8b1a08', back: '#c84010', curtain: '#101828' } },
+  ];
+
+  function applyPreset(idx: number) {
+    const preset = PRESETS[idx];
+    (Object.keys(preset.colors) as Part[]).forEach(part => {
+      applyColor(part, preset.colors[part]);
+    });
+    if (state.part) {
+      const currentHex = state.colors[state.part];
+      document.querySelectorAll<HTMLElement>('.pal-opt').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.hex === currentHex);
+      });
+    }
+    document.querySelectorAll('.preset-card').forEach((c, i) => c.classList.toggle('selected', i === idx));
+  }
+
+  document.querySelectorAll<HTMLElement>('.preset-card').forEach((card, idx) => {
+    card.addEventListener('click', () => applyPreset(idx));
+  });
+
+  // Step nav
+  // ─── 価格計算 ─────────────────────────────────────────────────────────────
+  const BASE_PRICE   = 500000;
+  const COLOR_ADD    = 20000;
+  const TECH_PRICE: Record<string, number> = { makie: 50000, raptopaint: 30000, none: 0 };
+  const TECH_LABEL: Record<string, string> = { makie: '蒔絵', raptopaint: 'ラップ塗り', none: '' };
+
+  function calcPrice() {
+    const uniqueColors = new Set(Object.values(state.colors));
+    const colorCost = Math.max(0, uniqueColors.size - 1) * COLOR_ADD;
+    const techCost  = (Object.values(state.techniques) as string[])
+      .reduce((sum, t) => sum + (TECH_PRICE[t] ?? 0), 0);
+    return BASE_PRICE + colorCost + techCost;
+  }
+
+  function renderEstimate() {
+    const body = document.getElementById('estimate-body')!;
+    const parts: Part[] = ['outer', 'door-front', 'door-back', 'back', 'curtain'];
+    const uniqueColors = [...new Set(Object.values(state.colors))];
+    const colorCost = Math.max(0, uniqueColors.length - 1) * COLOR_ADD;
+    const techCost  = (Object.values(state.techniques) as string[])
+      .reduce((sum, t) => sum + (TECH_PRICE[t] ?? 0), 0);
+    const total = BASE_PRICE + colorCost + techCost;
+    const fmt = (n: number) => `${(n / 10000).toFixed(0)}万円`;
+
+    const paletteDots = uniqueColors.map(hex =>
+      `<span class="est-pal-dot" style="background:${hex}"></span>`
+    ).join('');
+
+    const rows = parts.map(p => {
+      const tech = state.techniques[p];
+      const techBadge = tech !== 'none'
+        ? `<span class="est-tech-badge">${TECH_LABEL[tech]}</span>`
+        : '';
+      return `<tr>
+        <td class="est-td est-td-part">${PART_LABELS[p]}</td>
+        <td class="est-td est-td-color">
+          <span class="est-swatch-bar" style="background:${state.colors[p]}"></span>
+        </td>
+        <td class="est-td est-td-tech">${techBadge}</td>
+      </tr>`;
+    }).join('');
+
+    body.innerHTML = `
+      <div class="est-palette-section">
+        <p class="est-section-label">使用カラー</p>
+        <div class="est-palette-row">${paletteDots}</div>
+      </div>
+      <table class="est-table">
+        <thead>
+          <tr>
+            <th class="est-th">パーツ</th>
+            <th class="est-th">カラー</th>
+            <th class="est-th">技法</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+    const totalEl = document.getElementById('estimate-total');
+    if (totalEl) totalEl.innerHTML = `<div class="est-total"><span>概算合計</span><span class="est-total-num">${fmt(total)}〜</span></div>`;
+  }
+
+  // デスクトップのデフォルトカメラ位置
+  const defaultCamPos    = new THREE.Vector3(0, 0.05, 2.2);
+  const defaultCamTarget = new THREE.Vector3(0, 0.05, 0);
+  // モバイルのデフォルトカメラ位置（起動時に上書き済み）
+  const mobileCamPos    = new THREE.Vector3(0, 0.5, 3.6);
+  const mobileCamTarget = new THREE.Vector3(0, -0.1, 0);
+
+  function showStep(n: number) {
+    document.querySelectorAll<HTMLElement>('.form-step').forEach(el => el.classList.remove('active'));
+    document.querySelector<HTMLElement>(`#step-${n}`)!.classList.add('active');
+
+    document.querySelectorAll<HTMLElement>('.step-dot').forEach(dot => {
+      dot.classList.remove('active', 'done');
+      const s = parseInt(dot.dataset.step!);
+      if (s === n) dot.classList.add('active');
+      if (s < n)  dot.classList.add('done');
+    });
+
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (n === 2) {
+      if (isMobile) {
+        formPanel.style.height = '28vh';
+        animateCameraTo(0, 0.4, 3.2, 0, -0.05, 0);
+      } else {
+        animateCameraTo(0, 0.1, 2.0, 0, 0.05, 0);
+      }
+    } else {
+      if (isMobile) formPanel.style.height = n === 3 ? '75vh' : '60vh';
+      controls.enabled = true;
+      const p = isMobile ? mobileCamPos    : defaultCamPos;
+      const t = isMobile ? mobileCamTarget : defaultCamTarget;
+      camPosTarget  = p.clone();
+      camLookTarget = t.clone();
+    }
+    if (n === 3) {
+      renderEstimate();
+      // コンフィグ情報をURLパラメータに乗せる
+      const config = {
+        colors: state.colors,
+        techniques: state.techniques,
+      };
+      const link = document.getElementById('btn-contact-link') as HTMLAnchorElement;
+      if (link) link.href = `/contact?config=${encodeURIComponent(JSON.stringify(config))}`;
+    }
+  }
+  document.querySelectorAll<HTMLButtonElement>('.btn-next').forEach(btn => {
+    btn.addEventListener('click', () => showStep(parseInt(btn.dataset.next!)));
+  });
+  document.querySelectorAll<HTMLButtonElement>('.btn-back').forEach(btn => {
+    btn.addEventListener('click', () => showStep(parseInt(btn.dataset.back!)));
+  });
+
+  window.addEventListener('resize', resize);
+
+  // ─── モバイル ボトムシート ────────────────────────────────────────────────
+  const formPanel = document.querySelector<HTMLElement>('.form-panel')!;
+  let sheetExpanded = true;
+
+  function setSheet(expanded: boolean) {
+    sheetExpanded = expanded;
+    formPanel.style.transition = 'transform 0.35s cubic-bezier(0.32,0.72,0,1)';
+    formPanel.style.transform = expanded ? 'translateY(0)' : 'translateY(calc(100% - 100px))';
+  }
+
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    // 仏壇の上端が画面上部・下端が中央より少し下のカメラ構図
+    camera.position.set(0, 0.5, 3.6);
+    controls.target.set(0, -0.1, 0);
+    controls.update();
+
+    // 閉じているときはパネル全体タップで開く
+    formPanel.addEventListener('click', () => {
+      if (!sheetExpanded) setSheet(true);
+    });
+
+    const handle = document.createElement('div');
+    handle.className = 'sheet-handle';
+    formPanel.prepend(handle);
+    handle.addEventListener('click', e => {
+      e.stopPropagation();
+      setSheet(!sheetExpanded);
+    });
+
+    // スクロール先頭からの下スワイプでシートを閉じる
+    let startY = 0;
+    let mayClose = false;
+
+    formPanel.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      const activeStep = formPanel.querySelector<HTMLElement>('.form-step.active');
+      const stepNum = activeStep ? parseInt(activeStep.id.replace('step-', '')) : 1;
+      const scroller = formPanel.querySelector<HTMLElement>('.palette-scroll');
+      mayClose = stepNum <= 2 && (!scroller || scroller.scrollTop === 0);
+    }, { passive: true });
+
+    formPanel.addEventListener('touchmove', e => {
+      if (!sheetExpanded || !mayClose) return;
+      const dy = e.touches[0].clientY - startY;
+      if (dy > 0) {
+        e.preventDefault(); // スクロールを止めてシートクローズに使う
+      } else {
+        mayClose = false; // 上スクロールなら通常スクロールに戻す
+      }
+    }, { passive: false });
+
+    formPanel.addEventListener('touchend', e => {
+      const dy = e.changedTouches[0].clientY - startY;
+      if (sheetExpanded && mayClose && dy > 60) setSheet(false);
+      mayClose = false;
+    });
+  }
+
+  // ─── 起動 ─────────────────────────────────────────────────────────────────
+  ;(Object.keys(state.colors) as Part[]).forEach(part => {
+    const sw = document.getElementById(`swatch-${part}`);
+    const dt = document.getElementById(`dot-${part}`);
+    if (sw) sw.style.background = state.colors[part];
+    if (dt) dt.style.background = state.colors[part];
+  });
+  resize();
+  animate();
+  selectPart('outer', true);
+</script>
+
+<style>
+  .cfg-page {
+    min-height: 100vh;
+    padding: 0 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .cfg-header {
+    padding: 160px 0 80px;
+    text-align: center;
+  }
+  .cfg-header h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+  .cfg-sub {
+    color: var(--color-muted);
+    letter-spacing: 0.1em;
+    font-size: 0.95rem;
+  }
+
+  .cfg-body {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 64px;
+    align-items: start;
+    height: calc(100vh - 280px);
+  }
+  .form-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 80px;
+  }
+  .preview-panel {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+  }
+  @media (max-width: 900px) {
+    /* cfg-header を非表示 */
+    .cfg-header { display: none; }
+
+    /* ページ全体のパディングをリセット */
+    .cfg-page { padding: 0; }
+
+    /* cfg-body はグリッドをやめてシンプルにする */
+    .cfg-body {
+      display: block;
+      height: 100vh;
+    }
+
+    /* 3Dプレビューを全画面固定 */
+    .preview-panel {
+      position: fixed;
+      inset: 0;
+      height: 100vh;
+      padding-bottom: 0;
+      z-index: 0;
+    }
+
+    /* altar-wrap も全画面 */
+    .altar-wrap { border-radius: 0; }
+
+    /* preview-header をサイトヘッダーの下に */
+    .preview-header {
+      position: absolute;
+      top: 80px; left: 0; right: 0;
+      z-index: 1;
+      padding: 12px 20px;
+      background: linear-gradient(to bottom, rgba(8,8,20,0.5), transparent);
+      margin-bottom: 0;
+    }
+
+    /* モバイルでは preview-footer / preview-controls を非表示 */
+    .preview-footer { display: none; }
+
+    /* color-dots をプレビューヘッダーの下に配置・ラベルなし */
+    .color-dots {
+      position: absolute;
+      top: 96px;
+      bottom: auto;
+      left: 0; right: 0;
+      z-index: 1;
+      padding: 2px 20px;
+      gap: 10px;
+    }
+    .cd-lbl { display: none; }
+    .cd-dot { width: 14px; height: 14px; }
+
+    /* フォームパネルをボトムシートとして固定 */
+    .form-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60vh;
+      padding: 16px 20px 0;
+      padding-bottom: 0;
+      background: rgba(8, 8, 20, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(201,168,76,0.25);
+      border-radius: 16px 16px 0 0;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    /* ドラッグハンドル */
+    :global(.sheet-handle) {
+      width: 100%;
+      padding: 12px 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    :global(.sheet-handle::after) {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 4px;
+      background: rgba(201,168,76,0.6);
+      border-radius: 2px;
+    }
+
+    /* step-nav をコンパクトに */
+    .step-nav { margin-bottom: 6px; }
+
+
+    /* btn-row の余白調整 */
+    .btn-row { padding-top: 8px; padding-bottom: max(env(safe-area-inset-bottom), 20px); }
+
+    /* タブバーのマージン調整 */
+    .tab-bar { margin-bottom: 12px; }
+
+    /* step-title / step-desc をコンパクトに */
+    .step-title { font-size: 1.0rem; margin-bottom: 6px; }
+    .step-desc { margin-bottom: 12px; }
+  }
+
+  /* Step nav */
+  .step-nav {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+  }
+  .step-dot {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step-dot span {
+    font-family: var(--font-serif-en);
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    color: var(--color-muted);
+    transition: color 0.3s;
+  }
+  .step-dot.active { border-color: var(--color-gold); background: rgba(201,168,76,0.08); }
+  .step-dot.active span { color: var(--color-gold); }
+  .step-dot.done { border-color: var(--color-gold); background: var(--color-gold); }
+  .step-dot.done span { color: #080814; }
+  .step-line { flex: 1; height: 1px; background: rgba(201,168,76,0.2); }
+
+  .form-step { display: none; }
+  .form-step.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    animation: stepFadeIn 1.2s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes stepFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-curtain {
+    position: fixed;
+    inset: 0;
+    background: #080814;
+    z-index: 9999;
+    transition: opacity 1s ease;
+  }
+  .page-curtain.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .step-preview { gap: 10px; justify-content: flex-start; }
+  .step-preview .btn-sub-row { flex-shrink: 0; }
+  .tap-hint { font-size: 0.65rem; letter-spacing: 0.12em; color: var(--color-muted); text-align: center; flex-shrink: 0; }
+  .step-title { font-size: 1.3rem; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 12px; flex-shrink: 0; }
+  .step-desc { font-size: 0.85rem; color: var(--color-muted); letter-spacing: 0.05em; margin-bottom: 32px; line-height: 1.9; flex-shrink: 0; }
+  .palette-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .palette-scroll::-webkit-scrollbar { display: none; }
+
+  /* Part list */
+  .part-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+  .part-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.12);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .part-item:hover { border-color: rgba(201,168,76,0.35); }
+  .part-item.selected {
+    border-color: var(--color-gold);
+    background: rgba(201,168,76,0.06);
+  }
+  .part-swatch {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+    transition: background 0.4s;
+  }
+  .part-label {
+    flex: 1;
+    font-family: var(--font-serif-jp);
+    font-size: 0.88rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--color-cream);
+    text-align: left;
+  }
+  .part-arrow {
+    font-size: 1rem;
+    color: var(--color-muted);
+    transition: color 0.2s;
+  }
+  .part-item.selected .part-arrow { color: var(--color-gold); }
+
+  /* Color palette */
+  .color-palette { margin-bottom: 36px; }
+  .palette-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--color-gold);
+    margin-bottom: 16px;
+  }
+  .pal-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 7px;
+  }
+  .pal-opt {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 4px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .pal-opt:hover { border-color: rgba(201,168,76,0.4); }
+  .pal-opt.selected { border-color: var(--color-gold); background: rgba(201,168,76,0.07); }
+  .pal-sw {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: block;
+  }
+  .pal-sw-custom {
+    position: relative;
+    overflow: hidden;
+    background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pal-sw-custom input[type="color"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%; height: 100%;
+    cursor: pointer;
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; padding-top: 12px; }
+  .btn-sub-row { display: flex; gap: 8px; }
+  .btn-sub {
+    flex: 1; background: transparent; cursor: pointer;
+    font-family: var(--font-serif-jp); font-size: 0.72rem; font-weight: 300;
+    letter-spacing: 0.1em; padding: 9px 4px;
+    border: 1px solid rgba(201,168,76,0.25); color: var(--color-muted);
+    transition: all 0.2s;
+  }
+  .btn-sub:hover { border-color: rgba(201,168,76,0.6); color: var(--color-cream); }
+  .btn-sub.active { border-color: var(--color-gold); color: var(--color-gold); background: rgba(201,168,76,0.08); }
+  .btn-next, .btn-back {
+    background: transparent; cursor: pointer;
+    font-family: var(--font-serif-jp); font-size: 0.8rem; font-weight: 300;
+    letter-spacing: 0.2em; padding: 12px 36px; transition: all 0.25s;
+  }
+  .btn-next { border: 1px solid var(--color-gold); color: var(--color-gold); width: 100%; }
+  .btn-next:hover { background: var(--color-gold); color: #080814; }
+  .btn-back { border: none; color: var(--color-muted); font-size: 0.72rem; padding: 6px 0; text-align: center; width: 100%; }
+  .btn-back:hover { color: var(--color-cream); }
+  .btn-contact {
+    border: 1px solid var(--color-gold); color: var(--color-gold);
+    font-size: 0.8rem; font-weight: 300; letter-spacing: 0.2em;
+    padding: 12px 36px; transition: all 0.25s; display: block;
+    text-align: center;
+  }
+  .btn-contact:hover { background: var(--color-gold); color: #080814; }
+
+
+  /* 概算見積もり */
+  .estimate-body { margin: 16px 0; }
+  .estimate-note { font-size: 0.65rem; color: var(--color-muted); letter-spacing: 0.05em; margin-bottom: 24px; opacity: 0.6; }
+  :global(.est-section-label) { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--color-muted); margin-bottom: 10px; }
+  :global(.est-palette-section) { margin-bottom: 24px; }
+  :global(.est-palette-row) { display: flex; gap: 10px; flex-wrap: wrap; }
+  :global(.est-pal-dot) {
+    display: block; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
+  }
+  :global(.est-table) { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  :global(.est-th) { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--color-muted); border-bottom: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); padding: 7px 6px; text-align: left; font-weight: normal; }
+  :global(.est-td) { padding: 9px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: middle; }
+  :global(.est-td-part) { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--color-cream); width: 40%; }
+  :global(.est-td-color) { width: 30%; }
+  :global(.est-td-tech) { font-size: 0.72rem; letter-spacing: 0.06em; color: var(--color-muted); }
+  :global(.est-swatch-bar) { display: block; width: 64px; height: 18px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.08); }
+  :global(.est-tech-badge) {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.08em;
+    color: var(--color-gold); border: 1px solid rgba(201,168,76,0.4);
+    padding: 2px 7px; border-radius: 2px;
+  }
+  :global(.est-total) { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid rgba(201,168,76,0.4); padding-top: 16px; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--color-cream); }
+  :global(.est-total-num) { font-size: 1.6rem; letter-spacing: 0.04em; color: var(--color-gold); }
+  .btn-next { padding: 10px 20px; border: 1px solid rgba(201,168,76,0.5); border-radius: 2px; background: rgba(201,168,76,0.08); color: var(--color-gold); font-size: 0.8rem; letter-spacing: 0.15em; cursor: pointer; transition: all 0.2s; }
+  .btn-next:hover { background: rgba(201,168,76,0.18); }
+
+  /* Preview panel */
+  .preview-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; flex-shrink: 0;
+  }
+  .preview-label {
+    font-family: var(--font-serif-en); font-size: 0.7rem;
+    letter-spacing: 0.35em; color: var(--color-gold); text-transform: uppercase;
+  }
+  .preview-hint {
+    font-size: 0.65rem; letter-spacing: 0.1em; color: var(--color-muted);
+  }
+  /* アコーディオン */
+  .accordion { display: flex; flex-direction: column; gap: 1px; margin-bottom: 4px; }
+  .acc-item { display: contents; }
+  .acc-header {
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(30,22,12,0.9) 0%, rgba(15,12,8,0.95) 100%);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .acc-header:hover {
+    border-color: rgba(201,168,76,0.5);
+    background: linear-gradient(135deg, rgba(40,30,15,0.95) 0%, rgba(20,15,8,0.98) 100%);
+    box-shadow: inset 0 0 20px rgba(201,168,76,0.04), 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .acc-item.open .acc-header {
+    border-color: rgba(201,168,76,0.6);
+    border-bottom-color: transparent;
+    border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+    background: linear-gradient(135deg, rgba(45,32,14,0.98) 0%, rgba(22,16,8,1) 100%);
+    box-shadow: inset 0 0 30px rgba(201,168,76,0.06);
+  }
+  .acc-swatch {
+    width: 18px; height: 18px; border-radius: 2px;
+    border: 1px solid rgba(201,168,76,0.3);
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .acc-label {
+    flex: 1; font-size: 0.8rem; letter-spacing: 0.12em;
+    text-align: left; color: var(--color-cream);
+    font-family: var(--font-serif-jp);
+  }
+  .acc-tech-badge {
+    font-size: 0.6rem; letter-spacing: 0.08em; color: var(--color-gold);
+    padding: 2px 7px; border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 2px; background: rgba(201,168,76,0.06);
+  }
+  .acc-arrow {
+    font-size: 0.9rem; color: rgba(201,168,76,0.5);
+    transition: transform 0.25s, color 0.25s;
+  }
+  .acc-item.open .acc-arrow { transform: rotate(90deg); color: var(--color-gold); }
+  .acc-panel {
+    padding: 16px 16px 18px;
+    border: 1px solid rgba(201,168,76,0.6); border-top: none;
+    border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
+    background: linear-gradient(180deg, rgba(22,16,8,0.98) 0%, rgba(12,10,6,1) 100%);
+    box-shadow: inset 0 4px 16px rgba(0,0,0,0.3);
+    margin-bottom: 1px;
+  }
+  .tech-section { margin-top: 16px; }
+  .tech-grid {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; margin-bottom: 12px;
+  }
+  .tech-opt {
+    padding: 5px 12px; border-radius: 3px; font-size: 0.72rem; letter-spacing: 0.06em;
+    border: 1px solid rgba(255,255,255,0.15); background: transparent;
+    color: var(--color-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .tech-opt:hover { border-color: rgba(201,168,76,0.4); color: var(--color-text); }
+  .tech-opt.selected { border-color: var(--color-gold); color: var(--color-gold); background: rgba(201,168,76,0.08); }
+  .rapto-opt { all: unset; cursor: pointer; }
+  .rapto-opt.selected .pal-sw { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+  /* タブ */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .tab-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--font-serif-jp);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--color-muted);
+    padding: 8px 18px 9px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn.active { color: var(--color-gold); border-bottom-color: var(--color-gold); }
+  .tab-btn:hover:not(.active) { color: rgba(201,168,76,0.6); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .preset-section { margin-bottom: 20px; flex-shrink: 0; }
+  .preset-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .preset-card {
+    all: unset;
+    flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .preset-card:hover { border-color: rgba(201,168,76,0.3); }
+  .preset-card.selected { border-color: var(--color-gold); }
+  .preset-swatches { display: flex; gap: 3px; }
+  .preset-swatches span { width: 13px; height: 13px; border-radius: 50%; display: block; }
+  .preset-shuffle { justify-content: center; }
+  .shuffle-icon { font-size: 1.2rem; color: var(--color-muted); line-height: 1; }
+  .preset-shuffle:hover .shuffle-icon { color: var(--color-gold); }
+
+
+
+  /* 3D canvas */
+  .altar-wrap {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: #050508;
+  }
+  #three-canvas {
+    display: block;
+    width: 100% !important;
+  }
+  .three-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px; background: rgba(5,5,8,0.9);
+  }
+
+  /* Spinner */
+  .ai-spinner {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(201,168,76,0.2); border-top-color: var(--color-gold);
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  .ai-loading-text { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--color-gold); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Preview controls (扉・台ボタン) */
+  .preview-controls {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-preview-ctrl {
+    padding: 6px 10px;
+    background: rgba(8,8,20,0.6);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--color-muted);
+    font-family: var(--font-serif-jp);
+    font-size: 0.72rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .btn-preview-ctrl:hover { border-color: var(--color-gold); color: var(--color-gold); }
+  .btn-preview-ctrl.active { border-color: var(--color-gold); color: var(--color-gold); background: rgba(201,168,76,0.08); }
+
+  /* Preview footer (デスクトップ：フロー配置) */
+  .preview-footer { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+  .preview-controls { display: flex; gap: 6px; flex-shrink: 0; }
+
+  /* Color dots */
+  .color-dots {
+    display: flex; gap: 20px; justify-content: center;
+    padding: 16px 0 0; margin-top: 8px; flex-shrink: 0;
+  }
+  .cd-item { display: flex; align-items: center; gap: 7px; }
+  .cd-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: background 0.4s;
+    flex-shrink: 0;
+  }
+  .cd-lbl { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--color-muted); }
+</style>

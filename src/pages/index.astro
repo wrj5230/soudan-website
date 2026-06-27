@@ -1,0 +1,315 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+---
+
+<Layout>
+  <Header />
+
+  <!-- 全シーンを重ねて配置 -->
+  <div class="scenes">
+
+    <!-- Scene 0: Hero -->
+    <div class="scene active" data-scene="0">
+      <div class="hero-bg"></div>
+      <div class="scene-content hero-content">
+        <p class="hero-label">SOUDAN</p>
+        <h1 class="hero-title">祈りを、<br />創る。</h1>
+        <p class="hero-sub">あなたの想いをカタチに。</p>
+      </div>
+    </div>
+
+    <!-- Scene 1: Concept -->
+    <div class="scene" data-scene="1">
+      <div class="scene-content">
+        <p class="section-label">Concept</p>
+        <h2 class="scene-title">なぜ、SOUDANなのか。</h2>
+        <div class="divider"></div>
+        <div class="concept-body">
+          <p>仏壇は、故人と向き合う場所。<br />そこにあるべきは、量産品ではなく、<br />あなたの家にしかない、唯一の祈りの空間です。</p>
+          <p>SOUDANは、職人との対話から始まります。<br />想い出、家の佇まい、故人の好きだったもの。<br />すべてを聴き、すべてをカタチにします。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 2: Craftsmen -->
+    <div class="scene craftsmen-scene" data-scene="2">
+      <div class="scene-content">
+        <p class="section-label">Craftsmen & Techniques</p>
+        <h2 class="scene-title">職人と、技法。</h2>
+        <div class="divider"></div>
+        <div class="techniques-grid">
+          <div class="technique-card">
+            <h3>蒔絵</h3>
+            <p>漆の上に金銀の粉を蒔いて描く、日本が誇る伝統装飾技法。繊細な文様があなたの想いを永遠に刻みます。</p>
+          </div>
+          <div class="technique-card">
+            <h3>漆塗り</h3>
+            <p>何十もの工程を経て積み重ねられる漆の層。深みのある艶と、百年を超える耐久性を持ちます。</p>
+          </div>
+          <div class="technique-card">
+            <h3>彩色</h3>
+            <p>岩絵具や金泥を用いた日本画の技法。仏の世界を彩る色彩が、祈りの空間に命を吹き込みます。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 3: Configurator CTA -->
+    <div class="scene cfg-scene" data-scene="3">
+      <div class="scene-content cfg-content">
+        <p class="section-label">Try the Configurator</p>
+        <h2 class="cfg-title">あなただけの仏壇を、<br />創ってみる。</h2>
+        <p class="cfg-sub">色・技法・素材を自由に組み合わせて、<br />あなたの祈りの空間をイメージしてください。</p>
+        <a href="/configurator" class="cfg-btn" id="cfg-link">3Dで試してみる →</a>
+      </div>
+    </div>
+
+
+  </div><!-- /.scenes -->
+
+  <!-- ナビゲーション -->
+  <div class="scene-nav" id="nav-dots"></div>
+
+</Layout>
+
+<script>
+  const scenes = document.querySelectorAll<HTMLElement>('.scene');
+  const dotsContainer = document.getElementById('nav-dots')! as HTMLElement;
+  const total = scenes.length;
+  let current = 0;
+  let animating = false;
+
+  // ドット生成
+  scenes.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `シーン ${i + 1}`);
+    dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
+    dotsContainer.appendChild(dot);
+  });
+
+  function updateNav() {
+    dotsContainer.querySelectorAll('.nav-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current)
+    );
+  }
+
+  function goTo(n: number) {
+    if (animating || n === current || n < 0 || n >= total) return;
+    animating = true;
+    scenes[current].classList.remove('active');
+    scenes[current].classList.add('leave');
+    // フェードアウト完了後に次シーンをフェードイン
+    setTimeout(() => {
+      document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
+      current = n;
+      scenes[current].classList.add('active');
+      updateNav();
+      setTimeout(() => { animating = false; }, 800);
+    }, 500);
+  }
+
+  // タップ/クリックで次へ（フォーム・ボタン・リンクは除外）
+  document.querySelector('.scenes')!.addEventListener('click', e => {
+    const target = e.target as HTMLElement;
+    if (target.closest('a, button, input, textarea, label, form')) return;
+    goTo(current + 1);
+  });
+
+  // キーボード
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') goTo(current - 1);
+  });
+
+  // スワイプ（横）
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(dx) < 50) return;
+    if (dx > 0) goTo(current + 1);
+    else goTo(current - 1);
+  });
+
+</script>
+
+<style>
+  /* ─── ベース ─── */
+  :global(html), :global(body) {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .scenes {
+    position: fixed;
+    inset: 0;
+  }
+
+  /* ─── シーン ─── */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.1s cubic-bezier(0.22,1,0.36,1);
+    background: var(--color-bg);
+  }
+  .scene.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+  }
+  .scene.leave {
+    opacity: 0;
+    z-index: 0;
+  }
+
+  .scene-content {
+    max-width: 1000px;
+    width: 100%;
+    padding: 0 48px;
+  }
+
+  .scene-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 0;
+  }
+
+  /* ─── Hero ─── */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 40%, #0d1a3a 0%, #080814 60%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .hero-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.5em;
+    color: #c9a84c;
+    margin-bottom: 24px;
+  }
+  .hero-title {
+    font-size: clamp(3.5rem, 8vw, 6rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    line-height: 1.3;
+    margin-bottom: 24px;
+  }
+  .hero-sub {
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    color: #8a8a9a;
+  }
+
+  /* ─── Concept ─── */
+  .concept-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 560px;
+    font-size: 1rem;
+    line-height: 2.2;
+    color: #d0cac0;
+    margin-top: 8px;
+  }
+
+  /* ─── Craftsmen ─── */
+  .craftsmen-scene { background: #0d1628; }
+  .techniques-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 8px;
+  }
+  .technique-card {
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 28px 24px;
+  }
+  .technique-card h3 {
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: #c9a84c;
+    margin-bottom: 12px;
+  }
+  .technique-card p { color: #d0cac0; line-height: 1.9; font-size: 0.85rem; }
+
+  /* ─── Configurator CTA ─── */
+  .cfg-scene {
+    background: linear-gradient(135deg, #0a0f20 0%, #080814 60%, #0d1a2e 100%);
+  }
+  .cfg-content { text-align: center; }
+  .cfg-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    margin: 16px 0 24px;
+  }
+  .cfg-sub {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    letter-spacing: 0.08em;
+    line-height: 2;
+    margin-bottom: 40px;
+  }
+  .cfg-btn {
+    display: inline-block;
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    padding: 16px 48px;
+    transition: all 0.3s;
+  }
+  .cfg-btn:hover { background: var(--color-gold); color: #080814; }
+
+
+  /* ─── ナビゲーション ─── */
+  .scene-nav {
+    position: fixed;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  :global(.nav-dot) {
+    width: 6px; height: 6px;
+    border-radius: 3px;
+    background: rgba(201,168,76,0.3);
+    border: none; cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+    padding: 0;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :global(.nav-dot.active) {
+    width: 22px;
+    background: #c9a84c;
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 768px) {
+    .scene-content { padding: 0 20px; }
+    .scene-nav { bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)); }
+    .hero-title { letter-spacing: 0.08em; }
+    .hero-sub { letter-spacing: 0.15em; font-size: 0.9rem; }
+    .techniques-grid { grid-template-columns: 1fr; gap: 12px; overflow-y: auto; max-height: 60svh; }
+    .technique-card { padding: 18px; }
+  }
+</style>

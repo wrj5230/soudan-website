@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>蒔絵 パターンテスト</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0f; font-family: sans-serif; padding: 40px 32px; color: rgba(255,255,255,0.75); }
+h1 { font-size: 10px; letter-spacing: 0.4em; color: rgba(255,255,255,0.2); margin-bottom: 36px; }
+
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: start; }
+
+.preview-wrap { position: sticky; top: 40px; display: flex; flex-direction: column; gap: 16px; }
+.canvases { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cv-wrap { display: flex; flex-direction: column; gap: 6px; }
+canvas { display: block; width: 100%; aspect-ratio: 1; border-radius: 2px; }
+.cv-label { font-size: 9px; letter-spacing: 0.25em; color: rgba(255,255,255,0.2); text-align: center; }
+
+/* テクスチャプレビュー（生） */
+#cv-raw { background: #000; }
+/* パーツに貼った風プレビュー */
+#cv-dark { background: #181520; }
+#cv-red  { background: #7a1f2e; }
+#cv-blue { background: #1e3a6e; }
+
+.controls { display: flex; flex-direction: column; gap: 24px; }
+.ctrl-group { display: flex; flex-direction: column; gap: 10px; }
+.ctrl-group h2 { font-size: 9px; letter-spacing: 0.3em; color: rgba(255,255,255,0.18); border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; }
+
+.ctrl-row { display: flex; align-items: center; gap: 10px; }
+.ctrl-label { font-size: 11px; letter-spacing: 0.05em; color: rgba(255,255,255,0.45); width: 90px; flex-shrink: 0; }
+.ctrl-val   { font-size: 11px; color: rgba(201,168,76,0.9); width: 42px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+input[type=range] {
+  flex: 1; -webkit-appearance: none; height: 2px;
+  background: rgba(255,255,255,0.1); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: #c9a84c; cursor: pointer;
+}
+
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset-btn {
+  padding: 7px 14px; border: 1px solid rgba(255,255,255,0.08); border-radius: 2px;
+  background: none; color: rgba(255,255,255,0.35); font-size: 10px; letter-spacing: 0.15em;
+  cursor: pointer; transition: all 0.15s;
+}
+.preset-btn:hover { border-color: rgba(201,168,76,0.5); color: rgba(201,168,76,0.9); }
+
+.btn-seed {
+  padding: 7px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px;
+  background: none; color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 0.2em;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-seed:hover { border-color: rgba(201,168,76,0.5); color: rgba(201,168,76,0.9); }
+
+.param-display {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px; padding: 14px 16px;
+  font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.9;
+  font-family: monospace;
+}
+.param-display span { color: rgba(201,168,76,0.8); }
+
+.swatch-list { display: flex; gap: 6px; }
+.sw { width: 22px; height: 22px; border-radius: 3px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+.sw.active { border-color: rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<h1>MAKI-E — PATTERN EXPLORER</h1>
+
+<div class="layout">
+
+  <!-- 左：プレビュー -->
+  <div class="preview-wrap">
+    <div class="canvases">
+      <div class="cv-wrap">
+        <canvas id="cv-raw" width="256" height="256"></canvas>
+        <div class="cv-label">テクスチャ（生）</div>
+      </div>
+      <div class="cv-wrap">
+        <canvas id="cv-dark" width="256" height="256"></canvas>
+        <div class="cv-label">漆黒に重ねた場合</div>
+      </div>
+      <div class="cv-wrap">
+        <canvas id="cv-red" width="256" height="256"></canvas>
+        <div class="cv-label">朱に重ねた場合</div>
+      </div>
+      <div class="cv-wrap">
+        <canvas id="cv-blue" width="256" height="256"></canvas>
+        <div class="cv-label">群青に重ねた場合</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右：コントロール -->
+  <div class="controls">
+
+    <!-- 粒子 -->
+    <div class="ctrl-group">
+      <h2>PARTICLES</h2>
+      <div class="ctrl-row">
+        <span class="ctrl-label">微粒子の数</span>
+        <input type="range" id="sl-fine-count" min="200" max="5000" step="100" value="2000">
+        <span class="ctrl-val" id="v-fine-count">2000</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">微粒子サイズ</span>
+        <input type="range" id="sl-fine-size" min="0.3" max="3" step="0.1" value="1.2">
+        <span class="ctrl-val" id="v-fine-size">1.2</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">大粒子の数</span>
+        <input type="range" id="sl-big-count" min="0" max="300" step="10" value="80">
+        <span class="ctrl-val" id="v-big-count">80</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">大粒子サイズ</span>
+        <input type="range" id="sl-big-size" min="2" max="12" step="0.5" value="5">
+        <span class="ctrl-val" id="v-big-size">5.0</span>
+      </div>
+    </div>
+
+    <!-- グロー -->
+    <div class="ctrl-group">
+      <h2>GLOW</h2>
+      <div class="ctrl-row">
+        <span class="ctrl-label">グロー半径</span>
+        <input type="range" id="sl-glow" min="0" max="5" step="0.1" value="1.8">
+        <span class="ctrl-val" id="v-glow">1.8</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">グロー強度</span>
+        <input type="range" id="sl-glow-alpha" min="0" max="1" step="0.01" value="0.35">
+        <span class="ctrl-val" id="v-glow-alpha">0.35</span>
+      </div>
+    </div>
+
+    <!-- 密度ムラ -->
+    <div class="ctrl-group">
+      <h2>DENSITY VARIATION</h2>
+      <div class="ctrl-row">
+        <span class="ctrl-label">ムラの強さ</span>
+        <input type="range" id="sl-var" min="0" max="1" step="0.01" value="0.5">
+        <span class="ctrl-val" id="v-var">0.50</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">ムラのスケール</span>
+        <input type="range" id="sl-var-scale" min="1" max="10" step="0.1" value="3">
+        <span class="ctrl-val" id="v-var-scale">3.0</span>
+      </div>
+    </div>
+
+    <!-- 色 -->
+    <div class="ctrl-group">
+      <h2>COLOR</h2>
+      <div class="ctrl-row">
+        <span class="ctrl-label">金粉の色</span>
+        <div class="swatch-list" id="gold-swatches">
+          <div class="sw active" style="background:#c9a84c" data-color="#c9a84c" title="金"></div>
+          <div class="sw"        style="background:#e8e0b0" data-color="#e8e0b0" title="淡金"></div>
+          <div class="sw"        style="background:#f0f0f0" data-color="#f0f0f0" title="銀"></div>
+          <div class="sw"        style="background:#e8c8a0" data-color="#e8c8a0" title="古金"></div>
+          <div class="sw"        style="background:#d4a870" data-color="#d4a870" title="赤金"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- シード -->
+    <div class="ctrl-group">
+      <h2>SEED</h2>
+      <div class="ctrl-row">
+        <button class="btn-seed" id="btn-seed">シャッフル</button>
+      </div>
+    </div>
+
+    <!-- プリセット -->
+    <div class="ctrl-group">
+      <h2>PRESETS</h2>
+      <div class="preset-row">
+        <button class="preset-btn" data-preset="default">標準</button>
+        <button class="preset-btn" data-preset="fine">極細粉</button>
+        <button class="preset-btn" data-preset="bold">粗目</button>
+        <button class="preset-btn" data-preset="glow">輝き強め</button>
+        <button class="preset-btn" data-preset="sparse">疎ら</button>
+      </div>
+    </div>
+
+    <!-- パラメーター -->
+    <div class="ctrl-group">
+      <h2>CURRENT PARAMS</h2>
+      <div class="param-display" id="param-display"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── Perlinノイズ（密度ムラ用） ───────────────────────────────
+const _p=[151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
+const perm=new Uint8Array(512);
+for(let i=0;i<256;i++) perm[i]=perm[i+256]=_p[i];
+function fade(t){return t*t*t*(t*(t*6-15)+10);}
+function grad2(h,x,y){const g=h&3;return(g&1?-(g<2?x:y):(g<2?x:y))+(g&2?-(g<2?y:x):(g<2?y:x));}
+function noise2(x,y){
+  const X=Math.floor(x)&255,Y=Math.floor(y)&255;
+  x-=Math.floor(x);y-=Math.floor(y);
+  const u=fade(x),v=fade(y),a=perm[X]+Y,b=perm[X+1]+Y;
+  return(1-v)*((1-u)*grad2(perm[a],x,y)+u*grad2(perm[b],x-1,y))
+        +v*((1-u)*grad2(perm[a+1],x,y-1)+u*grad2(perm[b+1],x-1,y-1));
+}
+function fbm(x,y){let v=0,amp=1,freq=1,max=0;for(let i=0;i<4;i++){v+=noise2(x*freq,y*freq)*amp;max+=amp;amp*=0.5;freq*=2;}return(v/max+1)/2;}
+
+function hexRgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)};}
+
+// ─── 状態 ─────────────────────────────────────────────────────
+let state={
+  fineCount:2000, fineSize:1.2,
+  bigCount:80, bigSize:5.0,
+  glow:1.8, glowAlpha:0.35,
+  variation:0.5, varScale:3.0,
+  goldHex:'#c9a84c', seed:0,
+};
+let rng = mulberry32(42);
+
+function mulberry32(seed){
+  return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+}
+
+// ─── 描画 ─────────────────────────────────────────────────────
+function drawTexture(cv, bgColor){
+  const size = cv.width;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = bgColor || '#000000';
+  ctx.fillRect(0,0,size,size);
+
+  const {fineCount, fineSize, bigCount, bigSize, glow, glowAlpha, variation, varScale, goldHex, seed} = state;
+  const gold = hexRgb(goldHex);
+  const sx = seed, sy = seed * 1.3;
+
+  const drawParticle = (x, y, r, alpha, bright) => {
+    const gr = gold.r + Math.round((255 - gold.r) * bright * 0.4);
+    const gg = gold.g + Math.round((255 - gold.g) * bright * 0.4);
+    const gb = gold.b + Math.round((255 - gold.b) * bright * 0.4);
+
+    // グロー
+    if (glow > 0.1 && glowAlpha > 0.01) {
+      const glowR = r + glow * 2;
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+      grad.addColorStop(0, `rgba(${gr},${gg},${gb},${(alpha*glowAlpha).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${gr},${gg},${gb},0)`);
+      ctx.beginPath();
+      ctx.arc(x, y, glowR, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+    // 粒子本体
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${gr},${gg},${gb},${alpha.toFixed(3)})`;
+    ctx.fill();
+  };
+
+  // 密度マップを事前計算（ノイズ）
+  const densityAt = (x, y) => {
+    const nx = (x/size)*varScale + sx;
+    const ny = (y/size)*varScale + sy;
+    const n = fbm(nx, ny);
+    return variation > 0 ? Math.pow(n, variation * 2) : 1;
+  };
+
+  // 微粒子
+  const localRng = mulberry32(Math.floor(seed * 10000));
+  for (let i = 0; i < fineCount; i++) {
+    const x = localRng() * size;
+    const y = localRng() * size;
+    const density = densityAt(x, y);
+    if (localRng() > density) continue;
+    const r = fineSize * (0.5 + localRng() * 0.8);
+    const bright = 0.3 + localRng() * 0.7;
+    const alpha = 0.4 + localRng() * 0.6;
+    drawParticle(x, y, r, alpha, bright);
+  }
+
+  // 大粒子
+  for (let i = 0; i < bigCount; i++) {
+    const x = localRng() * size;
+    const y = localRng() * size;
+    const density = densityAt(x, y);
+    if (localRng() > density * 0.8) continue;
+    const r = bigSize * (0.5 + localRng() * 1.0);
+    const bright = 0.6 + localRng() * 0.4;
+    const alpha = 0.7 + localRng() * 0.3;
+    drawParticle(x, y, r, alpha, bright);
+  }
+}
+
+function draw(){
+  const cvRaw  = document.getElementById('cv-raw');
+  const cvDark = document.getElementById('cv-dark');
+  const cvRed  = document.getElementById('cv-red');
+  const cvBlue = document.getElementById('cv-blue');
+  drawTexture(cvRaw,  '#000000');
+  drawTexture(cvDark, '#181520');
+  drawTexture(cvRed,  '#7a1f2e');
+  drawTexture(cvBlue, '#1e3a6e');
+  updateParams();
+}
+
+function updateParams(){
+  const {fineCount,fineSize,bigCount,bigSize,glow,glowAlpha,variation,varScale,goldHex,seed}=state;
+  document.getElementById('param-display').innerHTML=
+    `fineCount:  <span>${fineCount}</span><br>`+
+    `fineSize:   <span>${fineSize.toFixed(1)}</span><br>`+
+    `bigCount:   <span>${bigCount}</span><br>`+
+    `bigSize:    <span>${bigSize.toFixed(1)}</span><br>`+
+    `glow:       <span>${glow.toFixed(1)}</span><br>`+
+    `glowAlpha:  <span>${glowAlpha.toFixed(2)}</span><br>`+
+    `variation:  <span>${variation.toFixed(2)}</span><br>`+
+    `varScale:   <span>${varScale.toFixed(1)}</span><br>`+
+    `gold:       <span>${goldHex}</span>`;
+}
+
+// ─── スライダー ────────────────────────────────────────────────
+function bind(id, key, valId, fmt, isInt){
+  const sl=document.getElementById(id), vl=document.getElementById(valId);
+  sl.addEventListener('input',()=>{
+    state[key]=isInt?parseInt(sl.value):parseFloat(sl.value);
+    vl.textContent=fmt(state[key]);
+    draw();
+  });
+}
+bind('sl-fine-count','fineCount','v-fine-count',v=>v,true);
+bind('sl-fine-size', 'fineSize', 'v-fine-size', v=>v.toFixed(1));
+bind('sl-big-count', 'bigCount', 'v-big-count', v=>v, true);
+bind('sl-big-size',  'bigSize',  'v-big-size',  v=>v.toFixed(1));
+bind('sl-glow',      'glow',     'v-glow',      v=>v.toFixed(1));
+bind('sl-glow-alpha','glowAlpha','v-glow-alpha', v=>v.toFixed(2));
+bind('sl-var',       'variation','v-var',        v=>v.toFixed(2));
+bind('sl-var-scale', 'varScale', 'v-var-scale',  v=>v.toFixed(1));
+
+// ─── 色 ───────────────────────────────────────────────────────
+document.getElementById('gold-swatches').addEventListener('click',e=>{
+  const sw=e.target.closest('.sw');if(!sw)return;
+  document.querySelectorAll('#gold-swatches .sw').forEach(s=>s.classList.remove('active'));
+  sw.classList.add('active');
+  state.goldHex=sw.dataset.color;
+  draw();
+});
+
+// ─── シード ───────────────────────────────────────────────────
+document.getElementById('btn-seed').addEventListener('click',()=>{
+  state.seed=Math.random()*100;
+  draw();
+});
+
+// ─── プリセット ───────────────────────────────────────────────
+const presets={
+  default:{ fineCount:2000, fineSize:1.2, bigCount:80,  bigSize:5.0, glow:1.8, glowAlpha:0.35, variation:0.5,  varScale:3.0 },
+  fine:   { fineCount:4000, fineSize:0.6, bigCount:20,  bigSize:2.5, glow:0.8, glowAlpha:0.20, variation:0.4,  varScale:4.0 },
+  bold:   { fineCount:800,  fineSize:2.5, bigCount:150, bigSize:9.0, glow:3.5, glowAlpha:0.50, variation:0.6,  varScale:2.5 },
+  glow:   { fineCount:1500, fineSize:1.0, bigCount:60,  bigSize:6.0, glow:4.5, glowAlpha:0.70, variation:0.35, varScale:3.5 },
+  sparse: { fineCount:400,  fineSize:1.5, bigCount:30,  bigSize:7.0, glow:2.5, glowAlpha:0.45, variation:0.85, varScale:2.0 },
+};
+const slMap={fineCount:'sl-fine-count',fineSize:'sl-fine-size',bigCount:'sl-big-count',bigSize:'sl-big-size',glow:'sl-glow',glowAlpha:'sl-glow-alpha',variation:'sl-var',varScale:'sl-var-scale'};
+const vMap ={fineCount:'v-fine-count', fineSize:'v-fine-size', bigCount:'v-big-count', bigSize:'v-big-size', glow:'v-glow',glowAlpha:'v-glow-alpha',variation:'v-var',  varScale:'v-var-scale'};
+const fmts ={fineCount:v=>v,fineSize:v=>v.toFixed(1),bigCount:v=>v,bigSize:v=>v.toFixed(1),glow:v=>v.toFixed(1),glowAlpha:v=>v.toFixed(2),variation:v=>v.toFixed(2),varScale:v=>v.toFixed(1)};
+
+document.querySelectorAll('.preset-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const p=presets[btn.dataset.preset];
+    Object.assign(state,p);
+    for(const[k,v]of Object.entries(p)){
+      if(slMap[k]) document.getElementById(slMap[k]).value=v;
+      if(vMap[k])  document.getElementById(vMap[k]).textContent=fmts[k](v);
+    }
+    draw();
+  });
+});
+
+draw();
+</script>
+</body>
+</html>
