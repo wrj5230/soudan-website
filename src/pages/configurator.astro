@@ -802,23 +802,47 @@ import Header from '../components/Header.astro';
     document.getElementById(`tab-${tab}`)!.classList.add('active');
   }
 
+  function openPanel(targetItem: HTMLElement) {
+    targetItem.after(accPanel);
+    // reflow を挟んでから open クラスを付与してトランジション発火
+    accPanel.getBoundingClientRect();
+    accPanel.classList.add('open');
+  }
+
+  function closePanel(then?: () => void) {
+    accPanel.classList.remove('open');
+    const onEnd = () => {
+      accPanel.removeEventListener('transitionend', onEnd);
+      if (!accPanel.classList.contains('open')) accPanel.remove();
+      then?.();
+    };
+    accPanel.addEventListener('transitionend', onEnd);
+  }
+
   function selectPart(part: Part | null, silent = false) {
     if (part === null || state.part === part) {
       // 同じパーツをクリック → 閉じる
       state.part = null;
       document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
-      accPanel.remove();
+      closePanel();
       return;
     }
+
+    const prevPart = state.part;
     state.part = part;
     if (!silent) switchTab('palette');
     setDoorOpen(part === 'door-back' || part === 'back' || part === 'curtain');
 
-    // アコーディオン開閉：選択パーツの直後にパネルを挿入
     document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
     const targetItem = document.querySelector<HTMLElement>(`.acc-item[data-part="${part}"]`)!;
     targetItem.classList.add('open');
-    targetItem.after(accPanel);
+
+    // 別パーツへの切り替えは即移動してそのまま開く
+    if (prevPart && accPanel.isConnected) {
+      accPanel.classList.remove('open');
+      accPanel.remove();
+    }
+    openPanel(targetItem);
 
     // カラー・技法UIを現在のパーツ状態に同期
     const currentHex = state.colors[part];
@@ -1589,8 +1613,9 @@ import Header from '../components/Header.astro';
     border: 1px solid rgba(201,168,76,0.18);
     border-radius: 3px;
     cursor: pointer;
-    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.1s ease, opacity 0.1s ease;
   }
+  .acc-header:active { transform: scaleX(0.98); opacity: 0.75; }
   .acc-header:hover {
     border-color: rgba(201,168,76,0.5);
     background: linear-gradient(135deg, rgba(40,30,15,0.95) 0%, rgba(20,15,8,0.98) 100%);
@@ -1625,12 +1650,21 @@ import Header from '../components/Header.astro';
   }
   .acc-item.open .acc-arrow { transform: rotate(90deg); color: var(--color-gold); }
   .acc-panel {
-    padding: 16px 16px 18px;
+    padding: 0 16px;
     border: 1px solid rgba(201,168,76,0.6); border-top: none;
     border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
     background: linear-gradient(180deg, rgba(22,16,8,0.98) 0%, rgba(12,10,6,1) 100%);
     box-shadow: inset 0 4px 16px rgba(0,0,0,0.3);
     margin-bottom: 1px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.38s;
+  }
+  .acc-panel.open {
+    max-height: 500px;
+    opacity: 1;
+    padding: 16px 16px 18px;
   }
   .tech-section { margin-top: 16px; }
   .tech-grid {
@@ -1666,8 +1700,13 @@ import Header from '../components/Header.astro';
   }
   .tab-btn.active { color: var(--color-gold); border-bottom-color: var(--color-gold); }
   .tab-btn:hover:not(.active) { color: rgba(201,168,76,0.6); }
+  .tab-btn:active { opacity: 0.6; transform: scaleY(0.94); }
   .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
+  .tab-panel.active { display: block; animation: tabFadeIn 0.3s ease; }
+  @keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   .preset-section { margin-bottom: 20px; flex-shrink: 0; }
   .preset-list {
@@ -1687,6 +1726,7 @@ import Header from '../components/Header.astro';
     transition: border-color 0.2s;
   }
   .preset-card:hover { border-color: rgba(201,168,76,0.3); }
+  .preset-card:active { transform: scale(0.94); opacity: 0.75; }
   .preset-card.selected { border-color: var(--color-gold); }
   .preset-swatches { display: flex; gap: 3px; }
   .preset-swatches span { width: 13px; height: 13px; border-radius: 50%; display: block; }
