@@ -36,11 +36,6 @@ import Footer from '../components/Footer.astro';
         <button type="submit" id="submit-btn">送信する</button>
       </form>
 
-      <div class="success-msg" id="success-msg" hidden>
-        <p class="success-icon">—</p>
-        <p class="success-title">送信が完了しました。</p>
-        <p class="success-sub">内容を確認のうえ、担当者よりご連絡いたします。</p>
-      </div>
     </div>
   </main>
 
@@ -55,9 +50,8 @@ import Footer from '../components/Footer.astro';
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
-  const form       = document.getElementById('contact-form') as HTMLFormElement;
-  const submitBtn  = document.getElementById('submit-btn') as HTMLButtonElement;
-  const successMsg = document.getElementById('success-msg') as HTMLElement;
+  const form      = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
   // コンフィグ情報をURLパラメータから読み取り（表示はしない・Supabaseに保存のみ）
   const params = new URLSearchParams(window.location.search);
@@ -89,8 +83,7 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    form.hidden = true;
-    successMsg.hidden = false;
+    window.location.href = '/thanks';
   });
 </script>
 

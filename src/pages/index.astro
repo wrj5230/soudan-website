@@ -11,7 +11,7 @@ import Header from '../components/Header.astro';
 
     <!-- Scene 0: Hero -->
     <div class="scene active" data-scene="0">
-      <div class="hero-bg"></div>
+      <canvas id="hero-canvas"></canvas>
       <div class="scene-content hero-content">
         <p class="hero-label">SOUDAN</p>
         <h1 class="hero-title">祈りを、<br />創る。</h1>
@@ -71,7 +71,121 @@ import Header from '../components/Header.astro';
   <!-- ナビゲーション -->
   <div class="scene-nav" id="nav-dots"></div>
 
+  <!-- ページ読み込みフェード -->
+  <div id="page-fade"></div>
+
 </Layout>
+
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+  // ── ページフェードイン ─────────────────────────────────
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('page-fade')?.classList.add('done');
+    }, 80);
+  });
+
+  // ── ヒーローカルーセル ──────────────────────────────────
+  const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const threeScene = new THREE.Scene();
+  threeScene.background = new THREE.Color('#080814');
+  threeScene.fog = new THREE.FogExp2('#080814', 0.07);
+
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+
+  // ライト
+  threeScene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  const dirLight = new THREE.DirectionalLight(0xffd4a0, 1.4);
+  dirLight.position.set(3, 6, 4);
+  threeScene.add(dirLight);
+  const rimLight = new THREE.DirectionalLight(0x4060c0, 0.5);
+  rimLight.position.set(-4, 2, -5);
+  threeScene.add(rimLight);
+
+  // カラープリセット [外枠/背板色, 扉色]
+  const PRESETS: [string, string][] = [
+    ['#0c0c0c', '#8b1a1a'],  // 漆黒 × 朱
+    ['#1a3a6b', '#c9a84c'],  // 群青 × 金
+    ['#5c1a2e', '#c9a84c'],  // 深緋 × 金
+    ['#1a4a2e', '#c9a84c'],  // 常磐 × 金
+    ['#8b5e1a', '#1a2a4a'],  // 飴色 × 藍鉄
+    ['#1a2a4a', '#8b1a1a'],  // 藍鉄 × 朱
+    ['#0d0d18', '#1a3a6b'],  // 黒 × 群青
+  ];
+
+  const COUNT = PRESETS.length;
+  const getRadius = () => window.innerWidth < 768 ? 2.0 : 2.8;
+  const carousel = new THREE.Group();
+  threeScene.add(carousel);
+  const clones: THREE.Object3D[] = [];
+
+  function makeMat(hex: string) {
+    return new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(hex),
+      roughness: 0.2,
+      metalness: 0.05,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.15,
+    });
+  }
+
+  new GLTFLoader().load('/altar.glb', (gltf) => {
+    const source = gltf.scene;
+
+    for (let i = 0; i < COUNT; i++) {
+      const [outerHex, doorHex] = PRESETS[i];
+      const clone = source.clone(true);
+
+      clone.traverse((node: any) => {
+        if (!node.isMesh) return;
+        const n: string = node.name.toLowerCase();
+        node.material = (n.includes('door') || n.includes('curtain'))
+          ? makeMat(doorHex)
+          : makeMat(outerHex);
+      });
+
+      const angle = (i / COUNT) * Math.PI * 2;
+      const r = getRadius();
+      clone.position.set(Math.sin(angle) * r, 0, Math.cos(angle) * r);
+      carousel.add(clone);
+      clones.push(clone);
+    }
+  });
+
+  function updateCamera() {
+    const mobile = window.innerWidth < 768;
+    camera.fov    = mobile ? 58 : 45;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.position.set(0, mobile ? 0.8 : 1.6, mobile ? 4.2 : 5.5);
+    camera.lookAt(0, mobile ? 0.1 : 0.3, 0);
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    // カルーセル半径を更新
+    const r = getRadius();
+    clones.forEach((clone, i) => {
+      const angle = (i / COUNT) * Math.PI * 2;
+      clone.position.set(Math.sin(angle) * r, 0, Math.cos(angle) * r);
+    });
+  }
+  updateCamera();
+  window.addEventListener('resize', updateCamera);
+
+  (function animate() {
+    requestAnimationFrame(animate);
+    carousel.rotation.y += 0.0016;
+    // 各仏壇がカルーセルの回転を打ち消して常に正面を向く
+    carousel.children.forEach(child => {
+      child.rotation.y = Math.PI - carousel.rotation.y;
+    });
+    renderer.render(threeScene, camera);
+  })();
+</script>
 
 <script>
   const scenes = document.querySelectorAll<HTMLElement>('.scene');
@@ -183,10 +297,11 @@ import Header from '../components/Header.astro';
   }
 
   /* ─── Hero ─── */
-  .hero-bg {
+  #hero-canvas {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 60% 40%, #0d1a3a 0%, #080814 60%);
+    width: 100%;
+    height: 100%;
   }
   .hero-content {
     position: relative;
@@ -302,6 +417,18 @@ import Header from '../components/Header.astro';
     width: 22px;
     background: #c9a84c;
   }
+
+  /* ─── ページフェード ─── */
+  #page-fade {
+    position: fixed;
+    inset: 0;
+    background: #080814;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.9s ease;
+  }
+  #page-fade.done { opacity: 0; }
 
   /* ─── Mobile ─── */
   @media (max-width: 768px) {

@@ -31,3 +31,5 @@ pattern-test.html
 
 # jetbrains setting folder
 .idea/
+
+.vercel
