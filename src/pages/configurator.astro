@@ -681,10 +681,38 @@ import Header from '../components/Header.astro';
     scene.add(model);
     loading.style.display = 'none';
 
-    // モデル描画後にカーテンを外す
+    // モデル描画後にカーテンを外し、イントロ演出
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        const isMobile = window.matchMedia('(max-width: 900px)').matches;
+
+        // close-up位置にセット
+        if (isMobile) {
+          camera.position.set(0, 0.5, 2.8);
+          controls.target.set(0, 0.1, 0);
+          setSheet(false); // パネルを閉じた状態で開始
+        } else {
+          camera.position.set(0, 0.1, 2.0);
+          controls.target.set(0, 0.05, 0);
+        }
+        controls.enabled = false;
+        controls.update();
+
         document.getElementById('page-curtain')?.classList.add('hidden');
+
+        // カーテンが消えたあと通常位置へ
+        setTimeout(() => {
+          if (isMobile) {
+            animateCameraTo(0, 0.5, 3.6, 0, -0.1, 0);
+            setTimeout(() => {
+              controls.enabled = true;
+              setSheet(true);
+            }, 2500);
+          } else {
+            animateCameraTo(0, 0.05, 2.2, 0, 0.05, 0);
+            setTimeout(() => { controls.enabled = true; }, 2000);
+          }
+        }, 1200);
       });
     });
   });

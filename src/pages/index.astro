@@ -71,21 +71,16 @@ import Header from '../components/Header.astro';
   <!-- ナビゲーション -->
   <div class="scene-nav" id="nav-dots"></div>
 
-  <!-- ページ読み込みフェード -->
-  <div id="page-fade"></div>
+  <!-- スプラッシュ -->
+  <div id="splash">
+    <p class="splash-label">SOUDAN</p>
+  </div>
 
 </Layout>
 
 <script>
   import * as THREE from 'three';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
-  // ── ページフェードイン ─────────────────────────────────
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.getElementById('page-fade')?.classList.add('done');
-    }, 80);
-  });
 
   // ── ヒーローカルーセル ──────────────────────────────────
   const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
@@ -137,6 +132,11 @@ import Header from '../components/Header.astro';
 
   new GLTFLoader().load('/altar.glb', (gltf) => {
     const source = gltf.scene;
+
+    // GLB読み込み完了後にスプラッシュをフェードアウト
+    setTimeout(() => {
+      document.getElementById('splash')?.classList.add('done');
+    }, 2000);
 
     for (let i = 0; i < COUNT; i++) {
       const [outerHex, doorHex] = PRESETS[i];
@@ -418,17 +418,31 @@ import Header from '../components/Header.astro';
     background: #c9a84c;
   }
 
-  /* ─── ページフェード ─── */
-  #page-fade {
+  /* ─── スプラッシュ ─── */
+  #splash {
     position: fixed;
     inset: 0;
     background: #080814;
     z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
     opacity: 1;
-    transition: opacity 0.9s ease;
+    transition: opacity 1.4s ease;
   }
-  #page-fade.done { opacity: 0; }
+  #splash.done { opacity: 0; }
+  .splash-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.65em;
+    color: #c9a84c;
+    opacity: 0;
+    animation: splashIn 0.9s ease 0.2s forwards;
+  }
+  @keyframes splashIn {
+    to { opacity: 1; }
+  }
 
   /* ─── Mobile ─── */
   @media (max-width: 768px) {
