@@ -23,11 +23,34 @@ import Header from '../components/Header.astro';
     <div class="scene" data-scene="1">
       <div class="scene-content">
         <p class="section-label">Concept</p>
-        <h2 class="scene-title">なぜ、SOUDANなのか。</h2>
+        <h2 class="scene-title">SOUDANとは。</h2>
         <div class="divider"></div>
-        <div class="concept-body">
-          <p>仏壇は、故人と向き合う場所。<br />そこにあるべきは、量産品ではなく、<br />あなたの家にしかない、唯一の祈りの空間です。</p>
-          <p>SOUDANは、職人との対話から始まります。<br />想い出、家の佇まい、故人の好きだったもの。<br />すべてを聴き、すべてをカタチにします。</p>
+        <div class="sou-container">
+          <svg class="sou-svg" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet">
+            <!-- 三角形の線 -->
+            <line x1="180" y1="52" x2="52" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+            <line x1="180" y1="52" x2="308" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+            <line x1="52"  y1="228" x2="308" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          </svg>
+          <!-- 創: 上中央 -->
+          <button class="sou-circle" data-idx="0" style="top:0;left:50%;transform:translateX(-50%)">
+            <span class="sou-kanji">創</span>
+            <span class="sou-read">つくる</span>
+          </button>
+          <!-- 想: 左下 -->
+          <button class="sou-circle" data-idx="1" style="bottom:60px;left:0">
+            <span class="sou-kanji">想</span>
+            <span class="sou-read">おもう</span>
+          </button>
+          <!-- 添: 右下 -->
+          <button class="sou-circle" data-idx="2" style="bottom:60px;right:0">
+            <span class="sou-kanji">添</span>
+            <span class="sou-read">そう</span>
+          </button>
+          <!-- 説明テキスト -->
+          <div class="sou-desc-panel" id="sou-desc-panel">
+            <p class="sou-desc-text" id="sou-desc-text"></p>
+          </div>
         </div>
       </div>
     </div>
@@ -247,6 +270,35 @@ import Header from '../components/Header.astro';
     else goTo(current - 1);
   });
 
+  // SOUトライアングル：クリックで説明フェードイン
+  const souDescs = [
+    '量産品ではなく、あなたの家にしかない祈りの空間を。職人の手で、ゼロから生み出します。',
+    '故人の好きだったもの、家の佇まい、残された記憶。すべてを丁寧に聴き取り、仏壇に宿らせます。',
+    '発注して終わりではなく、完成まで職人があなたに寄り添いながら、ともに創り上げます。',
+  ];
+  const souCircles = document.querySelectorAll<HTMLButtonElement>('.sou-circle');
+  const souDescPanel = document.getElementById('sou-desc-panel')!;
+  const souDescText = document.getElementById('sou-desc-text')!;
+
+  souCircles.forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const idx = Number(btn.dataset.idx);
+      const alreadyActive = btn.classList.contains('active');
+      souCircles.forEach(b => b.classList.remove('active'));
+      if (alreadyActive) {
+        souDescPanel.classList.remove('visible');
+        return;
+      }
+      btn.classList.add('active');
+      souDescPanel.classList.remove('visible');
+      souDescText.textContent = souDescs[idx];
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => souDescPanel.classList.add('visible'));
+      });
+    });
+  });
+
 </script>
 
 <style>
@@ -329,15 +381,79 @@ import Header from '../components/Header.astro';
   }
 
   /* ─── Concept ─── */
-  .concept-body {
+  .sou-container {
+    position: relative;
+    width: 360px;
+    height: 340px;
+    margin-top: 32px;
+  }
+  .sou-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .sou-circle {
+    all: unset;
+    position: absolute;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.35);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    max-width: 560px;
-    font-size: 1rem;
-    line-height: 2.2;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+    background: rgba(10,8,6,0.4);
+  }
+  .sou-circle:hover { border-color: rgba(201,168,76,0.7); }
+  .sou-circle.active {
+    border-color: #c9a84c;
+    background: rgba(201,168,76,0.08);
+    box-shadow: 0 0 18px rgba(201,168,76,0.15);
+  }
+  .sou-kanji {
+    font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 300;
+    color: #c9a84c;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+  .sou-read {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+  }
+  .sou-desc-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sou-desc-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .sou-desc-text {
+    font-size: 0.82rem;
+    line-height: 1.9;
     color: #d0cac0;
-    margin-top: 8px;
+    max-width: 300px;
+    margin: 0 auto;
   }
 
   /* ─── Craftsmen ─── */
@@ -446,6 +562,8 @@ import Header from '../components/Header.astro';
 
   /* ─── Mobile ─── */
   @media (max-width: 768px) {
+    .sou-container { width: 100%; max-width: 320px; height: 300px; }
+    .sou-desc-text { font-size: 0.78rem; max-width: 260px; }
     .scene-content { padding: 0 20px; }
     .scene-nav { bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)); }
     .hero-title { letter-spacing: 0.08em; }
