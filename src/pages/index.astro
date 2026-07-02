@@ -25,37 +25,25 @@ import Header from '../components/Header.astro';
         <p class="section-label">Concept</p>
         <h2 class="scene-title">SOUDANとは。</h2>
         <div class="divider"></div>
-        <div class="sou-container">
-          <svg class="sou-svg" viewBox="0 0 360 340" preserveAspectRatio="none">
-            <defs>
-              <mask id="circleMask">
-                <rect width="360" height="340" fill="white"/>
-                <circle cx="180" cy="44"  r="47" fill="black"/>
-                <circle cx="44"  cy="236" r="47" fill="black"/>
-                <circle cx="316" cy="236" r="47" fill="black"/>
-              </mask>
-            </defs>
-            <g mask="url(#circleMask)">
-              <line x1="180" y1="44"  x2="44"  y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
-              <line x1="180" y1="44"  x2="316" y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
-              <line x1="44"  y1="236" x2="316" y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
-            </g>
-          </svg>
-          <!-- 創: 上中央 -->
-          <button class="sou-circle" data-idx="0" style="top:0;left:50%;transform:translateX(-50%)">
-            <span class="sou-kanji">創</span>
-          </button>
-          <!-- 想: 左下 -->
-          <button class="sou-circle" data-idx="1" style="bottom:60px;left:0">
-            <span class="sou-kanji">想</span>
-          </button>
-          <!-- 添: 右下 -->
-          <button class="sou-circle" data-idx="2" style="bottom:60px;right:0">
-            <span class="sou-kanji">添</span>
-          </button>
-          <!-- 説明テキスト -->
-          <div class="sou-desc-panel" id="sou-desc-panel">
-            <p class="sou-desc-text" id="sou-desc-text"></p>
+        <div class="sou-slider" id="sou-slider">
+          <div class="sou-track" id="sou-track">
+            <div class="sou-card">
+              <p class="sou-kanji">創</p>
+              <p class="sou-desc">量産品ではなく、あなたの家にしかない祈りの空間を。職人の手で、ゼロから生み出します。</p>
+            </div>
+            <div class="sou-card">
+              <p class="sou-kanji">想</p>
+              <p class="sou-desc">故人の好きだったもの、家の佇まい、残された記憶。すべてを丁寧に聴き取り、仏壇に宿らせます。</p>
+            </div>
+            <div class="sou-card">
+              <p class="sou-kanji">添</p>
+              <p class="sou-desc">発注して終わりではなく、完成まで職人があなたに寄り添いながら、ともに創り上げます。</p>
+            </div>
+          </div>
+          <div class="sou-dots" id="sou-dots">
+            <span class="sou-dot active"></span>
+            <span class="sou-dot"></span>
+            <span class="sou-dot"></span>
           </div>
         </div>
       </div>
@@ -276,33 +264,21 @@ import Header from '../components/Header.astro';
     else goTo(current - 1);
   });
 
-  // SOUトライアングル：クリックで説明フェードイン
-  const souDescs = [
-    '量産品ではなく、あなたの家にしかない祈りの空間を。職人の手で、ゼロから生み出します。',
-    '故人の好きだったもの、家の佇まい、残された記憶。すべてを丁寧に聴き取り、仏壇に宿らせます。',
-    '発注して終わりではなく、完成まで職人があなたに寄り添いながら、ともに創り上げます。',
-  ];
-  const souCircles = document.querySelectorAll<HTMLButtonElement>('.sou-circle');
-  const souDescPanel = document.getElementById('sou-desc-panel')!;
-  const souDescText = document.getElementById('sou-desc-text')!;
+  // SOUスライダー：タップで次へめくる
+  const souTrack = document.getElementById('sou-track')!;
+  const souDots = document.querySelectorAll('.sou-dot');
+  const souTotal = 3;
+  let souIdx = 0;
 
-  souCircles.forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const idx = Number(btn.dataset.idx);
-      const alreadyActive = btn.classList.contains('active');
-      souCircles.forEach(b => b.classList.remove('active'));
-      if (alreadyActive) {
-        souDescPanel.classList.remove('visible');
-        return;
-      }
-      btn.classList.add('active');
-      souDescPanel.classList.remove('visible');
-      souDescText.textContent = souDescs[idx];
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => souDescPanel.classList.add('visible'));
-      });
-    });
+  function souGoTo(n: number) {
+    souIdx = n;
+    souTrack.style.transform = `translateX(-${souIdx * 100}%)`;
+    souDots.forEach((d, i) => d.classList.toggle('active', i === souIdx));
+  }
+
+  document.getElementById('sou-slider')!.addEventListener('click', e => {
+    e.stopPropagation();
+    souGoTo((souIdx + 1) % souTotal);
   });
 
 </script>
@@ -387,72 +363,52 @@ import Header from '../components/Header.astro';
   }
 
   /* ─── Concept ─── */
-  .sou-container {
-    position: relative;
-    width: min(360px, 100%);
-    aspect-ratio: 360 / 340;
-    margin-top: 32px;
-  }
-  .sou-svg {
-    position: absolute;
-    inset: 0;
+  .sou-slider {
+    overflow: hidden;
     width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-  .sou-circle {
-    all: unset;
-    position: absolute;
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    border: 1px solid rgba(201,168,76,0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    max-width: 480px;
+    margin-top: 40px;
     cursor: pointer;
-    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
-    background: rgba(10,8,6,0.4);
+    user-select: none;
   }
-  .sou-circle:hover { border-color: rgba(201,168,76,0.7); }
-  .sou-circle.active {
-    border-color: #c9a84c;
-    background: rgba(201,168,76,0.08);
-    box-shadow: 0 0 18px rgba(201,168,76,0.15);
+  .sou-track {
+    display: flex;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sou-card {
+    min-width: 100%;
+    padding-right: 4px;
   }
   .sou-kanji {
     font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
-    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-size: clamp(3.5rem, 7vw, 5.5rem);
     font-weight: 300;
     color: #c9a84c;
     line-height: 1;
     letter-spacing: 0.05em;
+    margin-bottom: 20px;
   }
-  .sou-desc-panel {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    pointer-events: none;
-    height: 72px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sou-desc-panel.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .sou-desc-text {
-    font-size: 0.82rem;
-    line-height: 1.9;
+  .sou-desc {
+    font-size: 0.88rem;
+    line-height: 2;
     color: #d0cac0;
-    max-width: 300px;
-    margin: 0 auto;
+    max-width: 400px;
+  }
+  .sou-dots {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .sou-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.25);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .sou-dot.active {
+    background: #c9a84c;
+    transform: scale(1.4);
   }
 
   /* ─── Craftsmen ─── */
@@ -561,8 +517,7 @@ import Header from '../components/Header.astro';
 
   /* ─── Mobile ─── */
   @media (max-width: 768px) {
-    .sou-container { max-width: 300px; }
-    .sou-desc-text { font-size: 0.78rem; max-width: 240px; }
+    .sou-kanji { margin-bottom: 14px; }
     .scene-content { padding: 0 20px; }
     .scene-nav { bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)); }
     .hero-title { letter-spacing: 0.08em; }
