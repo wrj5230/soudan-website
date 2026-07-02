@@ -264,16 +264,20 @@ import Header from '../components/Header.astro';
     else goTo(current - 1);
   });
 
-  // SOUスライダー：タップで次へめくる
-  const souTrack = document.getElementById('sou-track')!;
+  // SOUカード：タップでフェードイン切り替え
+  const souCards = document.querySelectorAll<HTMLElement>('.sou-card');
   const souDots = document.querySelectorAll('.sou-dot');
-  const souTotal = 3;
+  const souTotal = souCards.length;
   let souIdx = 0;
 
+  souCards[0].classList.add('active');
+
   function souGoTo(n: number) {
+    souCards[souIdx].classList.remove('active');
+    souDots[souIdx].classList.remove('active');
     souIdx = n;
-    souTrack.style.transform = `translateX(-${souIdx * 100}%)`;
-    souDots.forEach((d, i) => d.classList.toggle('active', i === souIdx));
+    souCards[souIdx].classList.add('active');
+    souDots[souIdx].classList.add('active');
   }
 
   document.getElementById('sou-slider')!.addEventListener('click', e => {
@@ -364,7 +368,7 @@ import Header from '../components/Header.astro';
 
   /* ─── Concept ─── */
   .sou-slider {
-    overflow: hidden;
+    position: relative;
     width: 100%;
     max-width: 480px;
     margin-top: 40px;
@@ -372,12 +376,21 @@ import Header from '../components/Header.astro';
     user-select: none;
   }
   .sou-track {
-    display: flex;
-    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
   }
   .sou-card {
-    min-width: 100%;
-    padding-right: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+  .sou-card.active {
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
   }
   .sou-kanji {
     font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
