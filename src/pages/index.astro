@@ -26,26 +26,32 @@ import Header from '../components/Header.astro';
         <h2 class="scene-title">SOUDANとは。</h2>
         <div class="divider"></div>
         <div class="sou-container">
-          <svg class="sou-svg" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet">
-            <!-- 三角形の線 -->
-            <line x1="180" y1="52" x2="52" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
-            <line x1="180" y1="52" x2="308" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
-            <line x1="52"  y1="228" x2="308" y2="228" stroke="rgba(201,168,76,0.2)" stroke-width="1"/>
+          <svg class="sou-svg" viewBox="0 0 360 340" preserveAspectRatio="none">
+            <defs>
+              <mask id="circleMask">
+                <rect width="360" height="340" fill="white"/>
+                <circle cx="180" cy="44"  r="47" fill="black"/>
+                <circle cx="44"  cy="236" r="47" fill="black"/>
+                <circle cx="316" cy="236" r="47" fill="black"/>
+              </mask>
+            </defs>
+            <g mask="url(#circleMask)">
+              <line x1="180" y1="44"  x2="44"  y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="180" y1="44"  x2="316" y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="44"  y1="236" x2="316" y2="236" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+            </g>
           </svg>
           <!-- 創: 上中央 -->
           <button class="sou-circle" data-idx="0" style="top:0;left:50%;transform:translateX(-50%)">
             <span class="sou-kanji">創</span>
-            <span class="sou-read">つくる</span>
           </button>
           <!-- 想: 左下 -->
           <button class="sou-circle" data-idx="1" style="bottom:60px;left:0">
             <span class="sou-kanji">想</span>
-            <span class="sou-read">おもう</span>
           </button>
           <!-- 添: 右下 -->
           <button class="sou-circle" data-idx="2" style="bottom:60px;right:0">
             <span class="sou-kanji">添</span>
-            <span class="sou-read">そう</span>
           </button>
           <!-- 説明テキスト -->
           <div class="sou-desc-panel" id="sou-desc-panel">
@@ -383,8 +389,8 @@ import Header from '../components/Header.astro';
   /* ─── Concept ─── */
   .sou-container {
     position: relative;
-    width: 360px;
-    height: 340px;
+    width: min(360px, 100%);
+    aspect-ratio: 360 / 340;
     margin-top: 32px;
   }
   .sou-svg {
@@ -402,10 +408,8 @@ import Header from '../components/Header.astro';
     border-radius: 50%;
     border: 1px solid rgba(201,168,76,0.35);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
     cursor: pointer;
     transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
     background: rgba(10,8,6,0.4);
@@ -423,11 +427,6 @@ import Header from '../components/Header.astro';
     color: #c9a84c;
     line-height: 1;
     letter-spacing: 0.05em;
-  }
-  .sou-read {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: rgba(201,168,76,0.5);
   }
   .sou-desc-panel {
     position: absolute;
@@ -562,8 +561,8 @@ import Header from '../components/Header.astro';
 
   /* ─── Mobile ─── */
   @media (max-width: 768px) {
-    .sou-container { width: 100%; max-width: 320px; height: 300px; }
-    .sou-desc-text { font-size: 0.78rem; max-width: 260px; }
+    .sou-container { max-width: 300px; }
+    .sou-desc-text { font-size: 0.78rem; max-width: 240px; }
     .scene-content { padding: 0 20px; }
     .scene-nav { bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)); }
     .hero-title { letter-spacing: 0.08em; }
