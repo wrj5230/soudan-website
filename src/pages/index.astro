@@ -19,8 +19,22 @@ import Header from '../components/Header.astro';
       </div>
     </div>
 
-    <!-- Scene 1: Concept -->
+    <!-- Scene 1: About -->
     <div class="scene" data-scene="1">
+      <div class="scene-content about-content">
+        <p class="section-label">About</p>
+        <h2 class="scene-title">想いを、<br />かたちに。</h2>
+        <div class="divider"></div>
+        <p class="about-lead">SOUDANは、世界にひとつだけのお仏壇を職人とともにつくる、オーダーメイドのサービスです。色・素材・技法をあなた自身でお選びいただき、故人への想いをそのままかたちにします。</p>
+        <div class="about-story">
+          <p class="about-quote">「なぜ、人生でもっとも大切な場所が、カタログの中にしかないのだろう。」</p>
+          <p class="about-body">4代にわたって仏壇店を営む中で、ずっと感じてきた問いです。その答えとして、SOUDANは生まれました。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 2: Concept -->
+    <div class="scene" data-scene="2">
       <div class="scene-content">
         <p class="section-label">Concept</p>
         <h2 class="scene-title">SOUDANとは。</h2>
@@ -42,8 +56,8 @@ import Header from '../components/Header.astro';
       </div>
     </div>
 
-    <!-- Scene 2: Craftsmen -->
-    <div class="scene craftsmen-scene" data-scene="2">
+    <!-- Scene 3: Craftsmen -->
+    <div class="scene craftsmen-scene" data-scene="3">
       <div class="scene-content">
         <p class="section-label">Craftsmen & Techniques</p>
         <h2 class="scene-title">職人と、技法。</h2>
@@ -65,8 +79,8 @@ import Header from '../components/Header.astro';
       </div>
     </div>
 
-    <!-- Scene 3: Configurator CTA -->
-    <div class="scene cfg-scene" data-scene="3">
+    <!-- Scene 4: Configurator CTA -->
+    <div class="scene cfg-scene" data-scene="4">
       <div class="scene-content cfg-content">
         <p class="section-label">Try the Configurator</p>
         <h2 class="cfg-title">あなただけの仏壇を、<br />創ってみる。</h2>
@@ -375,6 +389,33 @@ import Header from '../components/Header.astro';
     font-size: 0.88rem;
     line-height: 2;
     color: #d0cac0;
+  }
+
+  /* ─── About ─── */
+  .about-content { max-width: 560px; }
+  .about-lead {
+    font-size: 0.92rem;
+    line-height: 2.1;
+    color: #d0cac0;
+    margin-bottom: 40px;
+  }
+  .about-story {
+    border-left: 1px solid rgba(201,168,76,0.35);
+    padding-left: 24px;
+  }
+  .about-quote {
+    font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    font-weight: 300;
+    color: #c9a84c;
+    line-height: 1.9;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  .about-body {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: #8a8a9a;
   }
 
   /* ─── Craftsmen ─── */
