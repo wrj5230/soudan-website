@@ -347,16 +347,16 @@ import Header from '../components/Header.astro';
   }
   .sou-item {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 28px;
     margin-bottom: 28px;
     opacity: 0;
   }
   .sou-item:last-child { margin-bottom: 0; }
-  .scene.active .sou-item { animation: souFadeIn 0.8s ease forwards; }
-  .scene.active .sou-item:nth-child(1) { animation-delay: 0.1s; }
-  .scene.active .sou-item:nth-child(2) { animation-delay: 0.5s; }
-  .scene.active .sou-item:nth-child(3) { animation-delay: 0.9s; }
+  .scene.active .sou-item { animation: souFadeIn 1.2s ease forwards; }
+  .scene.active .sou-item:nth-child(1) { animation-delay: 0.2s; }
+  .scene.active .sou-item:nth-child(2) { animation-delay: 0.8s; }
+  .scene.active .sou-item:nth-child(3) { animation-delay: 1.4s; }
   @keyframes souFadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
