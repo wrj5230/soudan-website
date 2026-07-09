@@ -1,6 +1,6 @@
 ---
 interface Props {
-  currentPage: 'intro' | 'design' | 'company' | 'craft' | 'material' | 'estimate' | 'close';
+  currentPage: 'intro' | 'design' | 'company' | 'craft' | 'delivery' | 'estimate' | 'close';
 }
 const { currentPage } = Astro.props;
 ---
@@ -13,6 +13,7 @@ const { currentPage } = Astro.props;
       <li><a data-page="estimate" class={currentPage === 'estimate' ? 'active' : ''}>お見積り</a></li>
       <li><a data-page="company"  class={currentPage === 'company'  ? 'active' : ''}>会社紹介</a></li>
       <li><a data-page="craft"    class={currentPage === 'craft'    ? 'active' : ''}>職人・工程</a></li>
+      <li><a data-page="delivery" class={currentPage === 'delivery' ? 'active' : ''}>納期</a></li>
       <li><a data-page="design"   class={currentPage === 'design'   ? 'active' : ''}>デザイン確認</a></li>
       <li><a data-page="close"    class={currentPage === 'close'    ? 'active' : ''}>クロージング</a></li>
     </ul>
@@ -26,7 +27,7 @@ const { currentPage } = Astro.props;
     design:   `/consult${id ? '?id=' + id : ''}`,
     company:  `/consult/company${id ? '?id=' + id : ''}`,
     craft:    `/consult/craft${id ? '?id=' + id : ''}`,
-    material: `/consult/material${id ? '?id=' + id : ''}`,
+    delivery: `/consult/delivery${id ? '?id=' + id : ''}`,
     estimate: `/consult/estimate${id ? '?id=' + id : ''}`,
     close:    `/consult/close${id ? '?id=' + id : ''}`,
   };

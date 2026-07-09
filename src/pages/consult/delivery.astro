@@ -1,0 +1,72 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="納期 | SOUDAN 商談">
+  <ConsultNav currentPage="delivery" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+
+      <!-- 納期 -->
+      <section class="delivery-section">
+        <p class="section-eyebrow">納期の目安</p>
+        <div class="delivery-box">
+          <p class="delivery-term">
+            <!-- TODO: 納期を差し替え -->
+            ご注文確定から <strong>約〇〇ヶ月</strong>
+          </p>
+          <p class="delivery-note">
+            <!-- TODO: 補足を差し替え -->
+            ※ 技法・仕様により前後します。詳細はご相談ください。
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 760px; width: 100%; padding-top: 40px; }
+
+  .section-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 32px;
+  }
+
+  .delivery-box {
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .delivery-term {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+  }
+  .delivery-term strong { color: #c9a84c; font-weight: 400; }
+  .delivery-note {
+    font-size: 0.75rem;
+    color: #6a6a7a;
+    letter-spacing: 0.05em;
+  }
+</style>
