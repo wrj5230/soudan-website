@@ -15,7 +15,7 @@ import Header from '../components/Header.astro';
       <div class="scene-content hero-content">
         <p class="hero-label">SOUDAN</p>
         <h1 class="hero-title">祈りを、<br />創る。</h1>
-        <p class="hero-sub">あなたの想いをカタチに。</p>
+        <p class="hero-sub">セミオーダーメイド仏壇で、あなたの想いをカタチに。</p>
       </div>
     </div>
 
@@ -25,11 +25,7 @@ import Header from '../components/Header.astro';
         <p class="section-label">About</p>
         <h2 class="scene-title">SOUDANとは</h2>
         <div class="divider"></div>
-        <p class="about-lead">SOUDANは、世界にひとつだけのお仏壇を職人とともにつくる、セミオーダーメイドのサービスです。<br />お仏壇のお色・技法をあなた自身でお選びいただき、ご家族への想いをそのままかたちにします。</p>
-        <div class="about-story">
-          <p class="about-quote">「なぜ、人生でもっとも大切な場所が、カタログの中にしかないのだろう。」</p>
-          <p class="about-body">4代にわたって仏壇店を営む中で、ずっと感じてきた問いです。その答えとして、SOUDANは生まれました。</p>
-        </div>
+        <p class="about-lead">SOUDANは、大きさ・規格はそのままに、<br />お仏壇の色味と加飾の技法を自由に選べる、<br />セミオーダーメイドのサービスです。</p>
       </div>
     </div>
 
@@ -101,28 +97,18 @@ import Header from '../components/Header.astro';
         <p class="section-label">Our Story</p>
         <h2 class="scene-title">当店について</h2>
         <div class="divider"></div>
-        <p class="history-para">井上秀峰佛具店は、大正の時代よりその営みの中に在ります。<br />各宗派の仏具製作に携わりながら、分業で進む制作を束ね、<br />職人と職人をつなぐプロデュースとディレクションを担ってきました。</p>
+        <p class="history-para">井上秀峰佛具店は、大正時代創業の京都の仏具店です。<br />100年にわたり、各宗派の寺院やご家庭に仏壇・仏具を届けてきました。<br />3代にわたって積み重ねてきた職人との信頼関係と知識をもとに、お客様だけのお仏壇製作をサポートさせていただきます。</p>
       </div>
     </div>
 
-    <div class="scene history-scene" data-scene="6">
-      <img class="history-bg" src="/images/tempo.jpg" alt="" />
-      <div class="history-overlay"></div>
-      <div class="scene-content history-content">
-        <p class="section-label">Our Story</p>
-        <h2 class="scene-title">当店について</h2>
-        <div class="divider"></div>
-        <p class="history-para">3代にわたって受け継いできたのは、技術だけではありません。<br />いまを生きる人にとっての、心地よい祈りのかたちを問い続けること。<br />伝統を、次の時代へつないでいくこと。<br />その問いの答えのひとつが、SOUDANです。</p>
-      </div>
-    </div>
-
-    <!-- Scene 7: Flow -->
-    <div class="scene flow-scene" data-scene="7">
+    <!-- Scene 5: Flow -->
+    <div class="scene flow-scene" data-scene="5">
       <div class="scene-content">
         <p class="section-label">Flow</p>
         <h2 class="scene-title">ご利用の流れ</h2>
         <div class="divider"></div>
         <p class="flow-total">ご相談から納品まで、目安として約2〜3ヶ月程度です。</p>
+        <p class="flow-price"><!-- TODO: 実際の価格帯に差し替え -->価格帯の目安　<strong>¥300,000〜</strong>　（技法により変動します。特注サイズもご相談いただけます）</p>
         <ol class="flow-list">
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">01</span></div>
@@ -163,8 +149,8 @@ import Header from '../components/Header.astro';
       </div>
     </div>
 
-    <!-- Scene 8: Configurator CTA -->
-    <div class="scene cfg-scene" data-scene="8">
+    <!-- Scene 6: Configurator CTA -->
+    <div class="scene cfg-scene" data-scene="6">
       <div class="scene-content cfg-content">
         <p class="section-label">Try the Configurator</p>
         <h2 class="cfg-title">あなただけの仏壇を、<br />創ってみる。</h2>
@@ -319,32 +305,16 @@ import Header from '../components/Header.astro';
 
   function goTo(n: number) {
     if (animating || n === current || n < 0 || n >= total) return;
-    const skipFade = scenes[current].classList.contains('history-scene')
-                  && scenes[n].classList.contains('history-scene');
     animating = true;
-    if (skipFade) {
-      const prev = current;
+    scenes[current].classList.remove('active');
+    scenes[current].classList.add('leave');
+    setTimeout(() => {
+      document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
       current = n;
-      // 新シーンをトランジションなしで即表示（タイトル・背景が動かないように）
-      scenes[current].style.transition = 'none';
       scenes[current].classList.add('active');
-      scenes[current].offsetHeight; // reflow
-      scenes[current].style.transition = '';
       updateNav();
-      // 旧シーンは裏でフェードアウト（ユーザーには見えない）
-      requestAnimationFrame(() => { scenes[prev].classList.remove('active'); });
-      setTimeout(() => { animating = false; }, 200);
-    } else {
-      scenes[current].classList.remove('active');
-      scenes[current].classList.add('leave');
-      setTimeout(() => {
-        document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
-        current = n;
-        scenes[current].classList.add('active');
-        updateNav();
-        setTimeout(() => { animating = false; }, 800);
-      }, 500);
-    }
+      setTimeout(() => { animating = false; }, 800);
+    }, 500);
   }
 
   // タップ/クリックで次へ（フォーム・ボタン・リンクは除外）
@@ -499,30 +469,12 @@ import Header from '../components/Header.astro';
   }
 
   /* ─── About ─── */
-  .about-content { max-width: 560px; }
+  .about-content { max-width: 620px; }
   .about-lead {
-    font-size: 0.92rem;
-    line-height: 2.1;
+    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+    line-height: 2.0;
+    letter-spacing: 0.04em;
     color: #d0cac0;
-    margin-bottom: 40px;
-  }
-  .about-story {
-    border-left: 1px solid rgba(201,168,76,0.35);
-    padding-left: 24px;
-  }
-  .about-quote {
-    font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
-    font-size: clamp(0.95rem, 2vw, 1.1rem);
-    font-weight: 300;
-    color: #c9a84c;
-    line-height: 1.9;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-  }
-  .about-body {
-    font-size: 0.85rem;
-    line-height: 2;
-    color: #8a8a9a;
   }
 
   /* ─── Process List ─── */
@@ -618,9 +570,17 @@ import Header from '../components/Header.astro';
     font-size: 0.78rem;
     color: #8a8a9a;
     letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+  .flow-price {
+    font-size: 0.78rem;
+    color: #8a8a9a;
+    letter-spacing: 0.04em;
     margin-bottom: 20px;
     padding-left: 2px;
   }
+  .flow-price strong { color: #c9a84c; font-weight: 400; }
   .flow-left {
     display: flex;
     flex-direction: column;
