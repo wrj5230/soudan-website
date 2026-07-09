@@ -272,20 +272,17 @@ import Header from '../components/Header.astro';
         <!-- Step 2: 仏壇プレビュー -->
         <div class="form-step step-preview" id="step-2">
           <div class="btn-row">
-            <button class="btn-next" data-next="3">概算を見る →</button>
+            <button class="btn-next" data-next="3">選択内容を見る →</button>
             <button class="btn-back" data-back="1">戻る</button>
           </div>
         </div>
 
-        <!-- Step 3: 概算見積もり -->
+        <!-- Step 3: 選択確認 -->
         <div class="form-step" id="step-3">
-          <h2 class="step-title">概算見積もり</h2>
-          <p class="step-desc">選んだ内容をもとにした目安の金額です。</p>
+          <h2 class="step-title">こちらの内容でよろしいですか？</h2>
           <div class="palette-scroll">
             <div class="estimate-body" id="estimate-body"></div>
-            <p class="estimate-note">※職人技法・仕様により前後します。詳細はご相談ください。</p>
           </div>
-          <div id="estimate-total"></div>
           <div class="btn-row">
             <a href="/contact" class="btn-contact" id="btn-contact-link">このイメージで相談する</a>
             <button class="btn-back" data-back="2">戻る</button>
@@ -298,7 +295,10 @@ import Header from '../components/Header.astro';
       <div class="preview-panel">
         <div class="preview-header">
           <p class="preview-label">3D Preview</p>
-          <p class="preview-hint">ドラッグで回転 / スクロールでズーム</p>
+          <div class="preview-header-right">
+            <p class="preview-hint">ドラッグで回転 / スクロールでズーム</p>
+            <button type="button" class="dim-toggle-btn" id="dim-toggle">寸法を隠す</button>
+          </div>
         </div>
 
         <div class="altar-wrap" id="altar-wrap">
@@ -332,6 +332,7 @@ import Header from '../components/Header.astro';
   import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+  import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
   // ─── State ────────────────────────────────────────────────────────────────
   type Part = 'outer' | 'door-front' | 'door-back' | 'back' | 'curtain';
@@ -374,10 +375,18 @@ import Header from '../components/Header.astro';
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.8;
 
+  // ─── 寸法線ラベル用（CSS2DRenderer） ─────────────────────────────────────
+  const labelRenderer = new CSS2DRenderer();
+  labelRenderer.domElement.style.position = 'absolute';
+  labelRenderer.domElement.style.inset = '0';
+  labelRenderer.domElement.style.pointerEvents = 'none';
+  wrapper.appendChild(labelRenderer.domElement);
+
   function resize() {
     const w = wrapper.clientWidth;
     const h = wrapper.clientHeight || Math.round(w * 0.85);
     renderer.setSize(w, h, false);
+    labelRenderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
@@ -583,7 +592,6 @@ import Header from '../components/Header.astro';
   }
 
   function applyTechnique(part: Part, tech: Technique, raptoHex: string) {
-    console.log('applyTechnique', part, tech, raptoHex);
     state.techniques[part] = tech;
     state.raptoColors[part] = raptoHex;
     const hex = state.colors[part];
@@ -592,9 +600,7 @@ import Header from '../components/Header.astro';
       part === 'back'    ? meshes.back_panel :
       part === 'curtain' ? meshes.inner_curtain :
       [...meshes.door_L, ...meshes.door_R];
-    console.log('target meshes:', target.length);
     target.forEach(m => {
-      console.log('mesh:', m.name, 'material:', Array.isArray(m.material) ? 'array' : 'single');
       if (Array.isArray(m.material)) {
         m.material = (m.material as THREE.MeshPhysicalMaterial[]).map((mat, i) => {
           if (part === 'door-front' && i === 1) return mat;
@@ -629,6 +635,15 @@ import Header from '../components/Header.astro';
     ];
   }
 
+  // ─── モバイルボトムシート（GLTFコールバックより先に定義）────────────────────
+  const formPanel = document.querySelector<HTMLElement>('.form-panel')!;
+  let sheetExpanded = true;
+  function setSheet(expanded: boolean) {
+    sheetExpanded = expanded;
+    formPanel.style.transition = 'transform 0.35s cubic-bezier(0.32,0.72,0,1)';
+    formPanel.style.transform = expanded ? 'translateY(0)' : 'translateY(calc(100% - 100px))';
+  }
+
   // ─── GLB読み込み ─────────────────────────────────────────────────────────
   const loader = new GLTFLoader();
   loader.load('/altar.glb', (gltf) => {
@@ -636,7 +651,6 @@ import Header from '../components/Header.astro';
 
     model.traverse((obj) => {
       if (!(obj instanceof THREE.Mesh)) return;
-      console.log('mesh:', obj.name);
       obj.castShadow = true;
       obj.receiveShadow = true;
 
@@ -680,6 +694,9 @@ import Header from '../components/Header.astro';
 
     scene.add(model);
     loading.style.display = 'none';
+
+    // モデル確定後の実際のバウンディングボックスから寸法線を作成（回転・センタリング後）
+    buildDimensionLines(model);
 
     // モデル描画後にカーテンを外し、イントロ演出
     requestAnimationFrame(() => {
@@ -802,26 +819,21 @@ import Header from '../components/Header.astro';
     document.getElementById(`tab-${tab}`)!.classList.add('active');
   }
 
+  const accordion = document.getElementById('accordion')!;
+
   function openPanel(targetItem: HTMLElement) {
+    accPanel.classList.remove('open');
     targetItem.after(accPanel);
-    // reflow を挟んでから open クラスを付与してトランジション発火
-    accPanel.getBoundingClientRect();
-    accPanel.classList.add('open');
+    requestAnimationFrame(() => accPanel.classList.add('open'));
   }
 
-  function closePanel(then?: () => void) {
+  function closePanel(cb?: () => void) {
     accPanel.classList.remove('open');
-    const onEnd = () => {
-      accPanel.removeEventListener('transitionend', onEnd);
-      if (!accPanel.classList.contains('open')) accPanel.remove();
-      then?.();
-    };
-    accPanel.addEventListener('transitionend', onEnd);
+    setTimeout(() => { accordion.after(accPanel); cb?.(); }, 380);
   }
 
   function selectPart(part: Part | null, silent = false) {
     if (part === null || state.part === part) {
-      // 同じパーツをクリック → 閉じる
       state.part = null;
       document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
       closePanel();
@@ -837,11 +849,7 @@ import Header from '../components/Header.astro';
     const targetItem = document.querySelector<HTMLElement>(`.acc-item[data-part="${part}"]`)!;
     targetItem.classList.add('open');
 
-    // 別パーツへの切り替えは即移動してそのまま開く
-    if (prevPart && accPanel.isConnected) {
-      accPanel.classList.remove('open');
-      accPanel.remove();
-    }
+    if (prevPart) accPanel.classList.remove('open');
     openPanel(targetItem);
 
     // カラー・技法UIを現在のパーツ状態に同期
@@ -863,6 +871,9 @@ import Header from '../components/Header.astro';
     doorIsOpen = open;
     doorTargetL = open ?  Math.PI * 0.85 : 0;
     doorTargetR = open ? -Math.PI * 0.85 : 0;
+    if (dimOpenGroup) dimOpenGroup.visible = open;
+    if (doorDimGroup) doorDimGroup.visible = open;
+    if (deskDimGroup) deskDimGroup.visible = open;
     // 扉開閉に台を連動
     if (open) {
       deskOpen = true;
@@ -882,6 +893,171 @@ import Header from '../components/Header.astro';
     camLookTarget = new THREE.Vector3(lx, ly, lz);
     controls.enabled = false;
   }
+
+  // ─── 寸法線（図面風、常時表示・ボタンでトグル） ─────────────────────────────
+  // TODO: すべて仮の数値。実測値が出たら差し替える（2026-07-08時点）
+  const ALTAR_DIMENSIONS = {
+    width: '65 cm', depth: '43 cm', height: '90 cm',
+    doorWidth: '28.5 cm',
+    innerWidth: '55.5 cm', innerDepth: '35.5 cm', drawerDepth: '22.5 cm',
+    curtainHeight: '8 cm',
+  };
+
+  let dimGroup: THREE.Group | null = null;
+  let dimOpenGroup: THREE.Group | null = null; // 扉が開いている時だけ表示する寸法（静止パーツ）
+  let doorDimGroup: THREE.Group | null = null; // 扉に追従（doorLObjの子）
+  let deskDimGroup: THREE.Group | null = null; // 引き出しに追従（deskObjの子）
+
+  function buildDimensionLines(model: THREE.Object3D) {
+    const group = new THREE.Group();
+    group.visible = true;
+
+    const openGroup = new THREE.Group();
+    openGroup.visible = false; // 初期状態は扉が閉じているので非表示
+    group.add(openGroup);
+
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.85 });
+    const off = 0.07; // モデル面からのオフセット（見やすさのため少し離す）
+
+    function addLine(a: THREE.Vector3, b: THREE.Vector3, target: THREE.Group = group) {
+      const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+      target.add(new THREE.Line(geo, lineMat));
+    }
+    function addLabel(pos: THREE.Vector3, text: string, target: THREE.Group = group) {
+      const div = document.createElement('div');
+      div.className = 'dim-label';
+      div.textContent = text;
+      const obj = new CSS2DObject(div);
+      obj.position.copy(pos);
+      target.add(obj);
+    }
+
+    // 本体全体（幅・高さ・奥行き）
+    const box = new THREE.Box3().setFromObject(model);
+    const { min, max } = box;
+
+    // 幅：手前下辺をZ方向にオフセットした位置に表示
+    const wA = new THREE.Vector3(min.x, min.y - off, max.z + off);
+    const wB = new THREE.Vector3(max.x, min.y - off, max.z + off);
+    addLine(wA, wB);
+    addLine(new THREE.Vector3(min.x, min.y, max.z), wA);
+    addLine(new THREE.Vector3(max.x, min.y, max.z), wB);
+    addLabel(wA.clone().lerp(wB, 0.5), ALTAR_DIMENSIONS.width);
+
+    // 高さ：右手前の辺をX方向にオフセットした位置に表示
+    const hA = new THREE.Vector3(max.x + off, min.y, max.z + off);
+    const hB = new THREE.Vector3(max.x + off, max.y, max.z + off);
+    addLine(hA, hB);
+    addLine(new THREE.Vector3(max.x, min.y, max.z), hA);
+    addLine(new THREE.Vector3(max.x, max.y, max.z), hB);
+    addLabel(hA.clone().lerp(hB, 0.5), ALTAR_DIMENSIONS.height);
+
+    // 奥行き：右下辺をX方向にオフセットした位置に表示
+    const dA = new THREE.Vector3(max.x + off, min.y - off, min.z);
+    const dB = new THREE.Vector3(max.x + off, min.y - off, max.z);
+    addLine(dA, dB);
+    addLine(new THREE.Vector3(max.x, min.y, min.z), dA);
+    addLine(new THREE.Vector3(max.x, min.y, max.z), dB);
+    addLabel(dA.clone().lerp(dB, 0.5), ALTAR_DIMENSIONS.depth);
+
+    // 扉幅：扉（表・左）に追従させ、開いた位置でも正しく表示されるようにする
+    if (doorLObj) {
+      model.updateMatrixWorld(true);
+      const dBox = new THREE.Box3().setFromObject(doorLObj);
+      const doorOff = 0.04;
+      const worldA  = new THREE.Vector3(dBox.min.x, dBox.max.y + doorOff, dBox.max.z);
+      const worldB  = new THREE.Vector3(dBox.max.x, dBox.max.y + doorOff, dBox.max.z);
+      const worldA0 = new THREE.Vector3(dBox.min.x, dBox.max.y, dBox.max.z);
+      const worldB0 = new THREE.Vector3(dBox.max.x, dBox.max.y, dBox.max.z);
+
+      const doorGroup = new THREE.Group();
+      doorGroup.visible = false;
+      doorLObj.add(doorGroup);
+
+      const a  = doorLObj.worldToLocal(worldA.clone());
+      const b  = doorLObj.worldToLocal(worldB.clone());
+      const a0 = doorLObj.worldToLocal(worldA0.clone());
+      const b0 = doorLObj.worldToLocal(worldB0.clone());
+      addLine(a, b, doorGroup);
+      addLine(a0, a, doorGroup);
+      addLine(b0, b, doorGroup);
+      addLabel(a.clone().lerp(b, 0.5), `扉幅 ${ALTAR_DIMENSIONS.doorWidth}`, doorGroup);
+      doorDimGroup = doorGroup;
+    }
+
+    // 内部の幅・奥行き：内部の棚（inner_stage）の少し上に浮かせ、内部の空間の中に収まる位置で表示（扉が開いている時だけ）
+    const innerStage = model.getObjectByName('inner_stage');
+    if (innerStage) {
+      const iBox = new THREE.Box3().setFromObject(innerStage);
+      const innerOff = 0.04;
+      const liftY = iBox.max.y + innerOff;
+
+      // 幅：手前辺（内部空間の中）
+      const iwA = new THREE.Vector3(iBox.min.x, liftY, iBox.max.z);
+      const iwB = new THREE.Vector3(iBox.max.x, liftY, iBox.max.z);
+      addLine(iwA, iwB, openGroup);
+      addLine(new THREE.Vector3(iBox.min.x, iBox.max.y, iBox.max.z), iwA, openGroup);
+      addLine(new THREE.Vector3(iBox.max.x, iBox.max.y, iBox.max.z), iwB, openGroup);
+      addLabel(iwA.clone().lerp(iwB, 0.5), `内部幅 ${ALTAR_DIMENSIONS.innerWidth}`, openGroup);
+
+      // 奥行き：右辺（内部空間の中）
+      const idA = new THREE.Vector3(iBox.max.x, liftY, iBox.min.z);
+      const idB = new THREE.Vector3(iBox.max.x, liftY, iBox.max.z);
+      addLine(idA, idB, openGroup);
+      addLine(new THREE.Vector3(iBox.max.x, iBox.max.y, iBox.min.z), idA, openGroup);
+      addLine(new THREE.Vector3(iBox.max.x, iBox.max.y, iBox.max.z), idB, openGroup);
+      addLabel(idA.clone().lerp(idB, 0.5), `内部奥行き ${ALTAR_DIMENSIONS.innerDepth}`, openGroup);
+    }
+
+    // 引き出し（前机）の奥行き：引き出しに追従させ、引き出した位置でも正しく表示されるようにする
+    if (deskObj) {
+      model.updateMatrixWorld(true);
+      const eBox = new THREE.Box3().setFromObject(deskObj);
+      const deskOff = 0.05;
+      const worldDdA  = new THREE.Vector3(eBox.max.x + deskOff, eBox.max.y + deskOff, eBox.min.z);
+      const worldDdB  = new THREE.Vector3(eBox.max.x + deskOff, eBox.max.y + deskOff, eBox.max.z);
+      const worldDdA0 = new THREE.Vector3(eBox.max.x, eBox.max.y, eBox.min.z);
+      const worldDdB0 = new THREE.Vector3(eBox.max.x, eBox.max.y, eBox.max.z);
+
+      const deskGroup = new THREE.Group();
+      deskGroup.visible = false;
+      deskObj.add(deskGroup);
+
+      const ddA  = deskObj.worldToLocal(worldDdA.clone());
+      const ddB  = deskObj.worldToLocal(worldDdB.clone());
+      const ddA0 = deskObj.worldToLocal(worldDdA0.clone());
+      const ddB0 = deskObj.worldToLocal(worldDdB0.clone());
+      addLine(ddA, ddB, deskGroup);
+      addLine(ddA0, ddA, deskGroup);
+      addLine(ddB0, ddB, deskGroup);
+      addLabel(ddA.clone().lerp(ddB, 0.5), `引き出し奥行き ${ALTAR_DIMENSIONS.drawerDepth}`, deskGroup);
+      deskDimGroup = deskGroup;
+    }
+
+    // 垂れ幕（inner_curtain）：高さのみ表示（扉が開いている時だけ）
+    const curtainObj = model.getObjectByName('inner_curtain');
+    if (curtainObj) {
+      const cBox = new THREE.Box3().setFromObject(curtainObj);
+      const curtainOff = 0.04;
+      const cA = new THREE.Vector3(cBox.min.x - curtainOff, cBox.min.y, cBox.max.z);
+      const cB = new THREE.Vector3(cBox.min.x - curtainOff, cBox.max.y, cBox.max.z);
+      addLine(cA, cB, openGroup);
+      addLine(new THREE.Vector3(cBox.min.x, cBox.min.y, cBox.max.z), cA, openGroup);
+      addLine(new THREE.Vector3(cBox.min.x, cBox.max.y, cBox.max.z), cB, openGroup);
+      addLabel(cA.clone().lerp(cB, 0.5), `垂れ幕高さ ${ALTAR_DIMENSIONS.curtainHeight}`, openGroup);
+    }
+
+    scene.add(group);
+    dimGroup = group;
+    dimOpenGroup = openGroup;
+  }
+
+  const dimToggleBtn = document.getElementById('dim-toggle') as HTMLButtonElement;
+  dimToggleBtn.addEventListener('click', () => {
+    if (!dimGroup) return;
+    dimGroup.visible = !dimGroup.visible;
+    dimToggleBtn.textContent = dimGroup.visible ? '寸法を隠す' : '寸法を表示';
+  });
 
   // ─── ドアタップ開閉（レイキャスト） ────────────────────────────────────────
   const raycaster = new THREE.Raycaster();
@@ -935,6 +1111,7 @@ import Header from '../components/Header.astro';
     if (doorRObj) doorRObj.rotation.y += (doorTargetR - doorRObj.rotation.y) * 0.08;
     if (deskObj) deskObj.position.z += (deskTarget - deskObj.position.z) * 0.08;
     renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
   }
 
   // ─── イベント ─────────────────────────────────────────────────────────────
@@ -1046,66 +1223,26 @@ import Header from '../components/Header.astro';
   });
 
   // Step nav
-  // ─── 価格計算 ─────────────────────────────────────────────────────────────
-  const BASE_PRICE   = 500000;
-  const COLOR_ADD    = 20000;
-  const TECH_PRICE: Record<string, number> = { makie: 50000, raptopaint: 30000, none: 0 };
   const TECH_LABEL: Record<string, string> = { makie: '蒔絵', raptopaint: 'ラップ塗り', none: '' };
-
-  function calcPrice() {
-    const uniqueColors = new Set(Object.values(state.colors));
-    const colorCost = Math.max(0, uniqueColors.size - 1) * COLOR_ADD;
-    const techCost  = (Object.values(state.techniques) as string[])
-      .reduce((sum, t) => sum + (TECH_PRICE[t] ?? 0), 0);
-    return BASE_PRICE + colorCost + techCost;
-  }
 
   function renderEstimate() {
     const body = document.getElementById('estimate-body')!;
+    if (!body) return;
     const parts: Part[] = ['outer', 'door-front', 'door-back', 'back', 'curtain'];
-    const uniqueColors = [...new Set(Object.values(state.colors))];
-    const colorCost = Math.max(0, uniqueColors.length - 1) * COLOR_ADD;
-    const techCost  = (Object.values(state.techniques) as string[])
-      .reduce((sum, t) => sum + (TECH_PRICE[t] ?? 0), 0);
-    const total = BASE_PRICE + colorCost + techCost;
-    const fmt = (n: number) => `${(n / 10000).toFixed(0)}万円`;
-
-    const paletteDots = uniqueColors.map(hex =>
-      `<span class="est-pal-dot" style="background:${hex}"></span>`
-    ).join('');
-
     const rows = parts.map(p => {
       const tech = state.techniques[p];
-      const techBadge = tech !== 'none'
-        ? `<span class="est-tech-badge">${TECH_LABEL[tech]}</span>`
-        : '';
+      const techBadge = tech !== 'none' ? `<span class="est-tech-badge">${TECH_LABEL[tech]}</span>` : '';
       return `<tr>
         <td class="est-td est-td-part">${PART_LABELS[p]}</td>
-        <td class="est-td est-td-color">
-          <span class="est-swatch-bar" style="background:${state.colors[p]}"></span>
-        </td>
+        <td class="est-td est-td-color"><span class="est-swatch-bar" style="background:${state.colors[p]}"></span></td>
         <td class="est-td est-td-tech">${techBadge}</td>
       </tr>`;
     }).join('');
-
     body.innerHTML = `
-      <div class="est-palette-section">
-        <p class="est-section-label">使用カラー</p>
-        <div class="est-palette-row">${paletteDots}</div>
-      </div>
       <table class="est-table">
-        <thead>
-          <tr>
-            <th class="est-th">パーツ</th>
-            <th class="est-th">カラー</th>
-            <th class="est-th">技法</th>
-          </tr>
-        </thead>
+        <thead><tr><th class="est-th">パーツ</th><th class="est-th">カラー</th><th class="est-th">技法</th></tr></thead>
         <tbody>${rows}</tbody>
-      </table>
-    `;
-    const totalEl = document.getElementById('estimate-total');
-    if (totalEl) totalEl.innerHTML = `<div class="est-total"><span>概算合計</span><span class="est-total-num">${fmt(total)}〜</span></div>`;
+      </table>`;
   }
 
   // デスクトップのデフォルトカメラ位置
@@ -1144,11 +1281,7 @@ import Header from '../components/Header.astro';
     }
     if (n === 3) {
       renderEstimate();
-      // コンフィグ情報をURLパラメータに乗せる
-      const config = {
-        colors: state.colors,
-        techniques: state.techniques,
-      };
+      const config = { colors: state.colors, techniques: state.techniques, raptoColors: state.raptoColors };
       const link = document.getElementById('btn-contact-link') as HTMLAnchorElement;
       if (link) link.href = `/contact?config=${encodeURIComponent(JSON.stringify(config))}`;
     }
@@ -1163,14 +1296,6 @@ import Header from '../components/Header.astro';
   window.addEventListener('resize', resize);
 
   // ─── モバイル ボトムシート ────────────────────────────────────────────────
-  const formPanel = document.querySelector<HTMLElement>('.form-panel')!;
-  let sheetExpanded = true;
-
-  function setSheet(expanded: boolean) {
-    sheetExpanded = expanded;
-    formPanel.style.transition = 'transform 0.35s cubic-bezier(0.32,0.72,0,1)';
-    formPanel.style.transform = expanded ? 'translateY(0)' : 'translateY(calc(100% - 100px))';
-  }
 
   if (window.matchMedia('(max-width: 900px)').matches) {
     // 仏壇の上端が画面上部・下端が中央より少し下のカメラ構図
@@ -1563,7 +1688,7 @@ import Header from '../components/Header.astro';
   .btn-contact:hover { background: var(--color-gold); color: #080814; }
 
 
-  /* 概算見積もり */
+  /* 選択確認 */
   .estimate-body { margin: 16px 0; }
   .estimate-note { font-size: 0.65rem; color: var(--color-muted); letter-spacing: 0.05em; margin-bottom: 24px; opacity: 0.6; }
   :global(.est-section-label) { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--color-muted); margin-bottom: 10px; }
@@ -1574,13 +1699,17 @@ import Header from '../components/Header.astro';
     border: 1px solid rgba(255,255,255,0.12);
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3);
   }
-  :global(.est-table) { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-  :global(.est-th) { font-size: 0.65rem; letter-spacing: 0.2em; color: var(--color-muted); border-bottom: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); padding: 7px 6px; text-align: left; font-weight: normal; }
-  :global(.est-td) { padding: 9px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: middle; }
-  :global(.est-td-part) { font-size: 0.8rem; letter-spacing: 0.08em; color: var(--color-cream); width: 40%; }
-  :global(.est-td-color) { width: 30%; }
-  :global(.est-td-tech) { font-size: 0.72rem; letter-spacing: 0.06em; color: var(--color-muted); }
-  :global(.est-swatch-bar) { display: block; width: 64px; height: 18px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.08); }
+  :global(.est-table) { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+  :global(.est-th) {
+    font-size: 0.6rem; letter-spacing: 0.25em; color: rgba(201,168,76,0.5);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 6px 8px; text-align: left; font-weight: normal;
+  }
+  :global(.est-td) { padding: 11px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+  :global(.est-td-part) { font-size: 0.78rem; letter-spacing: 0.1em; color: var(--color-cream); width: 38%; }
+  :global(.est-td-color) { width: 28%; }
+  :global(.est-td-tech) { font-size: 0.68rem; letter-spacing: 0.08em; color: rgba(201,168,76,0.7); }
+  :global(.est-swatch-bar) { display: block; width: 48px; height: 16px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 6px rgba(0,0,0,0.4); }
   :global(.est-tech-badge) {
     display: inline-block; font-size: 0.65rem; letter-spacing: 0.08em;
     color: var(--color-gold); border: 1px solid rgba(201,168,76,0.4);
@@ -1603,6 +1732,16 @@ import Header from '../components/Header.astro';
   .preview-hint {
     font-size: 0.65rem; letter-spacing: 0.1em; color: var(--color-muted);
   }
+  .preview-header-right {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .dim-toggle-btn {
+    font-size: 0.62rem; letter-spacing: 0.08em; color: var(--color-gold);
+    background: transparent; border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 2px; padding: 4px 10px; cursor: pointer;
+    white-space: nowrap; transition: background 0.2s, color 0.2s;
+  }
+  .dim-toggle-btn:hover { background: rgba(201,168,76,0.15); }
   /* アコーディオン */
   .accordion { display: flex; flex-direction: column; gap: 1px; margin-bottom: 4px; }
   .acc-item { display: contents; }
@@ -1650,8 +1789,8 @@ import Header from '../components/Header.astro';
   }
   .acc-item.open .acc-arrow { transform: rotate(90deg); color: var(--color-gold); }
   .acc-panel {
-    padding: 0 16px;
-    border: 1px solid rgba(201,168,76,0.6); border-top: none;
+    padding: 16px 16px 18px;
+    border: 1px solid transparent; border-top: none;
     border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;
     background: linear-gradient(180deg, rgba(22,16,8,0.98) 0%, rgba(12,10,6,1) 100%);
     box-shadow: inset 0 4px 16px rgba(0,0,0,0.3);
@@ -1659,12 +1798,12 @@ import Header from '../components/Header.astro';
     overflow: hidden;
     max-height: 0;
     opacity: 0;
-    transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, padding 0.38s;
+    transition: max-height 0.35s ease-out, opacity 0.25s ease, border-color 0.25s;
   }
   .acc-panel.open {
     max-height: 500px;
     opacity: 1;
-    padding: 16px 16px 18px;
+    border-color: rgba(201,168,76,0.6);
   }
   .tech-section { margin-top: 16px; }
   .tech-grid {
@@ -1753,6 +1892,18 @@ import Header from '../components/Header.astro';
     position: absolute; inset: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 16px; background: rgba(5,5,8,0.9);
+  }
+
+  /* 寸法線ラベル（CSS2DObject） */
+  :global(.dim-label) {
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: #c9a84c;
+    white-space: nowrap;
+    background: rgba(5,5,8,0.55);
+    padding: 2px 6px;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
   }
 
   /* Spinner */
