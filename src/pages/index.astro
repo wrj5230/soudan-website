@@ -23,7 +23,7 @@ import Header from '../components/Header.astro';
     <div class="scene" data-scene="1">
       <div class="scene-content about-content">
         <p class="section-label">About</p>
-        <h2 class="scene-title">SOUDANとは。</h2>
+        <h2 class="scene-title">SOUDANとは</h2>
         <div class="divider"></div>
         <p class="about-lead">SOUDANは、世界にひとつだけのお仏壇を職人とともにつくる、セミオーダーメイドのサービスです。<br />お仏壇のお色・技法をあなた自身でお選びいただき、ご家族への想いをそのままかたちにします。</p>
         <div class="about-story">
@@ -36,6 +36,9 @@ import Header from '../components/Header.astro';
     <!-- Scene 2: Concept -->
     <div class="scene" data-scene="2">
       <div class="scene-content">
+        <p class="section-label">Concept</p>
+        <h2 class="scene-title">3つの<span class="sou-em">SOU</span></h2>
+        <div class="divider"></div>
         <div class="sou-list">
           <div class="sou-item">
             <p class="sou-kanji">創</p>
@@ -54,34 +57,118 @@ import Header from '../components/Header.astro';
     </div>
 
     <!-- Scene 3: Craftsmen -->
+    <!-- Scene 3: 工程スライド -->
     <div class="scene craftsmen-scene" data-scene="3">
       <div class="scene-content">
-        <p class="section-label">Craftsmen & Techniques</p>
-        <h2 class="scene-title">職人と、技法。</h2>
+        <p class="section-label">Process</p>
+        <h2 class="scene-title">仏壇ができるまで</h2>
         <div class="divider"></div>
-        <div class="techniques-grid">
-          <div class="technique-card">
-            <h3>蒔絵</h3>
-            <p>漆の上に金銀の粉を蒔いて描く、日本が誇る伝統装飾技法。繊細な文様があなたの想いを永遠に刻みます。</p>
+        <p class="ps-note">実際の製作工程は、ここでご紹介するよりもさらに細かく分かれています。</p>
+        <div class="ps-list">
+          <div class="ps-item">
+            <img class="ps-bg" src="/images/kiji.png" alt="" onerror="this.style.display='none'"/>
+            <div class="ps-content">
+              <h3 class="ps-name">木地</h3>
+              <p class="ps-read">きじ</p>
+              <p class="ps-body">ヒノキやスギなど厳選された木材を、熟練の木地師が鑿と鉋で削り出します。木の呼吸を読みながら木取りをするのが職人の目利き。塗りや装飾の美しさはこの土台の精度にかかっています。</p>
+            </div>
           </div>
-          <div class="technique-card">
-            <h3>漆塗り</h3>
-            <p>何十もの工程を経て積み重ねられる漆の層。深みのある艶と、百年を超える耐久性を持ちます。</p>
+          <div class="ps-item">
+            <img class="ps-bg" src="/images/nuri.png" alt="" onerror="this.style.display='none'"/>
+            <div class="ps-content">
+              <h3 class="ps-name">塗</h3>
+              <p class="ps-read">ぬり</p>
+              <p class="ps-body">木地に漆を塗っては研ぎ、また塗っては研ぐ。この工程を何十回と繰り返すことで、深みのある艶と強度が生まれます。完成した漆面は百年以上の耐久性を持ちます。</p>
+            </div>
           </div>
-          <div class="technique-card">
-            <h3>彩色</h3>
-            <p>岩絵具や金泥を用いた日本画の技法。仏の世界を彩る色彩が、祈りの空間に命を吹き込みます。</p>
+          <div class="ps-item">
+            <img class="ps-bg" src="/images/soushoku.png" alt="" onerror="this.style.display='none'"/>
+            <div class="ps-content">
+              <h3 class="ps-name">装飾</h3>
+              <p class="ps-read">そうしょく</p>
+              <p class="ps-body">仕上がった塗面に、蒔絵や彩色など選ばれた技法で文様を施します。金銀の粉や岩絵具で描かれた文様が、祈りの空間に命を吹き込みます。</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scene 4: Configurator CTA -->
-    <div class="scene cfg-scene" data-scene="4">
+    <!-- Scene 4–5: Store History -->
+    <div class="scene history-scene" data-scene="4">
+      <img class="history-bg" src="/images/tempo.jpg" alt="" />
+      <div class="history-overlay"></div>
+      <div class="scene-content history-content">
+        <p class="section-label">Our Story</p>
+        <h2 class="scene-title">当店について</h2>
+        <div class="divider"></div>
+        <p class="history-para">井上秀峰佛具店は、大正の時代よりその営みの中に在ります。<br />各宗派の仏具製作に携わりながら、分業で進む制作を束ね、<br />職人と職人をつなぐプロデュースとディレクションを担ってきました。</p>
+      </div>
+    </div>
+
+    <div class="scene history-scene" data-scene="6">
+      <img class="history-bg" src="/images/tempo.jpg" alt="" />
+      <div class="history-overlay"></div>
+      <div class="scene-content history-content">
+        <p class="section-label">Our Story</p>
+        <h2 class="scene-title">当店について</h2>
+        <div class="divider"></div>
+        <p class="history-para">3代にわたって受け継いできたのは、技術だけではありません。<br />いまを生きる人にとっての、心地よい祈りのかたちを問い続けること。<br />伝統を、次の時代へつないでいくこと。<br />その問いの答えのひとつが、SOUDANです。</p>
+      </div>
+    </div>
+
+    <!-- Scene 7: Flow -->
+    <div class="scene flow-scene" data-scene="7">
+      <div class="scene-content">
+        <p class="section-label">Flow</p>
+        <h2 class="scene-title">ご利用の流れ</h2>
+        <div class="divider"></div>
+        <p class="flow-total">ご相談から納品まで、目安として約2〜3ヶ月程度です。</p>
+        <ol class="flow-list">
+          <li class="flow-item">
+            <div class="flow-left"><span class="flow-num">01</span></div>
+            <div class="flow-text">
+              <p class="flow-name">コンフィギュレーターで選ぶ</p>
+              <p class="flow-desc">色・技法をシミュレーションしながら、イメージを形にします。</p>
+            </div>
+          </li>
+          <li class="flow-item">
+            <div class="flow-left"><span class="flow-num">02</span><span class="flow-time">1〜2週間</span></div>
+            <div class="flow-text">
+              <p class="flow-name">ご相談</p>
+              <p class="flow-desc">オンラインにて、イメージをもとに詳細をヒアリングし、お見積もりをご提示します。</p>
+            </div>
+          </li>
+          <li class="flow-item">
+            <div class="flow-left"><span class="flow-num">03</span><span class="flow-time">約2〜3ヶ月</span></div>
+            <div class="flow-text">
+              <p class="flow-name">制作</p>
+              <p class="flow-desc">職人が一点ずつ丁寧に製作します。</p>
+            </div>
+          </li>
+          <li class="flow-item">
+            <div class="flow-left"><span class="flow-num">04</span><span class="flow-time">1〜2週間</span></div>
+            <div class="flow-text">
+              <p class="flow-name">納品</p>
+              <p class="flow-desc">基本的には郵送にてお届けします。</p>
+            </div>
+          </li>
+          <li class="flow-item">
+            <div class="flow-left"><span class="flow-num">05</span></div>
+            <div class="flow-text">
+              <p class="flow-name">アフターサポート</p>
+              <p class="flow-desc">設置場所や仏具の配置など、不安なことがあればお気軽にご相談ください。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Scene 8: Configurator CTA -->
+    <div class="scene cfg-scene" data-scene="8">
       <div class="scene-content cfg-content">
         <p class="section-label">Try the Configurator</p>
         <h2 class="cfg-title">あなただけの仏壇を、<br />創ってみる。</h2>
-        <p class="cfg-sub">色・技法を自由に組み合わせて、<br />あなたの祈りの空間をイメージしてください。</p>
+        <p class="cfg-sub">3Dモデルを回転させながら、<br />色・技法の組み合わせをリアルタイムに確かめられます。</p>
         <a href="/configurator" class="cfg-btn" id="cfg-link">3Dで試してみる →</a>
       </div>
     </div>
@@ -232,17 +319,32 @@ import Header from '../components/Header.astro';
 
   function goTo(n: number) {
     if (animating || n === current || n < 0 || n >= total) return;
+    const skipFade = scenes[current].classList.contains('history-scene')
+                  && scenes[n].classList.contains('history-scene');
     animating = true;
-    scenes[current].classList.remove('active');
-    scenes[current].classList.add('leave');
-    // フェードアウト完了後に次シーンをフェードイン
-    setTimeout(() => {
-      document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
+    if (skipFade) {
+      const prev = current;
       current = n;
+      // 新シーンをトランジションなしで即表示（タイトル・背景が動かないように）
+      scenes[current].style.transition = 'none';
       scenes[current].classList.add('active');
+      scenes[current].offsetHeight; // reflow
+      scenes[current].style.transition = '';
       updateNav();
-      setTimeout(() => { animating = false; }, 800);
-    }, 500);
+      // 旧シーンは裏でフェードアウト（ユーザーには見えない）
+      requestAnimationFrame(() => { scenes[prev].classList.remove('active'); });
+      setTimeout(() => { animating = false; }, 200);
+    } else {
+      scenes[current].classList.remove('active');
+      scenes[current].classList.add('leave');
+      setTimeout(() => {
+        document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
+        current = n;
+        scenes[current].classList.add('active');
+        updateNav();
+        setTimeout(() => { animating = false; }, 800);
+      }, 500);
+    }
   }
 
   // タップ/クリックで次へ（フォーム・ボタン・リンクは除外）
@@ -268,6 +370,7 @@ import Header from '../components/Header.astro';
     else goTo(current - 1);
   });
 
+  // 縦スクロールは横スワイプと干渉しないためJS不要
 
 </script>
 
@@ -316,6 +419,12 @@ import Header from '../components/Header.astro';
     font-weight: 300;
     letter-spacing: 0.1em;
     margin-bottom: 0;
+  }
+  .sou-em {
+    font-family: 'Cormorant Garamond', serif;
+    color: #c9a84c;
+    letter-spacing: 0.5em;
+    font-style: normal;
   }
 
   /* ─── Hero ─── */
@@ -374,13 +483,14 @@ import Header from '../components/Header.astro';
   }
   .sou-kanji {
     font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
-    font-size: clamp(2.8rem, 5vw, 4rem);
+    font-size: clamp(3.5rem, 6vw, 5rem);
     font-weight: 300;
     color: #c9a84c;
     line-height: 1;
     letter-spacing: 0.05em;
     flex-shrink: 0;
-    width: 1.2em;
+    width: 1.1em;
+    text-shadow: 0 0 24px rgba(201,168,76,0.3);
   }
   .sou-desc {
     font-size: 0.88rem;
@@ -415,25 +525,169 @@ import Header from '../components/Header.astro';
     color: #8a8a9a;
   }
 
-  /* ─── Craftsmen ─── */
-  .craftsmen-scene { background: #0d1628; }
-  .techniques-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-top: 8px;
+  /* ─── Process List ─── */
+  .craftsmen-scene { background: #0a0806; }
+  .ps-list {
+    margin-top: 28px;
+    overflow-y: scroll;
+    height: 54svh;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
   }
-  .technique-card {
-    border: 1px solid rgba(201,168,76,0.2);
-    padding: 28px 24px;
+  .ps-list::-webkit-scrollbar { display: none; }
+  .ps-item {
+    scroll-snap-align: start;
+    min-height: 54svh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background: #0a0806;
   }
-  .technique-card h3 {
-    font-size: 1.1rem;
-    letter-spacing: 0.15em;
-    color: #c9a84c;
+  .ps-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+  .ps-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 32px;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, transparent 100%);
+  }
+  .ps-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+    display: block;
     margin-bottom: 12px;
   }
-  .technique-card p { color: #d0cac0; line-height: 1.9; font-size: 0.85rem; }
+  .ps-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 300;
+    color: #c9a84c;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .ps-note { font-size: 0.78rem; line-height: 1.9; color: #8a8a9a; margin-bottom: 20px; max-width: 480px; }
+  .ps-read { font-size: 0.65rem; letter-spacing: 0.25em; color: rgba(201,168,76,0.4); margin-bottom: 16px; }
+  .ps-body { font-size: 0.84rem; line-height: 2; color: rgba(255,255,255,0.85); max-width: 480px; }
+
+  /* ─── Store History ─── */
+  .history-scene { background: #0a0806; }
+  .history-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+  }
+  .history-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%);
+  }
+  .history-scene {
+    align-items: flex-start;
+    padding-top: 22vh;
+  }
+  .history-content {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+  }
+  .history-para {
+    font-size: 0.92rem;
+    line-height: 2.2;
+    color: #d0cac0;
+    margin-top: 8px;
+    max-width: 520px;
+    opacity: 0;
+  }
+  .scene.active .history-para { animation: souFadeIn 1.2s ease 0.3s forwards; }
+
+  /* ─── Flow ─── */
+  .flow-total {
+    font-size: 0.78rem;
+    color: #8a8a9a;
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+    padding-left: 2px;
+  }
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    align-self: stretch;
+    width: 68px;
+    padding-right: 16px;
+  }
+  .flow-time {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: rgba(201,168,76,0.5);
+    white-space: nowrap;
+    text-align: right;
+  }
+  .flow-list {
+    list-style: none;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 520px;
+  }
+  .flow-item {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    position: relative;
+    padding-bottom: 20px;
+    opacity: 0;
+  }
+  .flow-text { padding-left: 20px; }
+  .flow-item::before {
+    content: '';
+    position: absolute;
+    left: 68px;
+    top: 22px;
+    bottom: 0;
+    width: 1px;
+    background: rgba(201,168,76,0.2);
+  }
+  .flow-item:last-child::before { display: none; }
+  .flow-item:last-child { padding-bottom: 0; }
+  .flow-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: #c9a84c;
+    flex-shrink: 0;
+  }
+  .flow-name {
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    color: #e8e0d4;
+  }
+  .flow-desc { font-size: 0.78rem; line-height: 1.8; color: #8a8a9a; }
+  .scene.active .flow-item { animation: souFadeIn 0.9s ease forwards; }
+  .scene.active .flow-item:nth-child(1) { animation-delay: 0.1s; }
+  .scene.active .flow-item:nth-child(2) { animation-delay: 0.3s; }
+  .scene.active .flow-item:nth-child(3) { animation-delay: 0.5s; }
+  .scene.active .flow-item:nth-child(4) { animation-delay: 0.7s; }
+  .scene.active .flow-item:nth-child(5) { animation-delay: 0.9s; }
 
   /* ─── Configurator CTA ─── */
   .cfg-scene {
@@ -526,7 +780,8 @@ import Header from '../components/Header.astro';
     .scene-nav { bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)); }
     .hero-title { letter-spacing: 0.08em; }
     .hero-sub { letter-spacing: 0.15em; font-size: 0.9rem; }
-    .techniques-grid { grid-template-columns: 1fr; gap: 12px; overflow-y: auto; max-height: 60svh; }
-    .technique-card { padding: 18px; }
+    .ps-list { height: 60svh; }
+    .ps-item { min-height: 60svh; }
+    .ps-content { padding: 24px; }
   }
 </style>
