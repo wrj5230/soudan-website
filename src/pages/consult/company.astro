@@ -1,0 +1,199 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="会社紹介 | SOUDAN 商談">
+  <ConsultNav currentPage="company" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+
+      <!-- ブランドヘッダー -->
+      <div class="brand-header">
+        <h1 class="brand-catch">あなたの想いを、かたちに。</h1>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- 母体店舗紹介 -->
+      <section class="intro-section">
+        <p class="section-eyebrow">ブランドについて</p>
+        <p class="intro-text">
+          大正時代創業の京都の仏具店<strong>「井上秀峰佛具店」</strong>が手掛けるオーダーメイドブランドです。
+        </p>
+        <p class="intro-body">
+          個人店だからこそできる柔軟なご提案で、100年にわたり各宗派の寺院やご家庭に仏壇・仏具を届けてきました。<br />
+          3代にわたり積み重ねてきた職人との信頼関係と知識をもとに、<br />
+          世界にひとつだけのお仏壇の制作をサポートいたします。
+        </p>
+      </section>
+
+      <!-- こだわり -->
+      <section class="feature-section">
+        <p class="section-eyebrow">私たちのこだわり</p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <span class="feature-icon">01</span>
+            <h3 class="feature-title">老舗の目利き</h3>
+            <p class="feature-body">大正創業以来の素材選びの眼と、長年培った職人ネットワークが、品質を支えています。</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">02</span>
+            <h3 class="feature-title">完全オーダーメイド</h3>
+            <p class="feature-body">色・技法・サイズをすべてご要望に合わせてお作りします。同じものは二つとありません。</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">03</span>
+            <h3 class="feature-title">末永いお付き合い</h3>
+            <p class="feature-body">修理・リフォームにも対応。お届け後も、仏壇のことなら何でもご相談ください。</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- 代表者一言 -->
+      <section class="message-section">
+        <p class="section-eyebrow">代表より</p>
+        <blockquote class="message-quote">
+          <!-- TODO: 代表者メッセージを差し替え -->
+          「お仏壇は、祈りの場であり、家族の歴史を刻む場所でもあります。
+          SOUDANでは、お客様お一人おひとりのストーリーに寄り添いながら、
+          想いを込めたお仏壇をご一緒に作らせていただきます。」
+        </blockquote>
+        <p class="message-author">三代目当主　井上浩司</p>
+      </section>
+
+      <!-- Instagram リンク -->
+      <div class="sns-row">
+        <a href="https://www.instagram.com/inoue_shuho/" target="_blank" rel="noopener" class="sns-link">
+          Instagram で事例を見る →
+        </a>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .page-wrap {
+    max-width: 760px;
+    width: 100%;
+  }
+
+  /* ブランドヘッダー */
+  .brand-header { text-align: center; padding: 40px 0; }
+  .brand-catch {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    line-height: 1.6;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: rgba(201,168,76,0.12);
+    margin: 48px 0;
+  }
+
+  /* 一言紹介 */
+  .intro-text {
+    font-size: 1.1rem;
+    line-height: 2.2;
+    color: #c0bab0;
+    letter-spacing: 0.06em;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .intro-text strong { color: #f5f0e8; font-weight: 400; }
+  .intro-body {
+    font-size: 0.88rem;
+    line-height: 2.0;
+    color: #8a8a9a;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  /* こだわり */
+  .section-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 32px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .feature-item { display: flex; flex-direction: column; gap: 12px; }
+  .feature-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: rgba(201,168,76,0.3);
+    line-height: 1;
+  }
+  .feature-title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+  .feature-body {
+    font-size: 0.82rem;
+    color: #8a8a9a;
+    line-height: 1.8;
+    letter-spacing: 0.04em;
+  }
+
+  /* 代表メッセージ */
+  .message-section { margin-bottom: 16px; }
+  .message-quote {
+    font-size: 0.95rem;
+    line-height: 2.0;
+    color: #c0bab0;
+    letter-spacing: 0.06em;
+    border-left: 2px solid rgba(201,168,76,0.3);
+    padding-left: 24px;
+    margin-bottom: 16px;
+    font-style: normal;
+  }
+  .message-author {
+    font-size: 0.75rem;
+    color: #6a6a7a;
+    letter-spacing: 0.15em;
+    padding-left: 24px;
+  }
+
+  /* SNS */
+  .sns-row { margin-top: 48px; text-align: center; }
+  .sns-link {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: rgba(201,168,76,0.7);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .sns-link:hover { color: #c9a84c; }
+
+  @media (max-width: 700px) {
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>

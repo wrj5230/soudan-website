@@ -1,0 +1,664 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ConsultNav from '../components/ConsultNav.astro';
+---
+
+<Layout title="商談シート | SOUDAN">
+  <!-- パスワードゲート -->
+  <div id="auth-gate">
+    <div class="auth-box">
+      <p class="auth-label">SOUDAN</p>
+      <h1 class="auth-title">商談シート</h1>
+      <form id="auth-form">
+        <input type="password" id="auth-input" placeholder="パスワードを入力" autocomplete="current-password" />
+        <button type="submit">入室</button>
+        <p id="auth-error" class="auth-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <div id="consult-content" style="display:none">
+    <ConsultNav currentPage="design" />
+    <div id="loading-view" class="full-center">
+      <p class="loading-text">読み込み中…</p>
+    </div>
+    <div id="error-view" class="full-center" style="display:none">
+      <p class="error-text">データが見つかりませんでした</p>
+    </div>
+    <div id="main-view" style="display:none">
+      <header class="consult-header">
+        <span id="contact-date" class="consult-header-date"></span>
+      </header>
+      <div class="consult-body">
+
+        <!-- 左パネル：顧客情報・アンケート -->
+        <div class="info-panel">
+          <div class="customer-block">
+            <p class="info-eyebrow">お客様</p>
+            <h2 id="customer-name" class="customer-name"></h2>
+            <p id="customer-email" class="customer-contact"></p>
+            <p id="customer-phone" class="customer-contact"></p>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <div class="survey-block">
+            <p class="info-eyebrow">アンケート回答</p>
+
+            <div class="qa-item" id="qa-for-whom">
+              <p class="qa-question">どなたのためのお仏壇ですか？</p>
+              <p class="qa-answer" id="ans-for-whom"></p>
+            </div>
+            <div class="qa-item" id="qa-why-custom">
+              <p class="qa-question">なぜSOUDANを選ばれましたか？</p>
+              <p class="qa-answer" id="ans-why-custom"></p>
+            </div>
+            <div class="qa-item" id="qa-design-story">
+              <p class="qa-question">このデザインへのこだわりは？</p>
+              <p class="qa-answer" id="ans-design-story"></p>
+            </div>
+            <div class="qa-item" id="qa-message">
+              <p class="qa-question">その他ご要望</p>
+              <p class="qa-answer" id="ans-message"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右パネル：3Dビューア + カラーサマリー -->
+        <div class="view-panel">
+          <div id="altar-wrap">
+            <canvas id="three-canvas"></canvas>
+            <div id="three-loading" class="three-loading">Loading…</div>
+          </div>
+          <div id="color-summary" class="color-summary" style="display:none">
+            <p class="color-summary-label">選択されたイメージ</p>
+            <ul id="color-list" class="color-list"></ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+  import { createClient } from '@supabase/supabase-js';
+
+  // ─── Supabase ─────────────────────────────────────────────────────────────
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  // ─── Auth ─────────────────────────────────────────────────────────────────
+  const PASSWORD = import.meta.env.PUBLIC_CONSULT_PASSWORD ?? '';
+  const authGate    = document.getElementById('auth-gate')!;
+  const consultContent = document.getElementById('consult-content')!;
+
+  function unlock() {
+    authGate.style.display = 'none';
+    consultContent.style.display = 'block';
+    init();
+  }
+
+  if (sessionStorage.getItem('consult_auth') === 'ok') {
+    unlock();
+  } else {
+    document.getElementById('auth-form')!.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = (document.getElementById('auth-input') as HTMLInputElement).value;
+      if (val === PASSWORD) {
+        sessionStorage.setItem('consult_auth', 'ok');
+        unlock();
+      } else {
+        document.getElementById('auth-error')!.textContent = 'パスワードが違います';
+      }
+    });
+  }
+
+  const COLOR_NAMES: Record<string, string> = {
+    '#0c0c0c': '漆黒', '#090909': '漆黒', '#8b1a1a': '朱', '#7a1f2e': '深緋',
+    '#1e3a6e': '群青', '#2e5e38': '常磐', '#4e3660': '紫苑', '#5c3d22': '飴色',
+    '#1a2a4a': '藍鉄', '#c9a84c': '金', '#5e3a0a': '白木', '#2a1a08': '溜塗',
+  };
+  const TECH_NAMES: Record<string, string> = {
+    none: '', makie: '蒔絵', raptopaint: 'ラップ塗り', raden: '螺鈿',
+  };
+  const PART_LABELS: Record<string, string> = {
+    outer: '外枠・台', 'door-front': '扉（表）', 'door-back': '扉（裏）',
+    back: '背板', curtain: '垂れ幕',
+  };
+
+  let configData: any = null;
+
+  async function init() {
+    const id = new URLSearchParams(window.location.search).get('id');
+    const loadingView = document.getElementById('loading-view')!;
+    const errorView   = document.getElementById('error-view')!;
+    const mainView    = document.getElementById('main-view')!;
+
+    if (!id) {
+      loadingView.style.display = 'none';
+      errorView.style.display = 'flex';
+      (errorView.querySelector('.error-text') as HTMLElement).textContent = 'URLに id が指定されていません';
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      loadingView.style.display = 'none';
+      errorView.style.display = 'flex';
+      return;
+    }
+
+    // 顧客情報を描画
+    const createdAt = data.created_at ? new Date(data.created_at).toLocaleDateString('ja-JP') : '';
+    (document.getElementById('contact-date') as HTMLElement).textContent = createdAt;
+    (document.getElementById('customer-name') as HTMLElement).textContent = `${data.name} 様`;
+    (document.getElementById('customer-email') as HTMLElement).textContent = data.email ?? '';
+    const phoneEl = document.getElementById('customer-phone') as HTMLElement;
+    phoneEl.textContent = data.phone ?? '';
+    if (!data.phone) phoneEl.style.display = 'none';
+
+    // アンケート回答
+    const survey = data.survey ?? {};
+    fillQA('qa-for-whom',    'ans-for-whom',    survey.forWhom);
+    fillQA('qa-why-custom',  'ans-why-custom',  survey.whyCustom);
+    fillQA('qa-design-story','ans-design-story', survey.designStory);
+    fillQA('qa-message',     'ans-message',      data.message);
+
+    // カラーサマリー
+    configData = data.config ?? null;
+    if (configData?.colors) {
+      const colorSummary = document.getElementById('color-summary')!;
+      const colorList    = document.getElementById('color-list')!;
+      colorSummary.style.display = 'block';
+      for (const [part, label] of Object.entries(PART_LABELS)) {
+        const hex  = String(configData.colors[part] ?? '');
+        const tech = String(configData.techniques?.[part] ?? 'none');
+        const li = document.createElement('li');
+        li.className = 'color-item';
+        li.innerHTML = `
+          <span class="color-swatch" style="background:${hex}"></span>
+          <span class="color-part">${label}</span>
+          <span class="color-name">${COLOR_NAMES[hex] ?? ''}</span>
+          ${tech !== 'none' ? `<span class="color-tech">${TECH_NAMES[tech] ?? tech}</span>` : ''}
+        `;
+        colorList.appendChild(li);
+      }
+    }
+
+    loadingView.style.display = 'none';
+    mainView.style.display = 'block';
+    initThree();
+  }
+
+  function fillQA(wrapperId: string, answerId: string, value: string | null | undefined) {
+    if (!value) {
+      const el = document.getElementById(wrapperId);
+      if (el) el.style.display = 'none';
+      return;
+    }
+    const el = document.getElementById(answerId);
+    if (el) el.textContent = value;
+  }
+
+  // ─── Three.js ─────────────────────────────────────────────────────────────
+  type Technique = 'none' | 'makie' | 'raptopaint' | 'raden';
+
+  const meshes: Record<string, THREE.Mesh[]> = {
+    outer_frame: [], back_panel: [], door_L: [], door_R: [], inner_curtain: [],
+  };
+
+  let doorLObj: THREE.Object3D | null = null;
+  let doorRObj: THREE.Object3D | null = null;
+  let doorTargetL = 0, doorTargetR = 0, doorIsOpen = false;
+  let deskObj: THREE.Object3D | null = null;
+  let deskBaseZ = 0, deskTarget = 0;
+
+  function setDoorOpen(open: boolean) {
+    doorIsOpen = open;
+    doorTargetL = open ?  Math.PI * 0.85 : 0;
+    doorTargetR = open ? -Math.PI * 0.85 : 0;
+    if (deskObj) deskTarget = open ? deskBaseZ - 0.20 : deskBaseZ;
+  }
+
+  const hingeMat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color('#c9a84c'), metalness: 0.85, roughness: 0.18, envMapIntensity: 1.2,
+  });
+
+  // ─── テクスチャ ───────────────────────────────────────────────────────────
+  let _makieTexture: THREE.CanvasTexture | null = null;
+  function getMakieTexture(): THREE.CanvasTexture {
+    if (_makieTexture) return _makieTexture;
+    const size = 512, cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d')!;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, size, size);
+    const gold = { r: 201, g: 168, b: 76 };
+    const dp = (x: number, y: number, r: number, a: number, b: number) => {
+      const gr = Math.round(gold.r + (255-gold.r)*b*0.4), gg = Math.round(gold.g + (255-gold.g)*b*0.4), gb = Math.round(gold.b + (255-gold.b)*b*0.4);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${gr},${gg},${gb},${a.toFixed(3)})`; ctx.fill();
+    };
+    for (let i = 0; i < 3900; i++) { const x = Math.random()*size, y = Math.random()*size; dp(x, y, 0.9*(0.5+Math.random()*0.8), 0.4+Math.random()*0.6, 0.3+Math.random()*0.7); }
+    for (let i = 0; i < 190;  i++) { const x = Math.random()*size, y = Math.random()*size; dp(x, y, 2.5*(0.5+Math.random()*1.0), 0.7+Math.random()*0.3, 0.6+Math.random()*0.4); }
+    _makieTexture = new THREE.CanvasTexture(cv);
+    _makieTexture.wrapS = _makieTexture.wrapT = THREE.RepeatWrapping;
+    _makieTexture.repeat.set(5, 5);
+    return _makieTexture;
+  }
+
+  const _perm = (() => {
+    const p = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
+    const arr = new Uint8Array(512);
+    for (let i = 0; i < 256; i++) arr[i] = arr[i+256] = p[i];
+    return arr;
+  })();
+  const _fade = (t: number) => t*t*t*(t*(t*6-15)+10);
+  const _grad2 = (h: number, x: number, y: number) => { const g = h&3; return (g&1?-(g<2?x:y):(g<2?x:y))+(g&2?-(g<2?y:x):(g<2?y:x)); };
+  function _noise2(x: number, y: number) {
+    const X = Math.floor(x)&255, Y = Math.floor(y)&255;
+    x -= Math.floor(x); y -= Math.floor(y);
+    const u = _fade(x), v = _fade(y), a = _perm[X]+Y, b = _perm[X+1]+Y;
+    return (1-v)*((1-u)*_grad2(_perm[a],x,y)+u*_grad2(_perm[b],x-1,y))+v*((1-u)*_grad2(_perm[a+1],x,y-1)+u*_grad2(_perm[b+1],x-1,y-1));
+  }
+  function _fbm(x: number, y: number) {
+    let v=0,amp=1,freq=1,max=0;
+    for(let i=0;i<5;i++){v+=_noise2(x*freq,y*freq)*amp;max+=amp;amp*=0.5;freq*=2;}
+    return v/max;
+  }
+  function createRaptoTexture(baseHex: string, raptoHex: string): THREE.CanvasTexture {
+    const size = 512, cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d')!;
+    const ph = (h: string) => ({r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)});
+    const base = ph(baseHex), rapto = ph(raptoHex);
+    const img = ctx.createImageData(size,size); const d = img.data;
+    for(let y=0;y<size;y++){for(let x=0;x<size;x++){
+      const nx=(x/size)*3.3+69.876,ny=(y/size)*3.3+69.876*1.7;
+      const t=Math.pow(Math.abs(Math.sin((nx*0.19+_fbm(nx,ny)*5)*Math.PI)),2.2);
+      const i=(y*size+x)*4;
+      d[i]=Math.round(base.r+(rapto.r-base.r)*t);d[i+1]=Math.round(base.g+(rapto.g-base.g)*t);d[i+2]=Math.round(base.b+(rapto.b-base.b)*t);d[i+3]=255;
+    }}
+    ctx.putImageData(img,0,0);
+    return new THREE.CanvasTexture(cv);
+  }
+
+  function makeMaterial(hex: string, tech: Technique = 'none', raptoHex = '#c9a84c') {
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(hex), roughness: 0.35, metalness: 0.0,
+      clearcoat: 0.08, clearcoatRoughness: 0.6, reflectivity: 0.0, envMapIntensity: 0.0,
+    });
+    if (tech === 'raptopaint') {
+      mat.map = createRaptoTexture(hex, raptoHex);
+      mat.color.set('#ffffff'); mat.clearcoat = 0.3; mat.roughness = 0.3;
+    } else if (tech === 'makie') {
+      mat.emissiveMap = getMakieTexture(); mat.emissive.set('#c9a84c');
+      mat.emissiveIntensity = 0.8; mat.metalness = 0.25; mat.roughness = 0.2;
+    } else if (tech === 'raden') {
+      mat.iridescence = 1.0; mat.iridescenceIOR = 1.5; mat.roughness = 0.1; mat.metalness = 0.2;
+    }
+    return mat;
+  }
+
+  function applyDoorMaterial(mesh: THREE.Mesh, frontHex: string, backHex: string, frontTech: Technique = 'none', backTech: Technique = 'none') {
+    const geo = mesh.geometry, normal = geo.attributes.normal, index = geo.index;
+    geo.clearGroups();
+    if (index) {
+      for (let i = 0; i < index.count; i += 3) {
+        const nz = normal.getZ(index.getX(i));
+        geo.addGroup(i, 3, nz < -0.5 ? 0 : nz > 0.5 ? 1 : 2);
+      }
+    }
+    (mesh as any).material = [
+      makeMaterial(frontHex, frontTech),
+      makeMaterial(backHex, backTech),
+      makeMaterial(frontHex, frontTech),
+    ];
+  }
+
+  function applyConfigToModel(config: any) {
+    if (!config?.colors) return;
+    const c = config.colors, t = config.techniques ?? {};
+    meshes.outer_frame.forEach(m => { m.material = makeMaterial(c.outer, t.outer); });
+    meshes.back_panel.forEach(m => { m.material = makeMaterial(c.back, t.back); });
+    meshes.inner_curtain.forEach(m => { m.material = makeMaterial(c.curtain, t.curtain); });
+    meshes.door_L.forEach(m => applyDoorMaterial(m, c['door-front'], c['door-back'], t['door-front'], t['door-back']));
+    meshes.door_R.forEach(m => applyDoorMaterial(m, c['door-front'], c['door-back'], t['door-front'], t['door-back']));
+  }
+
+  // ─── Three.js 初期化 ──────────────────────────────────────────────────────
+  function initThree() {
+    const canvas  = document.getElementById('three-canvas') as HTMLCanvasElement;
+    const wrapper = document.getElementById('altar-wrap')!;
+    const loading = document.getElementById('three-loading')!;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.8;
+
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+    camera.position.set(0, 0.05, 2.2);
+
+    const scene = new THREE.Scene();
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.05));
+    const dir = new THREE.DirectionalLight(0xfff5e0, 0.25);
+    dir.position.set(1.5, 4, 2.5); dir.castShadow = true; scene.add(dir);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.08;
+    controls.minDistance = 0.8; controls.maxDistance = 4;
+    controls.maxPolarAngle = Math.PI * 0.75;
+    controls.target.set(0, 0.05, 0); controls.update();
+
+    function resize() {
+      const w = wrapper.clientWidth;
+      const h = wrapper.clientHeight || Math.round(w * 0.85);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    new ResizeObserver(resize).observe(wrapper);
+
+    new GLTFLoader().load('/altar.glb', (gltf) => {
+      gltf.scene.traverse((obj) => {
+        if (!(obj instanceof THREE.Mesh)) return;
+        obj.castShadow = obj.receiveShadow = true;
+        if (obj.name === 'outer_frame' || obj.name === 'inner_stage' || obj.name === 'front_desk') {
+          obj.material = makeMaterial('#0c0c0c'); meshes.outer_frame.push(obj);
+          if (obj.name === 'front_desk') { deskObj = obj; deskBaseZ = obj.position.z; deskTarget = deskBaseZ; }
+        } else if (obj.name === 'back_panel') {
+          obj.material = makeMaterial('#181520'); meshes.back_panel.push(obj);
+        } else if (obj.name === 'door_L') {
+          applyDoorMaterial(obj, '#090909', '#2a1a08'); meshes.door_L.push(obj); doorLObj = obj;
+        } else if (obj.name === 'door_R') {
+          applyDoorMaterial(obj, '#090909', '#2a1a08'); meshes.door_R.push(obj); doorRObj = obj;
+        } else if (obj.name === 'inner_curtain') {
+          obj.material = makeMaterial('#3b1f0a'); meshes.inner_curtain.push(obj);
+        } else if (obj.name.startsWith('hinge')) {
+          obj.material = hingeMat;
+        }
+      });
+
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const center = box.getCenter(new THREE.Vector3());
+      gltf.scene.position.sub(center);
+      gltf.scene.position.y += (box.max.y - box.min.y) / 2 - center.y + box.min.y;
+      gltf.scene.rotation.y = Math.PI;
+      scene.add(gltf.scene);
+      loading.style.display = 'none';
+
+      if (configData) applyConfigToModel(configData);
+
+      // 扉タップ開閉
+      const raycaster = new THREE.Raycaster();
+      let tapStartX = 0, tapStartY = 0;
+      canvas.addEventListener('pointerdown', e => { tapStartX = e.clientX; tapStartY = e.clientY; });
+      canvas.addEventListener('pointerup', e => {
+        if (Math.hypot(e.clientX - tapStartX, e.clientY - tapStartY) > 8) return;
+        const rect = canvas.getBoundingClientRect();
+        const x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+        const y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+        raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+        const doorMeshes: THREE.Object3D[] = [];
+        if (doorLObj) doorLObj.traverse(o => doorMeshes.push(o));
+        if (doorRObj) doorRObj.traverse(o => doorMeshes.push(o));
+        if (raycaster.intersectObjects(doorMeshes, true).length > 0) {
+          setDoorOpen(!doorIsOpen);
+        }
+      });
+    });
+
+    (function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      if (doorLObj) doorLObj.rotation.y += (doorTargetL - doorLObj.rotation.y) * 0.08;
+      if (doorRObj) doorRObj.rotation.y += (doorTargetR - doorRObj.rotation.y) * 0.08;
+      if (deskObj)  deskObj.position.z  += (deskTarget  - deskObj.position.z)  * 0.08;
+      renderer.render(scene, camera);
+    })();
+  }
+</script>
+
+<style>
+  /* ─── Auth Gate ──────────────────────────────────────────────────────────── */
+  #auth-gate {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+  }
+  .auth-box {
+    text-align: center;
+    width: 320px;
+  }
+  .auth-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 8px;
+  }
+  .auth-title {
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    margin-bottom: 36px;
+  }
+  #auth-form { display: flex; flex-direction: column; gap: 12px; }
+  #auth-input {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.25);
+    color: #f5f0e8;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1rem;
+    padding: 12px 16px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 0.15em;
+  }
+  #auth-input:focus { border-color: rgba(201,168,76,0.6); }
+  #auth-form button {
+    background: transparent;
+    border: 1px solid #c9a84c;
+    color: #c9a84c;
+    cursor: pointer;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    padding: 12px;
+    transition: all 0.3s;
+  }
+  #auth-form button:hover { background: #c9a84c; color: #080814; }
+  .auth-error { font-size: 0.75rem; color: #c97070; min-height: 1.2em; }
+
+  /* ─── Loading / Error ────────────────────────────────────────────────────── */
+  .full-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .loading-text, .error-text {
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: #5a5a6a;
+  }
+
+  /* ─── Consult Layout ─────────────────────────────────────────────────────── */
+  #consult-content { min-height: 100vh; padding-top: 52px; }
+
+  .consult-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 12px 40px;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+  }
+  .consult-header-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.6);
+  }
+  .consult-header-date {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #5a5a6a;
+  }
+
+  .consult-body {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 52px - 45px);
+  }
+
+  /* ─── 左パネル ───────────────────────────────────────────────────────────── */
+  .info-panel {
+    padding: 40px 36px;
+    border-right: 1px solid rgba(201,168,76,0.1);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .info-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .customer-name {
+    font-size: 1.8rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .customer-contact {
+    font-size: 0.8rem;
+    color: #8a8a9a;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+  .divider-line {
+    height: 1px;
+    background: rgba(201,168,76,0.12);
+  }
+  .qa-item { margin-bottom: 24px; }
+  .qa-question {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    color: rgba(201,168,76,0.55);
+    margin-bottom: 8px;
+  }
+  .qa-answer {
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: #d0cac0;
+    white-space: pre-wrap;
+  }
+
+  /* ─── 右パネル ───────────────────────────────────────────────────────────── */
+  .view-panel {
+    display: flex;
+    flex-direction: column;
+  }
+  #altar-wrap {
+    flex: 1;
+    position: relative;
+    min-height: 400px;
+  }
+  #three-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .three-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: #5a5a6a;
+  }
+
+  /* ─── カラーサマリー ─────────────────────────────────────────────────────── */
+  .color-summary {
+    padding: 20px 32px;
+    border-top: 1px solid rgba(201,168,76,0.12);
+  }
+  .color-summary-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: rgba(201,168,76,0.5);
+    margin-bottom: 14px;
+  }
+  .color-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+  }
+  .color-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .color-swatch {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  .color-part {
+    font-size: 0.72rem;
+    color: #8a8a9a;
+    letter-spacing: 0.05em;
+  }
+  .color-name {
+    font-size: 0.72rem;
+    color: #d0cac0;
+    letter-spacing: 0.08em;
+  }
+  .color-tech {
+    font-size: 0.68rem;
+    color: rgba(201,168,76,0.65);
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── モバイル ───────────────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .consult-header { padding: 16px 20px; }
+    .consult-body { grid-template-columns: 1fr; }
+    .info-panel { border-right: none; border-bottom: 1px solid rgba(201,168,76,0.1); padding: 28px 20px; }
+    #altar-wrap { min-height: 60vw; }
+    .color-summary { padding: 16px 20px; }
+  }
+</style>

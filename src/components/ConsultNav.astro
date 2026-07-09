@@ -1,0 +1,89 @@
+---
+interface Props {
+  currentPage: 'intro' | 'design' | 'company' | 'craft' | 'material' | 'estimate' | 'close';
+}
+const { currentPage } = Astro.props;
+---
+
+<nav class="consult-nav" id="consult-nav">
+  <div class="nav-inner">
+    <span class="nav-brand">SOUDAN</span>
+    <ul class="nav-list" id="nav-list">
+      <li><a data-page="intro"    class={currentPage === 'intro'    ? 'active' : ''}>イントロ</a></li>
+      <li><a data-page="estimate" class={currentPage === 'estimate' ? 'active' : ''}>お見積り</a></li>
+      <li><a data-page="company"  class={currentPage === 'company'  ? 'active' : ''}>会社紹介</a></li>
+      <li><a data-page="craft"    class={currentPage === 'craft'    ? 'active' : ''}>職人・工程</a></li>
+      <li><a data-page="design"   class={currentPage === 'design'   ? 'active' : ''}>デザイン確認</a></li>
+      <li><a data-page="close"    class={currentPage === 'close'    ? 'active' : ''}>クロージング</a></li>
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const id = new URLSearchParams(location.search).get('id') ?? '';
+  const routes: Record<string, string> = {
+    intro:    `/consult/intro${id ? '?id=' + id : ''}`,
+    design:   `/consult${id ? '?id=' + id : ''}`,
+    company:  `/consult/company${id ? '?id=' + id : ''}`,
+    craft:    `/consult/craft${id ? '?id=' + id : ''}`,
+    material: `/consult/material${id ? '?id=' + id : ''}`,
+    estimate: `/consult/estimate${id ? '?id=' + id : ''}`,
+    close:    `/consult/close${id ? '?id=' + id : ''}`,
+  };
+  document.querySelectorAll<HTMLAnchorElement>('#nav-list a[data-page]').forEach(a => {
+    const page = a.dataset.page!;
+    a.href = routes[page];
+  });
+</script>
+
+<style>
+  .consult-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(8, 8, 20, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: rgba(201,168,76,0.7);
+    flex-shrink: 0;
+  }
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 4px;
+  }
+  .nav-list a {
+    display: block;
+    padding: 6px 16px;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: #6a6a7a;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+  .nav-list a:hover {
+    color: #d0cac0;
+  }
+  .nav-list a.active {
+    color: #c9a84c;
+    background: rgba(201,168,76,0.08);
+  }
+</style>

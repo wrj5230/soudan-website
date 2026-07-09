@@ -1,0 +1,214 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="職人・制作工程 | SOUDAN 商談">
+  <ConsultNav currentPage="craft" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+
+      <!-- 職人紹介 -->
+      <section class="craftsman-section">
+        <p class="section-eyebrow">職人紹介</p>
+        <div class="craftsman-card">
+          <div class="craftsman-photo">
+            <!-- TODO: 職人写真を差し替え（src/assets/ に配置して <Image> で読み込む） -->
+            <div class="photo-placeholder">Photo</div>
+          </div>
+          <div class="craftsman-info">
+            <p class="craftsman-role"><!-- TODO -->塗師 / 蒔絵師</p>
+            <h2 class="craftsman-name"><!-- TODO: 職人名を差し替え -->〇〇 〇〇</h2>
+            <p class="craftsman-bio">
+              <!-- TODO: 職人の経歴・一言を差し替え -->
+              京都で〇〇年の経験を持つ塗師。伝統的な漆塗りの技法を受け継ぎながら、
+              現代的なデザインへの対応にも定評がある。
+              「一本一本の刷毛に、想いを込めて」をモットーに制作に臨む。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- 制作工程 -->
+      <section class="process-section">
+        <p class="section-eyebrow">制作の流れ</p>
+        <ol class="step-list">
+          <li class="step-item">
+            <span class="step-num">STEP 1</span>
+            <div class="step-body">
+              <h3 class="step-title"><!-- TODO -->木地づくり</h3>
+              <p class="step-desc"><!-- TODO: 説明を差し替え -->材木を選び、仏壇の骨格となる木地を職人が手加工で仕上げます。</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">STEP 2</span>
+            <div class="step-body">
+              <h3 class="step-title"><!-- TODO -->下地・漆塗り</h3>
+              <p class="step-desc"><!-- TODO: 説明を差し替え -->木地に下地を施した後、漆を何層にも重ねて塗り上げます。乾燥には数週間を要します。</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">STEP 3</span>
+            <div class="step-body">
+              <h3 class="step-title"><!-- TODO -->技法の施工</h3>
+              <p class="step-desc"><!-- TODO: 説明を差し替え -->蒔絵・螺鈿・ラップ塗りなど、ご選択の技法を職人が一点一点手作業で施します。</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-num">STEP 4</span>
+            <div class="step-body">
+              <h3 class="step-title"><!-- TODO -->仕上げ・検品</h3>
+              <p class="step-desc"><!-- TODO: 説明を差し替え -->金具の取り付けと最終仕上げを経て、厳格な検品を行い納品します。</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- 納期 -->
+      <section class="delivery-section">
+        <p class="section-eyebrow">納期の目安</p>
+        <div class="delivery-box">
+          <p class="delivery-term">
+            <!-- TODO: 納期を差し替え -->
+            ご注文確定から <strong>約〇〇ヶ月</strong>
+          </p>
+          <p class="delivery-note">
+            <!-- TODO: 補足を差し替え -->
+            ※ 技法・仕様により前後します。詳細はご相談ください。
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 760px; width: 100%; padding-top: 40px; }
+
+  .section-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 32px;
+  }
+  .section-divider {
+    height: 1px;
+    background: rgba(201,168,76,0.12);
+    margin: 56px 0;
+  }
+
+  /* 職人カード */
+  .craftsman-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .craftsman-photo { aspect-ratio: 3/4; }
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: #5a5a6a;
+    min-height: 260px;
+  }
+  .craftsman-role {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 10px;
+  }
+  .craftsman-name {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    margin-bottom: 20px;
+  }
+  .craftsman-bio {
+    font-size: 0.85rem;
+    line-height: 2.0;
+    color: #8a8a9a;
+    letter-spacing: 0.05em;
+  }
+
+  /* 工程 */
+  .step-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .step-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    align-items: start;
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.5);
+    padding-top: 4px;
+  }
+  .step-title {
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .step-desc {
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: #8a8a9a;
+    letter-spacing: 0.04em;
+  }
+
+  /* 納期 */
+  .delivery-box {
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .delivery-term {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+  }
+  .delivery-term strong { color: #c9a84c; font-weight: 400; }
+  .delivery-note {
+    font-size: 0.75rem;
+    color: #6a6a7a;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .craftsman-card { grid-template-columns: 1fr; }
+    .photo-placeholder { min-height: 200px; }
+  }
+</style>

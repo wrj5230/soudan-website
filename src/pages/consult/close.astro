@@ -1,0 +1,237 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="クロージング | SOUDAN 商談">
+  <ConsultNav currentPage="close" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+
+      <div class="thanks-block">
+        <p class="thanks-label">ありがとうございました</p>
+        <h1 class="thanks-name"><span id="customer-name">〇〇</span> 様</h1>
+        <p class="thanks-sub">
+          本日は貴重なお時間をいただき、誠にありがとうございました。<br />
+          引き続きどうぞよろしくお願いいたします。
+        </p>
+      </div>
+
+      <div class="next-block">
+        <p class="next-eyebrow">次のステップ</p>
+        <p class="next-hint">※ 次のアクションをご確認ください</p>
+
+        <div class="action-list" id="action-list">
+          <label class="action-item">
+            <input type="checkbox" class="action-check" />
+            <span class="action-box"></span>
+            <span class="action-label">正式なお見積書をお送りします</span>
+          </label>
+          <label class="action-item">
+            <input type="checkbox" class="action-check" />
+            <span class="action-box"></span>
+            <span class="action-label">サンプル・カタログをお送りします</span>
+          </label>
+          <label class="action-item">
+            <input type="checkbox" class="action-check" />
+            <span class="action-box"></span>
+            <span class="action-label">次回のご商談日程を調整します</span>
+          </label>
+          <label class="action-item">
+            <input type="checkbox" class="action-check" />
+            <span class="action-box"></span>
+            <span class="action-label">改めてメール・お電話でご連絡いたします</span>
+          </label>
+          <label class="action-item">
+            <input type="checkbox" class="action-check" />
+            <span class="action-box"></span>
+            <span class="action-label">本日のご注文を受け付けます</span>
+          </label>
+        </div>
+
+        <div id="selected-summary" class="selected-summary" style="display:none">
+          <p class="summary-label">確認事項</p>
+          <ul id="summary-list" class="summary-list"></ul>
+        </div>
+      </div>
+
+      <div class="contact-block">
+        <p class="contact-eyebrow">お問い合わせ</p>
+        <p class="contact-info">井上秀峰佛具店 &nbsp;|&nbsp; 075-841-5551 &nbsp;|&nbsp; 京都市上京区下立売通七本松東入</p>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+
+  // 顧客名
+  const id = new URLSearchParams(location.search).get('id');
+  if (id) {
+    const supabase = createClient(
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+    );
+    supabase.from('contacts').select('name').eq('id', id).single().then(({ data }) => {
+      if (data?.name) document.getElementById('customer-name')!.textContent = data.name;
+    });
+  }
+
+  // チェックボックス → サマリー連動
+  const checks = document.querySelectorAll<HTMLInputElement>('.action-check');
+  const summary = document.getElementById('selected-summary')!;
+  const summaryList = document.getElementById('summary-list')!;
+
+  function updateSummary() {
+    const selected = Array.from(checks)
+      .filter(c => c.checked)
+      .map(c => c.closest('.action-item')!.querySelector('.action-label')!.textContent!.trim());
+
+    summaryList.innerHTML = selected.map(t => `<li>${t}</li>`).join('');
+    summary.style.display = selected.length > 0 ? 'block' : 'none';
+  }
+
+  checks.forEach(c => c.addEventListener('change', updateSummary));
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 720px; width: 100%; }
+
+  /* サンクス */
+  .thanks-block { text-align: center; padding: 40px 0 48px; }
+  .thanks-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: #6a6a7a;
+    margin-bottom: 16px;
+  }
+  .thanks-name {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+  .thanks-sub {
+    font-size: 0.85rem;
+    color: #8a8a9a;
+    line-height: 2;
+    letter-spacing: 0.06em;
+  }
+
+  /* 次のステップ */
+  .next-block {
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 32px 36px;
+    margin-bottom: 40px;
+  }
+  .next-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 8px;
+  }
+  .next-hint {
+    font-size: 0.72rem;
+    color: #5a5a6a;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+  }
+
+  .action-list { display: flex; flex-direction: column; gap: 4px; }
+  .action-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .action-item:hover { background: rgba(201,168,76,0.04); }
+  .action-check { display: none; }
+  .action-box {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(201,168,76,0.3);
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .action-check:checked + .action-box {
+    background: rgba(201,168,76,0.15);
+    border-color: #c9a84c;
+  }
+  .action-check:checked + .action-box::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 1px;
+    width: 6px; height: 10px;
+    border-right: 1.5px solid #c9a84c;
+    border-bottom: 1.5px solid #c9a84c;
+    transform: rotate(45deg);
+  }
+  .action-label {
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    color: #c0bab0;
+  }
+  .action-check:checked ~ .action-label { color: #f5f0e8; }
+
+  /* サマリー */
+  .selected-summary {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+  .summary-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 12px;
+  }
+  .summary-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .summary-list li {
+    font-size: 0.85rem;
+    color: #c9a84c;
+    letter-spacing: 0.08em;
+    padding-left: 12px;
+    position: relative;
+  }
+  .summary-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: rgba(201,168,76,0.5);
+    font-size: 0.75rem;
+  }
+
+  /* 連絡先 */
+  .contact-block { text-align: center; }
+  .contact-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+    margin-bottom: 10px;
+  }
+  .contact-info {
+    font-size: 0.78rem;
+    color: #6a6a7a;
+    letter-spacing: 0.1em;
+  }
+</style>

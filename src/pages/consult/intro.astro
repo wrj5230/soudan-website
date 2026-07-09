@@ -1,0 +1,137 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="イントロ | SOUDAN 商談">
+  <ConsultNav currentPage="intro" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+
+      <div class="agenda-block">
+        <p class="agenda-eyebrow">本日の流れ</p>
+        <ol class="agenda-list">
+          <li class="agenda-item">
+            <span class="agenda-num">01</span>
+            <div class="agenda-body">
+              <p class="agenda-title">概算お見積り</p>
+              <p class="agenda-desc">まず金額の目安を確認します</p>
+            </div>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-num">02</span>
+            <div class="agenda-body">
+              <p class="agenda-title">SOUDANについて</p>
+              <p class="agenda-desc">どんな店でどんな仕事をしているかをお伝えします</p>
+            </div>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-num">03</span>
+            <div class="agenda-body">
+              <p class="agenda-title">職人・制作工程と素材・技法</p>
+              <p class="agenda-desc">誰がどのように作るか、使う素材や技法についてご説明します</p>
+            </div>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-num">04</span>
+            <div class="agenda-body">
+              <p class="agenda-title">デザインの確認</p>
+              <p class="agenda-desc">選んでいただいたイメージを3Dで一緒に確認します</p>
+            </div>
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-num">05</span>
+            <div class="agenda-body">
+              <p class="agenda-title">今後の流れのご説明</p>
+              <p class="agenda-desc">ご注文からお届けまでの流れをご説明します</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <p class="duration-note">所要時間の目安：約 30〜45 分</p>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 52px 24px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 720px; width: 100%; }
+
+  /* ウェルカム */
+  .welcome-block { text-align: center; padding: 60px 0 56px; }
+  .welcome-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: #6a6a7a;
+    margin-bottom: 20px;
+  }
+  .welcome-name {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+  }
+  .welcome-name span { color: #f5f0e8; }
+
+  /* アジェンダ */
+  .agenda-block { margin-bottom: 48px; padding-top: 40px; }
+  .agenda-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.4em;
+    color: #c9a84c;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .agenda-list { list-style: none; display: flex; flex-direction: column; }
+  .agenda-item {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    align-items: center;
+  }
+  .agenda-item:first-child { border-top: 1px solid rgba(201,168,76,0.08); }
+  .agenda-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: rgba(201,168,76,0.25);
+    line-height: 1;
+  }
+  .agenda-title {
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .agenda-desc {
+    font-size: 0.78rem;
+    color: #6a6a7a;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+  }
+
+  .duration-note {
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: #5a5a6a;
+  }
+</style>

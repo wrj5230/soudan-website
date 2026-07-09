@@ -1,0 +1,161 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="素材・技法 | SOUDAN 商談">
+  <ConsultNav currentPage="material" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+      <p class="page-eyebrow">素材・技法について</p>
+      <div id="tech-list" class="tech-list"></div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+
+  const TECH_DESCRIPTIONS: Record<string, { title: string; subtitle: string; body: string }> = {
+    none: {
+      title: '伝統塗り',
+      subtitle: '漆塗り / 合成塗料',
+      /* TODO: 説明文を差し替え */
+      body: '職人が丁寧に重ね塗りを施した、艶やかな塗り仕上げです。漆本来の深みと光沢が、長い年月をかけて増していきます。',
+    },
+    makie: {
+      title: '蒔絵',
+      subtitle: '金粉の伝統技法',
+      /* TODO: 説明文を差し替え */
+      body: '漆が乾かないうちに金粉・銀粉を蒔きつけ、模様を描く日本古来の技法です。光の当たり方によって輝きが変わり、見る角度ごとに異なる表情を見せます。',
+    },
+    raptopaint: {
+      title: 'ラップ塗り',
+      subtitle: 'グラデーション塗装',
+      /* TODO: 説明文を差し替え */
+      body: '複数の色を重ね、独特のマーブル模様を生み出す現代的な塗装技法です。一点一点表情が異なり、世界にひとつだけの仕上がりになります。',
+    },
+    raden: {
+      title: '螺鈿',
+      subtitle: '貝殻の輝き',
+      /* TODO: 説明文を差し替え */
+      body: '夜光貝・アワビなどの貝殻を薄く削り、漆面に埋め込む技法です。光の角度によって虹色に輝き、幻想的な美しさを放ちます。',
+    },
+  };
+
+  const PART_LABELS: Record<string, string> = {
+    outer: '外枠・台', 'door-front': '扉（表）', 'door-back': '扉（裏）',
+    back: '背板', curtain: '垂れ幕',
+  };
+
+  async function init() {
+    const id = new URLSearchParams(location.search).get('id');
+    const list = document.getElementById('tech-list')!;
+
+    // 使用技法を特定（Supabase fetch）
+    let usedTechs = new Set<string>();
+    if (id) {
+      const supabase = createClient(
+        import.meta.env.PUBLIC_SUPABASE_URL,
+        import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+      );
+      const { data } = await supabase.from('contacts').select('config').eq('id', id).single();
+      if (data?.config?.techniques) {
+        Object.values(data.config.techniques as Record<string, string>).forEach(t => usedTechs.add(t));
+      }
+    }
+    if (usedTechs.size === 0) usedTechs.add('none');
+
+    // 使用技法を上に、その他を下に並べる
+    const ordered = [
+      ...Object.keys(TECH_DESCRIPTIONS).filter(k => usedTechs.has(k)),
+      ...Object.keys(TECH_DESCRIPTIONS).filter(k => !usedTechs.has(k)),
+    ];
+
+    ordered.forEach(tech => {
+      const desc = TECH_DESCRIPTIONS[tech];
+      const isUsed = usedTechs.has(tech);
+      const card = document.createElement('div');
+      card.className = `tech-card${isUsed ? ' used' : ''}`;
+      card.innerHTML = `
+        ${isUsed ? '<span class="used-badge">選択中</span>' : ''}
+        <div class="tech-header">
+          <h2 class="tech-title">${desc.title}</h2>
+          <span class="tech-subtitle">${desc.subtitle}</span>
+        </div>
+        <p class="tech-body">${desc.body}</p>
+      `;
+      list.appendChild(card);
+    });
+  }
+
+  init();
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 760px; width: 100%; padding-top: 40px; }
+
+  .page-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 36px;
+  }
+
+  .tech-list { display: flex; flex-direction: column; gap: 20px; }
+
+  :global(.tech-card) {
+    position: relative;
+    padding: 28px 32px;
+    border: 1px solid rgba(201,168,76,0.1);
+    transition: border-color 0.3s;
+  }
+  :global(.tech-card.used) {
+    border-color: rgba(201,168,76,0.4);
+    background: rgba(201,168,76,0.03);
+  }
+  :global(.used-badge) {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: #c9a84c;
+    border: 1px solid rgba(201,168,76,0.4);
+    padding: 3px 10px;
+    margin-bottom: 14px;
+  }
+  :global(.tech-header) {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  :global(.tech-title) {
+    font-size: 1.2rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+  }
+  :global(.tech-subtitle) {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: #6a6a7a;
+  }
+  :global(.tech-body) {
+    font-size: 0.85rem;
+    line-height: 2.0;
+    color: #8a8a9a;
+    letter-spacing: 0.04em;
+  }
+</style>

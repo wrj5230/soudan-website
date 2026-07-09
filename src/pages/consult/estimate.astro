@@ -1,0 +1,434 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ConsultNav from '../../components/ConsultNav.astro';
+---
+
+<Layout title="お見積り | SOUDAN 商談">
+  <ConsultNav currentPage="estimate" />
+
+  <main class="page-main">
+    <div class="page-wrap">
+      <p class="page-eyebrow">お見積り概算</p>
+      <div id="estimate-content">
+        <p class="loading-text">読み込み中…</p>
+      </div>
+      <p class="estimate-note">
+        ※ 上記はあくまで概算です。正式なお見積書は業務システムにてご発行いたします。<br />
+        ※ 価格は仕様・材料によって変動する場合があります。
+      </p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+    const id = new URLSearchParams(location.search).get('id');
+    location.href = `/consult${id ? '?id=' + id : ''}`;
+  }
+
+  /* TODO: 実際の価格に差し替え */
+  const TOTAL_PRICE = 0;
+
+  const PART_LABELS: Record<string, string> = {
+    outer: '外枠・台', 'door-front': '扉（表）', 'door-back': '扉（裏）',
+    back: '背板', curtain: '垂れ幕',
+  };
+  const DECO_NAMES: Record<string, string> = {
+    none:       '—',
+    makie:      '蒔絵',
+    raptopaint: 'ラップ塗り',
+    raden:      '螺鈿',
+  };
+
+  const fmt = (n: number) => n === 0 ? 'TBD' : `¥${n.toLocaleString()}`;
+
+  async function init() {
+    const id = new URLSearchParams(location.search).get('id');
+    const container = document.getElementById('estimate-content')!;
+
+    let colors: Record<string, string> = {};
+    let techniques: Record<string, string> = {};
+    let raptoColors: Record<string, string> = {};
+
+    if (id) {
+      const supabase = createClient(
+        import.meta.env.PUBLIC_SUPABASE_URL,
+        import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+      );
+      const { data } = await supabase.from('contacts').select('config').eq('id', id).single();
+      if (data?.config?.colors)      colors      = data.config.colors;
+      if (data?.config?.techniques)  techniques  = data.config.techniques;
+      if (data?.config?.raptoColors) raptoColors = data.config.raptoColors;
+    }
+
+    const parts = Object.entries(PART_LABELS).map(([part, label]) => ({
+      part, label,
+      hex:       colors[part] ?? '',
+      tech:      techniques[part] ?? 'none',
+      raptoHex:  raptoColors[part] ?? '#c9a84c',
+    }));
+
+    const makieParts = parts.filter(p => p.tech === 'makie');
+
+    const makeAccordion = (id: string, titleJa: string, titleEn: string, step: string, body: string, open = false) => `
+      <div class="accordion${open ? ' is-open' : ''}" data-acc="${id}">
+        <button class="acc-header" aria-expanded="${open}">
+          <span class="acc-num">${step}</span>
+          <div class="acc-title-block">
+            <span class="acc-title-ja">${titleJa}</span>
+            <span class="acc-title-en">${titleEn}</span>
+          </div>
+          <span class="acc-toggle"></span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-inner">${body}</div>
+        </div>
+      </div>
+    `;
+
+    const kiji = `
+      <p class="acc-desc">ご注文確定後、職人が寸法に合わせて木地を製作します。</p>
+      <table class="spec-table">
+        <tbody>
+          <tr><th>素材</th><td>— <span class="todo">（TODO）</span></td></tr>
+          <tr><th>構造</th><td>— <span class="todo">（TODO）</span></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const urushi = `
+      <p class="acc-desc">木地に漆を重ねて塗り上げます。パーツごとのカラーは以下のとおりです。</p>
+      <div class="color-grid">
+        ${parts.map(p => `
+          <div class="color-cell">
+            ${p.tech === 'raptopaint'
+              ? `<canvas class="color-swatch rapto-canvas" data-base="${p.hex || '#1e1e1e'}" data-rapto="${p.raptoHex}"></canvas>`
+              : `<span class="color-swatch" style="background:${p.hex || '#1e1e1e'}"></span>`}
+            <span class="color-part-label">${p.label}</span>
+            ${p.tech === 'raptopaint' ? '<span class="option-tag">ラップ塗装</span>' : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const makieBody = makieParts.length > 0 ? `
+      <p class="acc-desc">漆塗り後、以下のパーツに蒔絵の装飾を施します。</p>
+      <ul class="makie-list">
+        ${makieParts.map(p => `<li>${p.label}</li>`).join('')}
+      </ul>
+    ` : '';
+
+    let html = makeAccordion('kiji',   '木地',        'Wood Base',      '01', kiji,   false);
+    html    += makeAccordion('urushi', '漆塗り仕上げ', 'Urushi Lacquer', '02', urushi, true);
+    if (makieParts.length > 0) {
+      html  += makeAccordion('makie',  '蒔絵',         'Makie',          '03', makieBody, false);
+    }
+    html += `
+      <div class="total-block">
+        <span class="total-label">合計概算</span>
+        <span class="total-price">${fmt(TOTAL_PRICE)}</span>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    document.querySelectorAll<HTMLElement>('.accordion').forEach(acc => {
+      acc.querySelector('.acc-header')!.addEventListener('click', () => {
+        const isOpen = acc.classList.contains('is-open');
+        acc.classList.toggle('is-open', !isOpen);
+        (acc.querySelector('.acc-header') as HTMLButtonElement).setAttribute('aria-expanded', String(!isOpen));
+      });
+    });
+
+    document.querySelectorAll<HTMLCanvasElement>('.rapto-canvas').forEach(cv => {
+      drawRapto(cv, cv.dataset.base!, cv.dataset.rapto!);
+    });
+  }
+
+  // ─── Perlinノイズ ────────────────────────────────────────────────────────
+  const _perm = (() => {
+    const p = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
+    const arr = new Uint8Array(512);
+    for (let i = 0; i < 256; i++) arr[i] = arr[i + 256] = p[i];
+    return arr;
+  })();
+  const _fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+  const _grad2 = (h: number, x: number, y: number) => {
+    const g = h & 3;
+    return (g & 1 ? -(g < 2 ? x : y) : (g < 2 ? x : y)) + (g & 2 ? -(g < 2 ? y : x) : (g < 2 ? y : x));
+  };
+  const _noise2 = (x: number, y: number) => {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+    x -= Math.floor(x); y -= Math.floor(y);
+    const u = _fade(x), v = _fade(y);
+    const a = _perm[X] + Y, b = _perm[X + 1] + Y;
+    return (1-v)*((1-u)*_grad2(_perm[a], x, y) + u*_grad2(_perm[b], x-1, y))
+         +    v *((1-u)*_grad2(_perm[a+1], x, y-1) + u*_grad2(_perm[b+1], x-1, y-1));
+  };
+  const _fbm = (x: number, y: number) => {
+    let v = 0, amp = 1.0, freq = 1.0, max = 0;
+    for (let i = 0; i < 5; i++) { v += _noise2(x*freq, y*freq)*amp; max += amp; amp *= 0.5; freq *= 2.0; }
+    return v / max;
+  };
+
+  function drawRapto(cv: HTMLCanvasElement, baseHex: string, raptoHex: string) {
+    const SIZE = 128;
+    cv.width = cv.height = SIZE;
+    const ctx = cv.getContext('2d')!;
+    const ph = (h: string) => ({ r: parseInt(h.slice(1,3),16), g: parseInt(h.slice(3,5),16), b: parseInt(h.slice(5,7),16) });
+    const base = ph(baseHex), rapto = ph(raptoHex);
+    const img = ctx.createImageData(SIZE, SIZE);
+    const d = img.data;
+    const SCALE = 3.3, FREQ = 0.19, DIST = 5.0, POW = 2.2;
+    const SX = 69.876, SY = 69.876 * 1.7;
+    for (let y = 0; y < SIZE; y++) {
+      for (let x = 0; x < SIZE; x++) {
+        const nx = (x / SIZE) * SCALE + SX, ny = (y / SIZE) * SCALE + SY;
+        const n = _fbm(nx, ny);
+        const marble = Math.abs(Math.sin((nx * FREQ + n * DIST) * Math.PI));
+        const t = Math.pow(marble, POW);
+        const i = (y * SIZE + x) * 4;
+        d[i]   = Math.round(base.r + (rapto.r - base.r) * t);
+        d[i+1] = Math.round(base.g + (rapto.g - base.g) * t);
+        d[i+2] = Math.round(base.b + (rapto.b - base.b) * t);
+        d[i+3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  init();
+</script>
+
+<style>
+  .page-main {
+    min-height: 100vh;
+    padding: 88px 24px 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .page-wrap { max-width: 760px; width: 100%; padding-top: 40px; }
+
+  .page-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 36px;
+  }
+  .loading-text { font-size: 0.82rem; color: #5a5a6a; letter-spacing: 0.1em; }
+
+  /* ── アコーディオン ── */
+  :global(.accordion) {
+    border-top: 1px solid rgba(201,168,76,0.1);
+  }
+  :global(.accordion:last-of-type) {
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  :global(.acc-header) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 28px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: opacity 0.2s;
+  }
+  :global(.acc-header:hover) { opacity: 0.8; }
+
+  :global(.acc-num) {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.2rem;
+    font-weight: 300;
+    line-height: 1;
+    color: rgba(201,168,76,0.12);
+    min-width: 60px;
+    transition: color 0.3s;
+    user-select: none;
+  }
+  :global(.accordion.is-open .acc-num) {
+    color: rgba(201,168,76,0.4);
+  }
+
+  :global(.acc-title-block) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  :global(.acc-title-ja) {
+    font-size: 1.25rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: #a0998e;
+    transition: color 0.3s;
+  }
+  :global(.accordion.is-open .acc-title-ja) {
+    color: #ede8e0;
+  }
+  :global(.acc-title-en) {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    color: rgba(201,168,76,0.35);
+    transition: color 0.3s;
+  }
+  :global(.accordion.is-open .acc-title-en) {
+    color: rgba(201,168,76,0.6);
+  }
+
+  :global(.acc-toggle) {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1;
+    color: rgba(201,168,76,0.3);
+    transition: color 0.2s;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  :global(.acc-toggle::before) { content: '+'; }
+  :global(.accordion.is-open .acc-toggle::before) { content: '−'; }
+  :global(.accordion.is-open .acc-toggle) { color: rgba(201,168,76,0.6); }
+
+  :global(.acc-body) {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  :global(.accordion.is-open .acc-body) {
+    grid-template-rows: 1fr;
+  }
+  :global(.acc-inner) {
+    overflow: hidden;
+    padding-left: 88px;
+  }
+  :global(.accordion.is-open .acc-inner) {
+    padding-bottom: 36px;
+  }
+
+  :global(.acc-desc) {
+    font-size: 0.8rem;
+    color: #6a6a7a;
+    letter-spacing: 0.08em;
+    line-height: 2;
+    margin-bottom: 24px;
+  }
+
+  /* 木地テーブル */
+  :global(.spec-table) {
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  :global(.spec-table th) {
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: rgba(201,168,76,0.45);
+    font-weight: 400;
+    padding: 10px 28px 10px 0;
+    white-space: nowrap;
+    vertical-align: top;
+  }
+  :global(.spec-table td) {
+    color: #a0998e;
+    padding: 10px 0;
+    letter-spacing: 0.08em;
+  }
+  :global(.todo) { color: #3a3a4a; font-size: 0.72rem; }
+
+  /* カラーグリッド（3列） */
+  :global(.color-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 20px;
+  }
+  :global(.color-cell) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  :global(.color-swatch) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  :global(canvas.color-swatch) {
+    object-fit: cover;
+    image-rendering: auto;
+  }
+  :global(.color-part-label) {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #6a6a7a;
+  }
+  :global(.option-tag) {
+    display: inline-block;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    color: rgba(201,168,76,0.7);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 2px 6px;
+    border-radius: 1px;
+  }
+
+  /* 蒔絵リスト */
+  :global(.makie-list) {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  :global(.makie-list li) {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: #c9a84c;
+    padding-left: 18px;
+    position: relative;
+  }
+  :global(.makie-list li::before) {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: rgba(201,168,76,0.35);
+    font-size: 0.65rem;
+    top: 2px;
+  }
+
+  /* 合計 */
+  :global(.total-block) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 0;
+    margin-top: 4px;
+    border-top: 1px solid rgba(201,168,76,0.2);
+  }
+  :global(.total-label) {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: rgba(201,168,76,0.5);
+  }
+  :global(.total-price) {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: #c9a84c;
+  }
+
+  .estimate-note {
+    margin-top: 28px;
+    font-size: 0.72rem;
+    color: #5a5a6a;
+    line-height: 1.9;
+    letter-spacing: 0.05em;
+  }
+</style>
