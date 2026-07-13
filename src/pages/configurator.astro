@@ -872,8 +872,8 @@ import Header from '../components/Header.astro';
     doorTargetL = open ?  Math.PI * 0.85 : 0;
     doorTargetR = open ? -Math.PI * 0.85 : 0;
     if (dimOpenGroup) dimOpenGroup.visible = open;
-    if (doorDimGroup) doorDimGroup.visible = open;
-    if (deskDimGroup) deskDimGroup.visible = open;
+    if (doorDimGroup) doorDimGroup.visible = open && dimensionsEnabled;
+    if (deskDimGroup) deskDimGroup.visible = open && dimensionsEnabled;
     // 扉開閉に台を連動
     if (open) {
       deskOpen = true;
@@ -907,6 +907,7 @@ import Header from '../components/Header.astro';
   let dimOpenGroup: THREE.Group | null = null; // 扉が開いている時だけ表示する寸法（静止パーツ）
   let doorDimGroup: THREE.Group | null = null; // 扉に追従（doorLObjの子）
   let deskDimGroup: THREE.Group | null = null; // 引き出しに追従（deskObjの子）
+  let dimensionsEnabled = true; // 「寸法を隠す」トグルの状態（doorDimGroup/deskDimGroupはdimGroupの子ではないため個別に連動させる）
 
   function buildDimensionLines(model: THREE.Object3D) {
     const group = new THREE.Group();
@@ -1055,8 +1056,11 @@ import Header from '../components/Header.astro';
   const dimToggleBtn = document.getElementById('dim-toggle') as HTMLButtonElement;
   dimToggleBtn.addEventListener('click', () => {
     if (!dimGroup) return;
-    dimGroup.visible = !dimGroup.visible;
-    dimToggleBtn.textContent = dimGroup.visible ? '寸法を隠す' : '寸法を表示';
+    dimensionsEnabled = !dimensionsEnabled;
+    dimGroup.visible = dimensionsEnabled;
+    if (doorDimGroup) doorDimGroup.visible = dimensionsEnabled && doorIsOpen;
+    if (deskDimGroup) deskDimGroup.visible = dimensionsEnabled && doorIsOpen;
+    dimToggleBtn.textContent = dimensionsEnabled ? '寸法を隠す' : '寸法を表示';
   });
 
   // ─── ドアタップ開閉（レイキャスト） ────────────────────────────────────────
