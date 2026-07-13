@@ -1436,19 +1436,22 @@ import Header from '../components/Header.astro';
     .preview-header {
       position: absolute;
       top: 80px; left: 0; right: 0;
-      z-index: 1;
+      z-index: 2;
       padding: 12px 20px;
       background: linear-gradient(to bottom, rgba(8,8,20,0.5), transparent);
       margin-bottom: 0;
     }
 
+    /* モバイルではマウス操作の案内文は不要（ドラッグ/ピンチは直感的なため）、パレットとの重なり回避のため非表示 */
+    .preview-hint { display: none; }
+
     /* モバイルでは preview-footer / preview-controls を非表示 */
     .preview-footer { display: none; }
 
-    /* color-dots をプレビューヘッダーの下に配置・ラベルなし */
+    /* color-dots をプレビューヘッダーの下に配置・ラベルなし（ヘッダーの実高さ分だけ余白を確保） */
     .color-dots {
       position: absolute;
-      top: 96px;
+      top: 132px;
       bottom: auto;
       left: 0; right: 0;
       z-index: 1;
