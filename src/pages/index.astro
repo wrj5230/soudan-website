@@ -25,7 +25,36 @@ import Header from '../components/Header.astro';
         <p class="section-label">About</p>
         <h2 class="scene-title">SOUDANとは</h2>
         <div class="divider"></div>
-        <p class="about-lead">SOUDANは、大きさ・規格はそのままに、<br />お仏壇の色味と加飾の技法を自由に選べる、<br />セミオーダーメイドのサービスです。</p>
+
+        <div class="about-visual">
+          <div class="av-inputs">
+            <div class="av-group">
+              <p class="av-label">伝統技法</p>
+              <div class="av-chips">
+                <span class="av-chip av-chip-makie"></span>
+                <span class="av-chip av-chip-rapto"></span>
+              </div>
+            </div>
+            <span class="av-op av-op-x">×</span>
+            <div class="av-group">
+              <p class="av-label">こだわりのお色味</p>
+              <div class="av-swatches">
+                <span class="av-dot" style="background:#0c0c0c"></span>
+                <span class="av-dot" style="background:#8b1a1a"></span>
+                <span class="av-dot" style="background:#1e3a6e"></span>
+                <span class="av-dot" style="background:#2e5e38"></span>
+                <span class="av-dot" style="background:#4e3660"></span>
+                <span class="av-dot" style="background:#c9a84c"></span>
+              </div>
+            </div>
+          </div>
+          <span class="av-op av-op-eq">=</span>
+          <div class="av-group av-outcome">
+            <p class="av-result">あなただけの<br class="av-br-mobile" />お仏壇</p>
+          </div>
+        </div>
+
+        <p class="about-lead about-lead-caption">SOUDANは、大きさ・規格はそのままに、お仏壇の色味と加飾の技法を自由に選べる、セミオーダーメイドのサービスです。</p>
       </div>
     </div>
 
@@ -469,12 +498,126 @@ import Header from '../components/Header.astro';
   }
 
   /* ─── About ─── */
-  .about-content { max-width: 620px; }
-  .about-lead {
-    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
-    line-height: 2.0;
+  .about-content {
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .about-content > .section-label,
+  .about-content > .scene-title,
+  .about-content > .divider {
+    text-align: left;
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .about-lead-caption {
+    font-size: 0.85rem;
+    line-height: 1.9;
     letter-spacing: 0.04em;
-    color: #d0cac0;
+    color: #8a8a9a;
+  }
+
+  /* ─── About Visual（伝統技法×こだわりのお色味＝あなただけのお仏壇） ─── */
+  .about-visual {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 36px;
+    margin: 12px 0 40px;
+    padding: 44px 56px;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 6px;
+    background: rgba(201,168,76,0.03);
+  }
+  .av-inputs {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 36px;
+  }
+  .av-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .av-inputs, .av-op-eq, .av-outcome { opacity: 0; }
+  .scene.active .av-inputs,
+  .scene.active .av-op-eq,
+  .scene.active .av-outcome { animation: souFadeIn 1s ease forwards; }
+  .scene.active .av-inputs   { animation-delay: 0.2s; }
+  .scene.active .av-op-eq    { animation-delay: 0.7s; }
+  .scene.active .av-outcome  { animation-delay: 1.0s; }
+  .av-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    color: rgba(201,168,76,0.6);
+  }
+  .av-swatches { display: flex; }
+  .av-dot {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,240,232,0.25);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    margin-left: -16px;
+  }
+  .av-dot:first-child { margin-left: 0; }
+  .av-op {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.4rem;
+    font-weight: 300;
+    color: rgba(201,168,76,0.6);
+    flex-shrink: 0;
+    padding-bottom: 6px;
+  }
+  /* ×と＝はラベル分だけ下にずらし、パレット（60px行）の高さに合わせて中央揃え */
+  .av-op-x,
+  .av-op-eq {
+    padding-bottom: 0;
+    margin-top: 31px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+  }
+  .av-chips { display: flex; gap: 14px; }
+  .av-chip {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    border: 1px solid rgba(245,240,232,0.25);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  }
+  .av-chip-makie {
+    background: linear-gradient(135deg, #8a6d1e 0%, #c9a84c 45%, #e8c96a 55%, #8a6d1e 100%);
+  }
+  .av-chip-rapto {
+    background: linear-gradient(135deg, #1e3a6e 0%, #4e3660 35%, #8b1a1a 70%, #c9a84c 100%);
+  }
+  .av-result {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    line-height: 1.35;
+    color: #c9a84c;
+    text-shadow: 0 0 32px rgba(201,168,76,0.35);
+  }
+  .av-br-mobile { display: none; }
+  @media (max-width: 600px) {
+    .about-visual { flex-direction: column; align-items: center; gap: 12px; padding: 28px 20px; }
+    .av-inputs { gap: 14px; }
+    .av-group { gap: 8px; }
+    .av-chips { gap: 8px; }
+    .av-op { padding-bottom: 0; font-size: 2.2rem; }
+    .av-op-x, .av-op-eq { margin-top: 23px; height: 30px; }
+    .av-dot { width: 30px; height: 30px; margin-left: -8px; }
+    .av-chip { width: 30px; height: 30px; }
+    .av-result { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+    .av-br-mobile { display: initial; }
   }
 
   /* ─── Process List ─── */
@@ -716,11 +859,11 @@ import Header from '../components/Header.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
+    pointer-events: auto;
     opacity: 1;
     transition: opacity 1.4s ease;
   }
-  #splash.done { opacity: 0; }
+  #splash.done { opacity: 0; pointer-events: none; }
   .splash-label {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.1rem;
