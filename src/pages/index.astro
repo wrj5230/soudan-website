@@ -79,7 +79,7 @@ import Header from '../components/Header.astro';
           </div>
           <div class="sou-item">
             <p class="sou-kanji">添</p>
-            <p class="sou-desc">不安なことがあれば、まずはご相談ください。お客様に寄り添ったご提案をさせていただきます。</p>
+            <p class="sou-desc">不安なことがあれば、まずはご相談ください。<br />お客様に寄り添ったご提案をさせていただきます。</p>
           </div>
         </div>
       </div>
@@ -92,30 +92,33 @@ import Header from '../components/Header.astro';
         <p class="section-label">Process</p>
         <h2 class="scene-title">仏壇ができるまで</h2>
         <div class="divider"></div>
-        <p class="ps-note">実際の製作工程は、ここでご紹介するよりもさらに細かく分かれています。</p>
+        <p class="ps-note">SOUDANでは、京都の職人の手により、大きく分けて3つの工程で仏壇を製作します。</p>
         <div class="ps-list">
           <div class="ps-item">
             <img class="ps-bg" src="/images/kiji.png" alt="" onerror="this.style.display='none'"/>
             <div class="ps-content">
+              <span class="ps-num">01 / 03</span>
               <h3 class="ps-name">木地</h3>
               <p class="ps-read">きじ</p>
-              <p class="ps-body">ヒノキやスギなど厳選された木材を、熟練の木地師が鑿と鉋で削り出します。木の呼吸を読みながら木取りをするのが職人の目利き。塗りや装飾の美しさはこの土台の精度にかかっています。</p>
+              <p class="ps-body">ヒノキやスギなど厳選された木材を、熟練の木地師が鑿と鉋で削り出します。<br />塗りや装飾の美しさはこの土台の精度にかかっています。</p>
             </div>
           </div>
           <div class="ps-item">
             <img class="ps-bg" src="/images/nuri.png" alt="" onerror="this.style.display='none'"/>
             <div class="ps-content">
+              <span class="ps-num">02 / 03</span>
               <h3 class="ps-name">塗</h3>
               <p class="ps-read">ぬり</p>
-              <p class="ps-body">木地に漆を塗っては研ぎ、また塗っては研ぐ。この工程を何十回と繰り返すことで、深みのある艶と強度が生まれます。完成した漆面は百年以上の耐久性を持ちます。</p>
+              <p class="ps-body">木地に漆を塗っては研ぎ、また塗っては研ぐ。<br />この工程を何十回と繰り返すことで、深みのある艶と強度が生まれます。<br />完成した漆面は百年以上の耐久性を持ちます。</p>
             </div>
           </div>
           <div class="ps-item">
             <img class="ps-bg" src="/images/soushoku.png" alt="" onerror="this.style.display='none'"/>
             <div class="ps-content">
+              <span class="ps-num">03 / 03</span>
               <h3 class="ps-name">装飾</h3>
               <p class="ps-read">そうしょく</p>
-              <p class="ps-body">仕上がった塗面に、蒔絵や彩色など選ばれた技法で文様を施します。金銀の粉や岩絵具で描かれた文様が、祈りの空間に命を吹き込みます。</p>
+              <p class="ps-body">仕上がった塗面に、蒔絵や彩色など選ばれた技法で文様を施します。<br />金銀の粉や岩絵具で描かれた文様が、祈りの空間に命を吹き込みます。</p>
             </div>
           </div>
         </div>
@@ -130,7 +133,7 @@ import Header from '../components/Header.astro';
         <p class="section-label">Our Story</p>
         <h2 class="scene-title">当店について</h2>
         <div class="divider"></div>
-        <p class="history-para">井上秀峰佛具店は、大正時代創業の京都の仏具店です。<br />100年にわたり、各宗派の寺院やご家庭に仏壇・仏具を届けてきました。<br />3代にわたって積み重ねてきた職人との信頼関係と知識をもとに、お客様だけのお仏壇製作をサポートさせていただきます。</p>
+        <p class="history-para">SOUDANは、井上秀峰佛具店が手がけるサービスです。<br />大正時代創業以来100年にわたり、京都を拠点に各宗派の寺院やご家庭に仏壇・仏具を届けてきました。<br />3代にわたって積み重ねてきた職人との信頼関係と知識をもとに、お客様だけのお仏壇製作をサポートさせていただきます。</p>
       </div>
     </div>
 
@@ -140,53 +143,62 @@ import Header from '../components/Header.astro';
         <p class="section-label">Flow</p>
         <h2 class="scene-title">ご利用の流れ</h2>
         <div class="divider"></div>
-        <p class="flow-total">ご相談から納品まで、目安として約2〜3ヶ月程度です。</p>
-        <p class="flow-price"><!-- TODO: 実際の価格帯に差し替え -->価格帯の目安　<strong>¥300,000〜</strong>　（技法により変動します。特注サイズもご相談いただけます）</p>
         <ol class="flow-list">
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">01</span></div>
             <div class="flow-text">
-              <p class="flow-name">仏壇シミュレーターで選ぶ</p>
-              <p class="flow-desc">色・技法をシミュレーションしながら、イメージを形にします。</p>
+              <p class="flow-name">仏壇シミュレーター</p>
+              <p class="flow-desc">3Dモデルを操作しながら、お色味・技法を選んでイメージを膨らませてください。</p>
             </div>
           </li>
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">02</span><span class="flow-time">1〜2週間</span></div>
             <div class="flow-text">
               <p class="flow-name">ご相談</p>
-              <p class="flow-desc">オンラインにて、イメージをもとに詳細をヒアリングし、お見積もりをご提示します。</p>
+              <p class="flow-desc">オンラインにて、詳細をヒアリングしお見積りをご提示します。</p>
             </div>
           </li>
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">03</span><span class="flow-time">約2〜3ヶ月</span></div>
             <div class="flow-text">
-              <p class="flow-name">制作</p>
-              <p class="flow-desc">職人が一点ずつ丁寧に製作します。</p>
+              <p class="flow-name">製作</p>
+              <p class="flow-desc">京都の職人が一点ずつ丁寧に製作します。</p>
             </div>
           </li>
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">04</span><span class="flow-time">1〜2週間</span></div>
             <div class="flow-text">
               <p class="flow-name">納品</p>
-              <p class="flow-desc">基本的には郵送にてお届けします。</p>
+              <p class="flow-desc">郵送にてお届けします。<br />※近畿圏内は直接お届けすることも可能です。ご相談ください。</p>
             </div>
           </li>
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">05</span></div>
             <div class="flow-text">
               <p class="flow-name">アフターサポート</p>
-              <p class="flow-desc">設置場所や仏具の配置など、不安なことがあればお気軽にご相談ください。</p>
+              <p class="flow-desc">設置場所や仏具の配置などすべてサポートいたします。</p>
             </div>
           </li>
         </ol>
+        <div class="flow-stats">
+          <div class="flow-stat">
+            <span class="flow-stat-label">納期の目安</span>
+            <span class="flow-stat-value">3〜4ヶ月</span>
+          </div>
+          <div class="flow-stat-divider"></div>
+          <div class="flow-stat">
+            <span class="flow-stat-label">価格帯の目安</span>
+            <span class="flow-stat-value"><!-- TODO: 実際の価格帯に差し替え -->¥300,000〜</span>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Scene 6: Configurator CTA -->
     <div class="scene cfg-scene" data-scene="6">
       <div class="scene-content cfg-content">
-        <p class="section-label">Try the Configurator</p>
-        <h2 class="cfg-title">あなただけの仏壇を、<br />創ってみる。</h2>
+        <p class="section-label">Simulator</p>
+        <h2 class="cfg-title">あなただけのお仏壇を、<br />創ってみる。</h2>
         <p class="cfg-sub">3Dモデルを回転させながら、<br />色・技法の組み合わせをリアルタイムに確かめられます。</p>
         <a href="/configurator" class="cfg-btn" id="cfg-link">3Dで試してみる →</a>
       </div>
@@ -343,7 +355,11 @@ import Header from '../components/Header.astro';
     scenes[current].classList.remove('active');
     scenes[current].classList.add('leave');
     setTimeout(() => {
-      document.querySelectorAll('.scene.leave').forEach(s => s.classList.remove('leave'));
+      document.querySelectorAll('.scene.leave').forEach(s => {
+        s.classList.remove('leave');
+        const psList = s.querySelector<HTMLElement>('.ps-list');
+        if (psList) psList.scrollTop = 0;
+      });
       current = n;
       scenes[current].classList.add('active');
       updateNav();
@@ -355,6 +371,14 @@ import Header from '../components/Header.astro';
   document.querySelector('.scenes')!.addEventListener('click', e => {
     const target = e.target as HTMLElement;
     if (target.closest('a, button, input, textarea, label, form')) return;
+    const psList = target.closest('.ps-list') as HTMLElement | null;
+    if (psList) {
+      const atBottom = psList.scrollTop + psList.clientHeight >= psList.scrollHeight - 4;
+      if (!atBottom) {
+        psList.scrollBy({ top: psList.clientHeight, behavior: 'smooth' });
+        return;
+      }
+    }
     goTo(current + 1);
   });
 
@@ -699,9 +723,9 @@ import Header from '../components/Header.astro';
   }
   .ps-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.3em;
-    color: rgba(201,168,76,0.5);
+    color: #c9a84c;
     display: block;
     margin-bottom: 12px;
   }
@@ -752,21 +776,26 @@ import Header from '../components/Header.astro';
   .scene.active .history-para { animation: souFadeIn 1.2s ease 0.3s forwards; }
 
   /* ─── Flow ─── */
-  .flow-total {
-    font-size: 0.78rem;
-    color: #8a8a9a;
-    letter-spacing: 0.04em;
-    margin-bottom: 8px;
-    padding-left: 2px;
+  .flow-stats {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 32px;
   }
-  .flow-price {
-    font-size: 0.78rem;
+  .flow-stat { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .flow-stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
     color: #8a8a9a;
-    letter-spacing: 0.04em;
-    margin-bottom: 20px;
-    padding-left: 2px;
   }
-  .flow-price strong { color: #c9a84c; font-weight: 400; }
+  .flow-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    color: #c9a84c;
+  }
+  .flow-stat-divider { width: 1px; background: rgba(201,168,76,0.2); }
   .flow-left {
     display: flex;
     flex-direction: column;
@@ -781,9 +810,9 @@ import Header from '../components/Header.astro';
     display: flex;
     align-items: center;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
-    color: rgba(201,168,76,0.5);
+    color: #c9a84c;
     white-space: nowrap;
     text-align: right;
   }
@@ -840,6 +869,14 @@ import Header from '../components/Header.astro';
     background: linear-gradient(135deg, #0a0f20 0%, #080814 60%, #0d1a2e 100%);
   }
   .cfg-content { text-align: center; }
+  .cfg-content .section-label,
+  .cfg-title,
+  .cfg-sub,
+  .cfg-btn { opacity: 0; }
+  .scene.active .cfg-content .section-label { animation: souFadeIn 0.9s ease forwards; }
+  .scene.active .cfg-title { animation: souFadeIn 0.9s ease 0.2s forwards; }
+  .scene.active .cfg-sub { animation: souFadeIn 0.9s ease 0.5s forwards; }
+  .scene.active .cfg-btn { animation: souFadeIn 0.9s ease 0.8s forwards; }
   .cfg-title {
     font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 300;
@@ -861,7 +898,7 @@ import Header from '../components/Header.astro';
     font-size: 0.85rem;
     letter-spacing: 0.2em;
     padding: 16px 48px;
-    transition: all 0.3s;
+    transition: background-color 0.3s, color 0.3s;
   }
   .cfg-btn:hover { background: var(--color-gold); color: #080814; }
 

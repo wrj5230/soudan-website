@@ -1,0 +1,205 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="お問い合わせ | SOUDAN" description="SOUDANへのお問い合わせ・よくあるご質問はこちらから。">
+  <Header />
+
+  <main>
+    <div class="info-wrap">
+      <p class="section-label">Contact</p>
+      <h1 class="page-title">お問い合わせ</h1>
+      <div class="divider"></div>
+      <p class="lead">ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+
+      <div class="contact-block">
+        <div class="contact-item">
+          <span class="contact-label">お電話</span>
+          <a class="contact-value" href="tel:0758415551">075-841-5551</a>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">メール</span>
+          <a class="contact-value" href="mailto:shuho0523@gmail.com">shuho0523@gmail.com</a>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">営業時間</span>
+          <span class="contact-value">月〜土　9:30〜17:00（日・祝定休）</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">所在地</span>
+          <span class="contact-value">〒602-8353　京都市上京区下立売通七本松東入長門町402</span>
+        </div>
+      </div>
+
+      <div class="faq-block">
+        <p class="faq-heading">よくあるご質問</p>
+        <div class="faq-list">
+          <div class="faq-item">
+            <p class="faq-q">予算はどのくらい見ておけばいいですか？</p>
+            <!-- TODO: 実際の価格帯に差し替え -->
+            <p class="faq-a">価格帯の目安は¥300,000〜です。お選びいただくお色味や技法によって変動します。</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">納期はどのくらいかかりますか？</p>
+            <p class="faq-a">お問い合わせから3〜4ヶ月ほどいただいております。</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">サイズは自由に選べますか？</p>
+            <p class="faq-a">サイズは規格として統一しており、基本的には固定になります。ご指定のサイズをご希望の場合は、別途料金にて対応可能ですのでご相談ください。</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">蒔絵やラップ塗り以外の技法も選べますか？</p>
+            <p class="faq-a">金箔押しや彩色など、他の技法もお選びいただけます。お見積りの際に詳しくお伺いいたします。</p>
+          </div>
+          <div class="faq-item">
+            <p class="faq-q">今使っている古い仏壇の処分はお願いできますか？</p>
+            <p class="faq-a">別途料金をいただきますが、お引き取りが可能です（関西エリアのみ）。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-block">
+        <p class="cta-text">本格的にご相談を希望される方はこちら</p>
+        <a href="/contact" class="cta-btn">ご相談フォームへ →</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+  }
+
+  .info-wrap {
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .section-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    color: #c9a84c;
+    margin-bottom: 12px;
+  }
+
+  .page-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 0;
+  }
+
+  .divider {
+    width: 40px;
+    height: 1px;
+    background: #c9a84c;
+    margin: 24px 0;
+  }
+
+  .lead {
+    font-size: 0.9rem;
+    color: #8a8a9a;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+  }
+
+  /* ─── Contact Block ─── */
+  .contact-block {
+    border: 1px solid rgba(201,168,76,0.25);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 56px;
+  }
+  .contact-item {
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+  }
+  .contact-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: rgba(201,168,76,0.85);
+    width: 72px;
+    flex-shrink: 0;
+  }
+  .contact-value {
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    color: #f5f0e8;
+  }
+  a.contact-value { transition: color 0.2s; }
+  a.contact-value:hover { color: #c9a84c; }
+
+  /* ─── FAQ Block ─── */
+  .faq-heading {
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    color: #f5f0e8;
+    margin-bottom: 24px;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 56px;
+  }
+  .faq-item {
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding-bottom: 24px;
+  }
+  .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .faq-q {
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    color: #c9a84c;
+    margin-bottom: 10px;
+  }
+  .faq-q::before { content: 'Q. '; }
+  .faq-a {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: #8a8a9a;
+    letter-spacing: 0.02em;
+  }
+  .faq-a::before { content: 'A. '; color: rgba(201,168,76,0.5); }
+
+  /* ─── CTA ─── */
+  .cta-block {
+    text-align: center;
+    padding-top: 8px;
+  }
+  .cta-text {
+    font-size: 0.82rem;
+    color: #8a8a9a;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+  .cta-btn {
+    display: inline-block;
+    border: 1px solid #c9a84c;
+    color: #c9a84c;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    padding: 14px 40px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .cta-btn:hover { background: #c9a84c; color: #080814; }
+
+  @media (max-width: 768px) {
+    main { padding: 100px 20px 60px; align-items: flex-start; }
+    .contact-item { flex-direction: column; gap: 4px; }
+    .contact-label { width: auto; }
+  }
+</style>
