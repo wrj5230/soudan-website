@@ -30,7 +30,7 @@ import ConsultNav from '../../components/ConsultNav.astro';
 
       <!-- Instagram リンク -->
       <div class="sns-row">
-        <a href="https://www.instagram.com/inoue_shuho/" target="_blank" rel="noopener" class="sns-link">
+        <a href="https://www.instagram.com/inoueshuho_btdn/" target="_blank" rel="noopener" class="sns-link">
           Instagram で事例を見る →
         </a>
       </div>
@@ -40,7 +40,15 @@ import ConsultNav from '../../components/ConsultNav.astro';
 </Layout>
 
 <script>
-  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
     const id = new URLSearchParams(location.search).get('id');
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }

@@ -10,8 +10,9 @@ import ConsultNav from '../components/ConsultNav.astro';
       <p class="auth-label">SOUDAN</p>
       <h1 class="auth-title">商談シート</h1>
       <form id="auth-form">
-        <input type="password" id="auth-input" placeholder="パスワードを入力" autocomplete="current-password" />
-        <button type="submit">入室</button>
+        <input type="email" id="auth-email" placeholder="メールアドレス" autocomplete="username" />
+        <input type="password" id="auth-password" placeholder="パスワード" autocomplete="current-password" />
+        <button type="submit">ログイン</button>
         <p id="auth-error" class="auth-error"></p>
       </form>
     </div>
@@ -95,8 +96,7 @@ import ConsultNav from '../components/ConsultNav.astro';
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
-  // ─── Auth ─────────────────────────────────────────────────────────────────
-  const PASSWORD = import.meta.env.PUBLIC_CONSULT_PASSWORD ?? '';
+  // ─── Auth（Supabase Authによるログイン） ────────────────────────────────────
   const authGate    = document.getElementById('auth-gate')!;
   const consultContent = document.getElementById('consult-content')!;
 
@@ -106,17 +106,19 @@ import ConsultNav from '../components/ConsultNav.astro';
     init();
   }
 
-  if (sessionStorage.getItem('consult_auth') === 'ok') {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
     unlock();
   } else {
-    document.getElementById('auth-form')!.addEventListener('submit', (e) => {
+    document.getElementById('auth-form')!.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const val = (document.getElementById('auth-input') as HTMLInputElement).value;
-      if (val === PASSWORD) {
-        sessionStorage.setItem('consult_auth', 'ok');
-        unlock();
+      const email    = (document.getElementById('auth-email')    as HTMLInputElement).value;
+      const password = (document.getElementById('auth-password') as HTMLInputElement).value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        document.getElementById('auth-error')!.textContent = 'メールアドレスまたはパスワードが違います';
       } else {
-        document.getElementById('auth-error')!.textContent = 'パスワードが違います';
+        unlock();
       }
     });
   }
@@ -465,7 +467,7 @@ import ConsultNav from '../components/ConsultNav.astro';
     margin-bottom: 36px;
   }
   #auth-form { display: flex; flex-direction: column; gap: 12px; }
-  #auth-input {
+  #auth-form input {
     background: transparent;
     border: 1px solid rgba(201,168,76,0.25);
     color: #f5f0e8;
@@ -476,7 +478,7 @@ import ConsultNav from '../components/ConsultNav.astro';
     text-align: center;
     letter-spacing: 0.15em;
   }
-  #auth-input:focus { border-color: rgba(201,168,76,0.6); }
+  #auth-form input:focus { border-color: rgba(201,168,76,0.6); }
   #auth-form button {
     background: transparent;
     border: 1px solid #c9a84c;

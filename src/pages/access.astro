@@ -24,6 +24,10 @@ import Footer from '../components/Footer.astro';
           <a class="contact-value" href="mailto:shuho0523@gmail.com">shuho0523@gmail.com</a>
         </div>
         <div class="contact-item">
+          <span class="contact-label">Instagram</span>
+          <a class="contact-value" href="https://www.instagram.com/inoueshuho_btdn/" target="_blank" rel="noopener">@inoueshuho_btdn（DMでもお問い合わせいただけます）</a>
+        </div>
+        <div class="contact-item">
           <span class="contact-label">営業時間</span>
           <span class="contact-value">月〜土　9:30〜17:00（日・祝定休）</span>
         </div>
@@ -39,7 +43,7 @@ import Footer from '../components/Footer.astro';
           <div class="faq-item">
             <p class="faq-q">予算はどのくらい見ておけばいいですか？</p>
             <!-- TODO: 実際の価格帯に差し替え -->
-            <p class="faq-a">価格帯の目安は¥300,000〜です。お選びいただくお色味や技法によって変動します。</p>
+            <p class="faq-a">価格帯の目安は¥300,000〜です。<br />お選びいただくお色味や技法によって変動します。</p>
           </div>
           <div class="faq-item">
             <p class="faq-q">納期はどのくらいかかりますか？</p>
@@ -47,22 +51,17 @@ import Footer from '../components/Footer.astro';
           </div>
           <div class="faq-item">
             <p class="faq-q">サイズは自由に選べますか？</p>
-            <p class="faq-a">サイズは規格として統一しており、基本的には固定になります。ご指定のサイズをご希望の場合は、別途料金にて対応可能ですのでご相談ください。</p>
+            <p class="faq-a">サイズは規格として統一しており、基本的には固定になります。<br />ご指定のサイズをご希望の場合は、別途料金にて対応可能ですのでご相談ください。</p>
           </div>
           <div class="faq-item">
             <p class="faq-q">蒔絵やラップ塗り以外の技法も選べますか？</p>
-            <p class="faq-a">金箔押しや彩色など、他の技法もお選びいただけます。お見積りの際に詳しくお伺いいたします。</p>
+            <p class="faq-a">金箔押しや彩色など、他の技法もお選びいただけます。<br />お見積りの際に詳しくお伺いいたします。</p>
           </div>
           <div class="faq-item">
             <p class="faq-q">今使っている古い仏壇の処分はお願いできますか？</p>
             <p class="faq-a">別途料金をいただきますが、お引き取りが可能です（関西エリアのみ）。</p>
           </div>
         </div>
-      </div>
-
-      <div class="cta-block">
-        <p class="cta-text">本格的にご相談を希望される方はこちら</p>
-        <a href="/contact" class="cta-btn">ご相談フォームへ →</a>
       </div>
     </div>
   </main>
@@ -174,28 +173,6 @@ import Footer from '../components/Footer.astro';
     letter-spacing: 0.02em;
   }
   .faq-a::before { content: 'A. '; color: rgba(201,168,76,0.5); }
-
-  /* ─── CTA ─── */
-  .cta-block {
-    text-align: center;
-    padding-top: 8px;
-  }
-  .cta-text {
-    font-size: 0.82rem;
-    color: #8a8a9a;
-    letter-spacing: 0.05em;
-    margin-bottom: 20px;
-  }
-  .cta-btn {
-    display: inline-block;
-    border: 1px solid #c9a84c;
-    color: #c9a84c;
-    font-size: 0.85rem;
-    letter-spacing: 0.2em;
-    padding: 14px 40px;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  .cta-btn:hover { background: #c9a84c; color: #080814; }
 
   @media (max-width: 768px) {
     main { padding: 100px 20px 60px; align-items: flex-start; }

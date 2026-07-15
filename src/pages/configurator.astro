@@ -6,7 +6,9 @@ import Header from '../components/Header.astro';
 <Layout title="仏壇シミュレーター | SOUDAN">
   <Header />
 
-  <div class="page-curtain" id="page-curtain"></div>
+  <div class="page-curtain" id="page-curtain">
+    <p class="curtain-label">SOUDAN</p>
+  </div>
   <main class="cfg-page">
     <div class="cfg-header">
       <p class="section-label">Configurator</p>
@@ -715,20 +717,23 @@ import Header from '../components/Header.astro';
         controls.enabled = false;
         controls.update();
 
-        document.getElementById('page-curtain')?.classList.add('hidden');
-
-        // カーテンが消えたあと通常位置へ
+        // SOUDANラベルが見える時間を確保してからカーテンを外す
         setTimeout(() => {
-          if (isMobile) {
-            animateCameraTo(0, 0.5, 3.6, 0, -0.1, 0);
-            setTimeout(() => {
-              controls.enabled = true;
-              setSheet(true);
-            }, 2500);
-          } else {
-            animateCameraTo(0, 0.05, 2.2, 0, 0.05, 0);
-            setTimeout(() => { controls.enabled = true; }, 2000);
-          }
+          document.getElementById('page-curtain')?.classList.add('hidden');
+
+          // カーテンが消えたあと通常位置へ
+          setTimeout(() => {
+            if (isMobile) {
+              animateCameraTo(0, 0.5, 3.6, 0, -0.1, 0);
+              setTimeout(() => {
+                controls.enabled = true;
+                setSheet(true);
+              }, 2500);
+            } else {
+              animateCameraTo(0, 0.05, 2.2, 0, 0.05, 0);
+              setTimeout(() => { controls.enabled = true; }, 2000);
+            }
+          }, 1200);
         }, 1200);
       });
     });
@@ -895,12 +900,12 @@ import Header from '../components/Header.astro';
   }
 
   // ─── 寸法線（図面風、常時表示・ボタンでトグル） ─────────────────────────────
-  // TODO: すべて仮の数値。実測値が出たら差し替える（2026-07-08時点）
+  // 実測値（2026-07-15差し替え）
   const ALTAR_DIMENSIONS = {
-    width: '65 cm', depth: '43 cm', height: '90 cm',
-    doorWidth: '28.5 cm',
-    innerWidth: '55.5 cm', innerDepth: '35.5 cm', drawerDepth: '22.5 cm',
-    curtainHeight: '8 cm',
+    width: '37 cm', depth: '25 cm', height: '40.5 cm',
+    doorWidth: '16.5 cm',
+    innerWidth: '29.5 cm', innerDepth: '19.5 cm', drawerDepth: '10.5 cm', drawerWidth: '28 cm',
+    curtainHeight: '4.5 cm',
   };
 
   let dimGroup: THREE.Group | null = null;
@@ -1032,6 +1037,21 @@ import Header from '../components/Header.astro';
       addLine(ddA0, ddA, deskGroup);
       addLine(ddB0, ddB, deskGroup);
       addLabel(ddA.clone().lerp(ddB, 0.5), `引き出し奥行き ${ALTAR_DIMENSIONS.drawerDepth}`, deskGroup);
+
+      // 引き出し（前机）の横幅：前面の上端に沿って表示
+      const worldWdA  = new THREE.Vector3(eBox.min.x, eBox.max.y + deskOff, eBox.max.z + deskOff);
+      const worldWdB  = new THREE.Vector3(eBox.max.x, eBox.max.y + deskOff, eBox.max.z + deskOff);
+      const worldWdA0 = new THREE.Vector3(eBox.min.x, eBox.max.y, eBox.max.z);
+      const worldWdB0 = new THREE.Vector3(eBox.max.x, eBox.max.y, eBox.max.z);
+      const wdA  = deskObj.worldToLocal(worldWdA.clone());
+      const wdB  = deskObj.worldToLocal(worldWdB.clone());
+      const wdA0 = deskObj.worldToLocal(worldWdA0.clone());
+      const wdB0 = deskObj.worldToLocal(worldWdB0.clone());
+      addLine(wdA, wdB, deskGroup);
+      addLine(wdA0, wdA, deskGroup);
+      addLine(wdB0, wdB, deskGroup);
+      addLabel(wdA.clone().lerp(wdB, 0.5), `引き出し幅 ${ALTAR_DIMENSIONS.drawerWidth}`, deskGroup);
+
       deskDimGroup = deskGroup;
     }
 
@@ -1559,11 +1579,25 @@ import Header from '../components/Header.astro';
     inset: 0;
     background: #080814;
     z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: opacity 1s ease;
   }
   .page-curtain.hidden {
     opacity: 0;
     pointer-events: none;
+  }
+  .curtain-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.65em;
+    color: #c9a84c;
+    opacity: 0;
+    animation: curtainLabelIn 0.9s ease 0.2s forwards;
+  }
+  @keyframes curtainLabelIn {
+    to { opacity: 1; }
   }
 
   .step-preview { gap: 10px; justify-content: flex-start; }

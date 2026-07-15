@@ -68,19 +68,20 @@ import ConsultNav from '../../components/ConsultNav.astro';
 <script>
   import { createClient } from '@supabase/supabase-js';
 
-  if (sessionStorage.getItem('consult_auth') !== 'ok') {
-    const id = new URLSearchParams(location.search).get('id');
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const id = new URLSearchParams(location.search).get('id');
+  if (!session) {
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }
 
   // 顧客名
-  const id = new URLSearchParams(location.search).get('id');
   if (id) {
-    const supabase = createClient(
-      import.meta.env.PUBLIC_SUPABASE_URL,
-      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-    );
-    supabase.from('contacts').select('name').eq('id', id).single().then(({ data }) => {
+    supabase.from('contacts_public').select('name').eq('id', id).single().then(({ data }) => {
       if (data?.name) document.getElementById('customer-name')!.textContent = data.name;
     });
   }

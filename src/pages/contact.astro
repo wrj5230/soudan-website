@@ -7,6 +7,10 @@ import Footer from '../components/Footer.astro';
 <Layout title="お問い合わせ | SOUDAN" description="SOUDANへのお問い合わせ・ご相談はこちらから。">
   <Header />
 
+  <div class="page-curtain" id="page-curtain">
+    <p class="curtain-label">SOUDAN</p>
+  </div>
+
   <main>
     <div class="contact-wrap">
       <p class="section-label">Contact</p>
@@ -61,6 +65,10 @@ import Footer from '../components/Footer.astro';
           <textarea id="design-story" name="design-story" rows="3"></textarea>
         </div>
         <div class="form-group">
+          <label for="interested-technique">気になる技法があれば教えてください</label>
+          <textarea id="interested-technique" name="interested-technique" rows="3"></textarea>
+        </div>
+        <div class="form-group">
           <label for="message">その他ご要望</label>
           <textarea id="message" name="message" rows="4"></textarea>
         </div>
@@ -83,6 +91,10 @@ import Footer from '../components/Footer.astro';
 
   const form      = document.getElementById('contact-form') as HTMLFormElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  setTimeout(() => {
+    document.getElementById('page-curtain')?.classList.add('hidden');
+  }, 1200);
 
 const TECH_NAMES: Record<string, string> = {
     none: 'なし', makie: '蒔絵', raptopaint: 'ラップ塗り', raden: '螺鈿',
@@ -147,9 +159,10 @@ const TECH_NAMES: Record<string, string> = {
     submitBtn.disabled = true;
 
     const survey = {
-      forWhom:     (document.getElementById('for-whom')     as HTMLSelectElement).value   || null,
-      whyCustom:   (document.getElementById('why-custom')   as HTMLTextAreaElement).value || null,
-      designStory: (document.getElementById('design-story') as HTMLTextAreaElement).value || null,
+      forWhom:             (document.getElementById('for-whom')             as HTMLSelectElement).value   || null,
+      whyCustom:           (document.getElementById('why-custom')           as HTMLTextAreaElement).value || null,
+      designStory:         (document.getElementById('design-story')         as HTMLTextAreaElement).value || null,
+      interestedTechnique: (document.getElementById('interested-technique') as HTMLTextAreaElement).value || null,
     };
 
     const { error } = await supabase.from('contacts').insert({
@@ -173,6 +186,32 @@ const TECH_NAMES: Record<string, string> = {
 </script>
 
 <style>
+  .page-curtain {
+    position: fixed;
+    inset: 0;
+    background: #080814;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1s ease;
+  }
+  .page-curtain.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .curtain-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.65em;
+    color: #c9a84c;
+    opacity: 0;
+    animation: curtainLabelIn 0.9s ease 0.2s forwards;
+  }
+  @keyframes curtainLabelIn {
+    to { opacity: 1; }
+  }
+
   main {
     min-height: 100vh;
     display: flex;

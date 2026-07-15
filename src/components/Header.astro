@@ -8,7 +8,10 @@
       <li><a href="/configurator">仏壇シミュレーター</a></li>
       <li><a href="/access" class="contact-link">お問い合わせ</a></li>
     </ul>
-    <a href="/contact" class="mobile-cta">相談する</a>
+    <div class="mobile-nav">
+      <a href="/access" class="mobile-link">お問い合わせ</a>
+      <a href="/contact" class="mobile-cta">相談する</a>
+    </div>
   </nav>
 </header>
 
@@ -72,7 +75,7 @@
     color: #080814 !important;
   }
 
-  .mobile-cta {
+  .mobile-nav {
     display: none;
   }
 
@@ -82,6 +85,17 @@
     }
     ul {
       display: none;
+    }
+    .mobile-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .mobile-link {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: #f5f0e8;
+      opacity: 0.8;
     }
     .mobile-cta {
       display: inline-block;

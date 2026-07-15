@@ -82,7 +82,13 @@ import ConsultNav from '../../components/ConsultNav.astro';
 <script>
   import { createClient } from '@supabase/supabase-js';
 
-  if (sessionStorage.getItem('consult_auth') !== 'ok') {
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
     const id = new URLSearchParams(location.search).get('id');
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }
@@ -116,11 +122,7 @@ import ConsultNav from '../../components/ConsultNav.astro';
 
     let usedTechs = new Set<string>();
     if (id) {
-      const supabase = createClient(
-        import.meta.env.PUBLIC_SUPABASE_URL,
-        import.meta.env.PUBLIC_SUPABASE_ANON_KEY
-      );
-      const { data } = await supabase.from('contacts').select('config').eq('id', id).single();
+      const { data } = await supabase.from('contacts_public').select('config').eq('id', id).single();
       if (data?.config?.techniques) {
         Object.values(data.config.techniques as Record<string, string>).forEach(t => usedTechs.add(t));
       }
