@@ -15,7 +15,11 @@ import Header from '../components/Header.astro';
       <div class="scene-content hero-content">
         <p class="hero-label">SOUDAN</p>
         <h1 class="hero-title">祈りを、<br />創る。</h1>
-        <p class="hero-sub">セミオーダーメイド仏壇で、あなたの想いをカタチに。</p>
+        <p class="hero-sub">あなたの想いをカタチに。</p>
+      </div>
+      <div class="scroll-hint">
+        <span class="scroll-hint-label">Scroll</span>
+        <span class="scroll-hint-line"></span>
       </div>
     </div>
 
@@ -54,7 +58,7 @@ import Header from '../components/Header.astro';
           </div>
         </div>
 
-        <p class="about-lead about-lead-caption">SOUDANは、大きさ・規格はそのままに、お仏壇の色味と加飾の技法を自由に選べる、セミオーダーメイドのサービスです。</p>
+        <p class="about-lead-caption">SOUDANは、大きさ・規格はそのままに、お仏壇の色味と加飾の技法を自由に選べる、セミオーダーメイドのサービスです。</p>
       </div>
     </div>
 
@@ -67,15 +71,15 @@ import Header from '../components/Header.astro';
         <div class="sou-list">
           <div class="sou-item">
             <p class="sou-kanji">創</p>
-            <p class="sou-desc">あなたとご家族だけのオリジナルのお仏壇。こだわりをぜひ職人と共に、あなたの手で創りだしてください。</p>
+            <p class="sou-desc">こだわりを込めたご家族だけのお仏壇を、職人と共に創る。</p>
           </div>
           <div class="sou-item">
             <p class="sou-kanji">想</p>
-            <p class="sou-desc">ご家族との思い出、好きだったものを今一度想像してみてください。</p>
+            <p class="sou-desc">ご家族との想い出、好きなものを、想像してみてください。</p>
           </div>
           <div class="sou-item">
             <p class="sou-kanji">添</p>
-            <p class="sou-desc">不安に思われることがあれば、ご相談から。お仏壇をお部屋に置く最後まで、寄り添って対応いたします。</p>
+            <p class="sou-desc">不安なことがあれば、まずはご相談ください。お客様に寄り添ったご提案をさせていただきます。</p>
           </div>
         </div>
       </div>
@@ -142,7 +146,7 @@ import Header from '../components/Header.astro';
           <li class="flow-item">
             <div class="flow-left"><span class="flow-num">01</span></div>
             <div class="flow-text">
-              <p class="flow-name">コンフィギュレーターで選ぶ</p>
+              <p class="flow-name">仏壇シミュレーターで選ぶ</p>
               <p class="flow-desc">色・技法をシミュレーションしながら、イメージを形にします。</p>
             </div>
           </li>
@@ -226,15 +230,14 @@ import Header from '../components/Header.astro';
   rimLight.position.set(-4, 2, -5);
   threeScene.add(rimLight);
 
-  // カラープリセット [外枠/背板色, 扉色]
-  const PRESETS: [string, string][] = [
-    ['#0c0c0c', '#8b1a1a'],  // 漆黒 × 朱
-    ['#1a3a6b', '#c9a84c'],  // 群青 × 金
-    ['#5c1a2e', '#c9a84c'],  // 深緋 × 金
-    ['#1a4a2e', '#c9a84c'],  // 常磐 × 金
-    ['#8b5e1a', '#1a2a4a'],  // 飴色 × 藍鉄
-    ['#1a2a4a', '#8b1a1a'],  // 藍鉄 × 朱
-    ['#0d0d18', '#1a3a6b'],  // 黒 × 群青
+  // カラープリセット：前半はオーソドックス（伝統色）、後半は現代アート的な大胆な配色
+  const PRESETS: { outer: string; door: string }[] = [
+    { outer: '#0c0c0c', door: '#8b1a1a' },  // 漆黒 × 朱
+    { outer: '#7a1f2e', door: '#c9a84c' },  // 深緋 × 金
+    { outer: '#5e3a0a', door: '#c9a84c' },  // 白木 × 金
+    { outer: '#000000', door: '#0a0a0a' },  // オールブラック
+    { outer: '#141414', door: '#0f5c52' },  // チャコール × ディープティール
+    { outer: '#c7bfae', door: '#0c0c0c' },  // ライトグレージュ × ブラック
   ];
 
   const COUNT = PRESETS.length;
@@ -262,15 +265,17 @@ import Header from '../components/Header.astro';
     }, 2000);
 
     for (let i = 0; i < COUNT; i++) {
-      const [outerHex, doorHex] = PRESETS[i];
+      const { outer, door } = PRESETS[i];
       const clone = source.clone(true);
+      const doorMat = makeMat(door);
+      const outerMat = makeMat(outer);
 
       clone.traverse((node: any) => {
         if (!node.isMesh) return;
         const n: string = node.name.toLowerCase();
         node.material = (n.includes('door') || n.includes('curtain'))
-          ? makeMat(doorHex)
-          : makeMat(outerHex);
+          ? doorMat
+          : outerMat;
       });
 
       const angle = (i / COUNT) * Math.PI * 2;
@@ -456,6 +461,44 @@ import Header from '../components/Header.astro';
     font-size: 1rem;
     letter-spacing: 0.3em;
     color: #8a8a9a;
+  }
+
+  /* ─── Scroll Hint ─── */
+  .scroll-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 96px;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: scrollHintFadeIn 1.2s ease 2.6s forwards;
+  }
+  .scroll-hint-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.4em;
+    color: rgba(201,168,76,0.55);
+    text-transform: uppercase;
+  }
+  .scroll-hint-line {
+    width: 1px;
+    height: 26px;
+    background: linear-gradient(to bottom, rgba(201,168,76,0.7), transparent);
+    transform-origin: top;
+    animation: scrollHintPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollHintFadeIn { to { opacity: 1; } }
+  @keyframes scrollHintPulse {
+    0%   { transform: scaleY(0.35); opacity: 0.35; }
+    50%  { transform: scaleY(1);    opacity: 1; }
+    100% { transform: scaleY(0.35); opacity: 0.35; }
+  }
+  @media (max-width: 768px) {
+    .scroll-hint { bottom: 76px; }
   }
 
   /* ─── Concept ─── */
