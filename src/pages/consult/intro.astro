@@ -12,25 +12,23 @@ import ConsultNav from '../../components/ConsultNav.astro';
       <div class="agenda-block">
         <p class="agenda-eyebrow">本日の流れ</p>
         <ol class="agenda-list">
-          <li class="agenda-item">
+          <li class="agenda-item no-desc">
             <span class="agenda-num">01</span>
             <div class="agenda-body">
-              <p class="agenda-title">概算お見積り</p>
-              <p class="agenda-desc">まず金額の目安を確認します</p>
+              <p class="agenda-title">お見積りのご説明</p>
             </div>
           </li>
-          <li class="agenda-item">
+          <li class="agenda-item no-desc">
             <span class="agenda-num">02</span>
             <div class="agenda-body">
               <p class="agenda-title">SOUDANについて</p>
-              <p class="agenda-desc">どんな店でどんな仕事をしているかをお伝えします</p>
             </div>
           </li>
           <li class="agenda-item">
             <span class="agenda-num">03</span>
             <div class="agenda-body">
-              <p class="agenda-title">職人・製作工程と素材・技法</p>
-              <p class="agenda-desc">誰がどのように作るか、使う素材や技法についてご説明します</p>
+              <p class="agenda-title">職人紹介</p>
+              <p class="agenda-desc">製作に携わる職人をご紹介します。</p>
             </div>
           </li>
           <li class="agenda-item">
@@ -40,11 +38,10 @@ import ConsultNav from '../../components/ConsultNav.astro';
               <p class="agenda-desc">選んでいただいたイメージを3Dで一緒に確認します</p>
             </div>
           </li>
-          <li class="agenda-item">
+          <li class="agenda-item no-desc">
             <span class="agenda-num">05</span>
             <div class="agenda-body">
-              <p class="agenda-title">今後の流れのご説明</p>
-              <p class="agenda-desc">ご注文からお届けまでの流れをご説明します</p>
+              <p class="agenda-title">今後の流れについて</p>
             </div>
           </li>
         </ol>
@@ -114,6 +111,7 @@ import ConsultNav from '../../components/ConsultNav.astro';
     letter-spacing: 0.12em;
     margin-bottom: 6px;
   }
+  .agenda-item.no-desc .agenda-title { margin-bottom: 0; }
   .agenda-desc {
     font-size: 0.78rem;
     color: #6a6a7a;

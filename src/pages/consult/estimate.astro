@@ -8,7 +8,7 @@ import ConsultNav from '../../components/ConsultNav.astro';
 
   <main class="page-main">
     <div class="page-wrap">
-      <p class="page-eyebrow">お見積り概算</p>
+      <p class="page-eyebrow">お見積り</p>
       <div id="estimate-content">
         <p class="loading-text">読み込み中…</p>
       </div>
@@ -34,8 +34,15 @@ import ConsultNav from '../../components/ConsultNav.astro';
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }
 
-  /* TODO: 実際の価格に差し替え */
-  const TOTAL_PRICE = 0;
+  /* 基本価格：色数（1〜5色）に応じて¥390,000〜¥495,000で按分 */
+  const BASE_PRICE = 390000;
+  const COLOR_STEP = 26250;
+
+  /* 技法パーツ単価（原価×1.6、蒔絵・彩色は振れ幅の中間値） */
+  const TECH_UNIT_PRICE: Record<string, number> = {
+    makie: 24000,
+    raptopaint: 16000,
+  };
 
   const PART_LABELS: Record<string, string> = {
     outer: '外枠・台', 'door-front': '扉（表）', 'door-back': '扉（裏）',
@@ -72,36 +79,30 @@ import ConsultNav from '../../components/ConsultNav.astro';
       raptoHex:  raptoColors[part] ?? '#c9a84c',
     }));
 
-    const makieParts = parts.filter(p => p.tech === 'makie');
+    const techParts = parts.filter(p => p.tech !== 'none');
 
-    const makeAccordion = (id: string, titleJa: string, titleEn: string, step: string, body: string, open = false) => `
-      <div class="accordion${open ? ' is-open' : ''}" data-acc="${id}">
-        <button class="acc-header" aria-expanded="${open}">
-          <span class="acc-num">${step}</span>
-          <div class="acc-title-block">
-            <span class="acc-title-ja">${titleJa}</span>
-            <span class="acc-title-en">${titleEn}</span>
+    const uniqueColorCount = new Set(parts.map(p => p.hex).filter(Boolean)).size || 1;
+    const basePrice = BASE_PRICE + (uniqueColorCount - 1) * COLOR_STEP;
+    const techPrice = parts.reduce((sum, p) => sum + (TECH_UNIT_PRICE[p.tech] ?? 0), 0);
+    const totalPrice = basePrice + techPrice;
+
+    const makeSection = (titleJa: string, titleEn: string, step: string, body: string) => `
+      <div class="est-section">
+        <div class="sec-header">
+          <span class="sec-num">${step}</span>
+          <div class="sec-title-block">
+            <span class="sec-title-ja">${titleJa}</span>
+            <span class="sec-title-en">${titleEn}</span>
           </div>
-          <span class="acc-toggle"></span>
-        </button>
-        <div class="acc-body">
-          <div class="acc-inner">${body}</div>
         </div>
+        <div class="sec-body">${body}</div>
       </div>
     `;
 
-    const kiji = `
-      <p class="acc-desc">ご注文確定後、職人が寸法に合わせて木地を製作します。</p>
-      <table class="spec-table">
-        <tbody>
-          <tr><th>素材</th><td>— <span class="todo">（TODO）</span></td></tr>
-          <tr><th>構造</th><td>— <span class="todo">（TODO）</span></td></tr>
-        </tbody>
-      </table>
-    `;
+    const kiji = ``;
 
     const urushi = `
-      <p class="acc-desc">木地に漆を重ねて塗り上げます。パーツごとのカラーは以下のとおりです。</p>
+      <p class="acc-desc">パーツごとのカラーは以下のとおりです。</p>
       <div class="color-grid">
         ${parts.map(p => `
           <div class="color-cell">
@@ -115,34 +116,38 @@ import ConsultNav from '../../components/ConsultNav.astro';
       </div>
     `;
 
-    const makieBody = makieParts.length > 0 ? `
-      <p class="acc-desc">漆塗り後、以下のパーツに蒔絵の装飾を施します。</p>
+    const techBody = techParts.length > 0 ? `
       <ul class="makie-list">
-        ${makieParts.map(p => `<li>${p.label}</li>`).join('')}
+        ${techParts.map(p => `<li>${p.label}　${DECO_NAMES[p.tech] ?? p.tech}</li>`).join('')}
       </ul>
     ` : '';
 
-    let html = makeAccordion('kiji',   '木地',        'Wood Base',      '01', kiji,   false);
-    html    += makeAccordion('urushi', '漆塗り仕上げ', 'Urushi Lacquer', '02', urushi, true);
-    if (makieParts.length > 0) {
-      html  += makeAccordion('makie',  '蒔絵',         'Makie',          '03', makieBody, false);
+    let html = makeSection('木地', 'Wood Base', '01', kiji);
+    html    += makeSection('漆塗り仕上げ', 'Urushi Lacquer', '02', urushi);
+    if (techParts.length > 0) {
+      html  += makeSection('技法', 'Technique', '03', techBody);
     }
+    const tax = Math.round(totalPrice * 0.1);
+    const totalWithTax = totalPrice + tax;
+
     html += `
-      <div class="total-block">
-        <span class="total-label">合計概算</span>
-        <span class="total-price">${fmt(TOTAL_PRICE)}</span>
+      <div class="total-summary">
+        <div class="summary-row">
+          <span class="summary-label">小計（税抜）</span>
+          <span class="summary-value">${fmt(totalPrice)}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">消費税（10%）</span>
+          <span class="summary-value">${fmt(tax)}</span>
+        </div>
+        <div class="total-block">
+          <span class="total-label">合計金額（税込）</span>
+          <span class="total-price">${fmt(totalWithTax)}</span>
+        </div>
       </div>
     `;
 
     container.innerHTML = html;
-
-    document.querySelectorAll<HTMLElement>('.accordion').forEach(acc => {
-      acc.querySelector('.acc-header')!.addEventListener('click', () => {
-        const isOpen = acc.classList.contains('is-open');
-        acc.classList.toggle('is-open', !isOpen);
-        (acc.querySelector('.acc-header') as HTMLButtonElement).setAttribute('aria-expanded', String(!isOpen));
-      });
-    });
 
     document.querySelectorAll<HTMLCanvasElement>('.rapto-canvas').forEach(cv => {
       drawRapto(cv, cv.dataset.base!, cv.dataset.rapto!);
@@ -215,104 +220,62 @@ import ConsultNav from '../../components/ConsultNav.astro';
 
   .page-eyebrow {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.68rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 300;
     letter-spacing: 0.35em;
-    color: rgba(201,168,76,0.6);
-    margin-bottom: 36px;
+    color: rgba(201,168,76,0.8);
+    text-align: center;
+    margin-bottom: 48px;
   }
   .loading-text { font-size: 0.82rem; color: #5a5a6a; letter-spacing: 0.1em; }
 
-  /* ── アコーディオン ── */
-  :global(.accordion) {
+  /* ── セクション（常時展開） ── */
+  :global(.est-section) {
     border-top: 1px solid rgba(201,168,76,0.1);
+    padding: 28px 0;
   }
-  :global(.accordion:last-of-type) {
+  :global(.est-section:last-of-type) {
     border-bottom: 1px solid rgba(201,168,76,0.1);
   }
-  :global(.acc-header) {
-    width: 100%;
+  :global(.sec-header) {
     display: flex;
     align-items: center;
     gap: 28px;
-    padding: 28px 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    transition: opacity 0.2s;
+    margin-bottom: 24px;
   }
-  :global(.acc-header:hover) { opacity: 0.8; }
 
-  :global(.acc-num) {
+  :global(.sec-num) {
     font-family: 'Cormorant Garamond', serif;
     font-size: 3.2rem;
     font-weight: 300;
     line-height: 1;
-    color: rgba(201,168,76,0.12);
+    color: rgba(201,168,76,0.4);
     min-width: 60px;
-    transition: color 0.3s;
     user-select: none;
   }
-  :global(.accordion.is-open .acc-num) {
-    color: rgba(201,168,76,0.4);
-  }
 
-  :global(.acc-title-block) {
+  :global(.sec-title-block) {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
-  :global(.acc-title-ja) {
+  :global(.sec-title-ja) {
     font-size: 1.25rem;
     font-weight: 300;
     letter-spacing: 0.25em;
-    color: #a0998e;
-    transition: color 0.3s;
-  }
-  :global(.accordion.is-open .acc-title-ja) {
     color: #ede8e0;
   }
-  :global(.acc-title-en) {
+  :global(.sec-title-en) {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-size: 0.75rem;
     letter-spacing: 0.18em;
-    color: rgba(201,168,76,0.35);
-    transition: color 0.3s;
-  }
-  :global(.accordion.is-open .acc-title-en) {
     color: rgba(201,168,76,0.6);
   }
 
-  :global(.acc-toggle) {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 300;
-    line-height: 1;
-    color: rgba(201,168,76,0.3);
-    transition: color 0.2s;
-    user-select: none;
-    flex-shrink: 0;
-  }
-  :global(.acc-toggle::before) { content: '+'; }
-  :global(.accordion.is-open .acc-toggle::before) { content: '−'; }
-  :global(.accordion.is-open .acc-toggle) { color: rgba(201,168,76,0.6); }
-
-  :global(.acc-body) {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  :global(.accordion.is-open .acc-body) {
-    grid-template-rows: 1fr;
-  }
-  :global(.acc-inner) {
-    overflow: hidden;
+  :global(.sec-body) {
     padding-left: 88px;
-  }
-  :global(.accordion.is-open .acc-inner) {
-    padding-bottom: 36px;
   }
 
   :global(.acc-desc) {
@@ -322,27 +285,6 @@ import ConsultNav from '../../components/ConsultNav.astro';
     line-height: 2;
     margin-bottom: 24px;
   }
-
-  /* 木地テーブル */
-  :global(.spec-table) {
-    border-collapse: collapse;
-    font-size: 0.85rem;
-  }
-  :global(.spec-table th) {
-    font-size: 0.62rem;
-    letter-spacing: 0.22em;
-    color: rgba(201,168,76,0.45);
-    font-weight: 400;
-    padding: 10px 28px 10px 0;
-    white-space: nowrap;
-    vertical-align: top;
-  }
-  :global(.spec-table td) {
-    color: #a0998e;
-    padding: 10px 0;
-    letter-spacing: 0.08em;
-  }
-  :global(.todo) { color: #3a3a4a; font-size: 0.72rem; }
 
   /* カラーグリッド（3列） */
   :global(.color-grid) {
@@ -404,6 +346,28 @@ import ConsultNav from '../../components/ConsultNav.astro';
     top: 2px;
   }
 
+  /* 小計・消費税 */
+  :global(.total-summary) {
+    border-top: 1px solid rgba(201,168,76,0.15);
+    padding-top: 20px;
+  }
+  :global(.summary-row) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+  }
+  :global(.summary-label) {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #6a6a7a;
+  }
+  :global(.summary-value) {
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: #a0998e;
+  }
+
   /* 合計 */
   :global(.total-block) {
     display: flex;
@@ -414,7 +378,7 @@ import ConsultNav from '../../components/ConsultNav.astro';
     border-top: 1px solid rgba(201,168,76,0.2);
   }
   :global(.total-label) {
-    font-size: 0.65rem;
+    font-size: 0.95rem;
     letter-spacing: 0.3em;
     color: rgba(201,168,76,0.5);
   }
