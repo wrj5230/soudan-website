@@ -1,6 +1,70 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ConsultNav from '../../components/ConsultNav.astro';
+
+// TODO: 実際の職人データ（人数・写真・経歴・Instagramアカウント）に差し替え
+const steps = [
+  {
+    num: '01',
+    title: '木地',
+    image: '/images/kiji.png',
+    desc: 'ヒノキやスギなど厳選された木材を、熟練の木地師が鑿と鉋で削り出します。塗りや装飾の美しさはこの土台の精度にかかっています。',
+    craftsmen: [
+      {
+        role: '木地師',
+        name: '〇〇 〇〇',
+        bio: '京都で〇〇年の経験を持つ木地師。仏壇の骨格となる木地を、鑿と鉋で一つひとつ手作業で削り出す。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+    ],
+  },
+  {
+    num: '02',
+    title: '塗',
+    image: '/images/nuri.png',
+    desc: '木地に漆を塗っては研ぎ、また塗っては研ぐ。この工程を何十回と繰り返すことで、深みのある艶と強度が生まれます。完成した漆面は百年以上の耐久性を持ちます。',
+    craftsmen: [
+      {
+        role: '塗師',
+        name: '〇〇 〇〇',
+        bio: '京都で〇〇年の経験を持つ塗師。伝統的な漆塗りの技法を受け継ぎながら、現代的なデザインへの対応にも定評がある。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+    ],
+  },
+  {
+    num: '03',
+    title: '装飾',
+    image: '/images/soushoku.png',
+    desc: '仕上がった塗面に、蒔絵・彩色・箔押などの技法で文様を施し、彫金を施した飾り金具を取り付けます。金銀の粉や岩絵具、輝く金具が、祈りの空間に命を吹き込みます。',
+    craftsmen: [
+      {
+        role: '蒔絵師',
+        name: '〇〇 〇〇',
+        bio: '「一本一本の刷毛に、想いを込めて」をモットーに、金粉・銀粉で文様を描く蒔絵師。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+      {
+        role: '彩色師',
+        name: '〇〇 〇〇',
+        bio: '京都で〇〇年の経験を持つ彩色師。岩絵具を用いて、文様に鮮やかな彩りを施す。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+      {
+        role: '箔押師',
+        name: '〇〇 〇〇',
+        bio: '金箔を一枚一枚丁寧に押し、仏壇に荘厳な輝きを与える箔押師。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+      {
+        role: '彫金師',
+        name: '〇〇 〇〇',
+        bio: '飾り金具に精緻な彫りを施す彫金師。細部の金具ひとつにも仏壇全体の品格が宿る。',
+        instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+      },
+    ],
+  },
+];
 ---
 
 <Layout title="職人・製作工程 | SOUDAN 商談">
@@ -9,62 +73,58 @@ import ConsultNav from '../../components/ConsultNav.astro';
   <main class="page-main">
     <div class="page-wrap">
 
-      <!-- 職人紹介 -->
-      <section class="craftsman-section">
-        <p class="section-eyebrow">職人紹介</p>
-        <div class="craftsman-card">
-          <div class="craftsman-photo">
-            <!-- TODO: 職人写真を差し替え（src/assets/ に配置して <Image> で読み込む） -->
-            <div class="photo-placeholder">Photo</div>
-          </div>
-          <div class="craftsman-info">
-            <p class="craftsman-role"><!-- TODO -->塗師 / 蒔絵師</p>
-            <h2 class="craftsman-name"><!-- TODO: 職人名を差し替え -->〇〇 〇〇</h2>
-            <p class="craftsman-bio">
-              <!-- TODO: 職人の経歴・一言を差し替え -->
-              京都で〇〇年の経験を持つ塗師。伝統的な漆塗りの技法を受け継ぎながら、
-              現代的なデザインへの対応にも定評がある。
-              「一本一本の刷毛に、想いを込めて」をモットーに製作に臨む。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <div class="section-divider"></div>
-
-      <!-- 製作工程 -->
-      <section class="process-section">
+      <!-- 工房ツアー（製作工程 + 職人紹介） -->
+      <section class="workshop-tour">
         <p class="section-eyebrow">製作の流れ</p>
-        <ol class="step-list">
-          <li class="step-item">
-            <span class="step-num">STEP 1</span>
-            <div class="step-body">
-              <h3 class="step-title"><!-- TODO -->木地づくり</h3>
-              <p class="step-desc"><!-- TODO: 説明を差し替え -->材木を選び、仏壇の骨格となる木地を職人が手加工で仕上げます。</p>
+        <p class="process-note">SOUDANでは、京都の職人の手により、大きく分けて3つの工程で仏壇を製作します。</p>
+
+        <div class="step-tabs" role="tablist">
+          {steps.map((s, i) => (
+            <button class="step-tab" data-step={i} aria-selected={i === 0 ? 'true' : 'false'}>
+              <span class="tab-num">{s.num}</span>
+              <span class="tab-title">{s.title}</span>
+            </button>
+          ))}
+        </div>
+
+        <!-- タブ切り替え：選んだ工程の画像・説明・職人紹介を表示（ぬるっとクロスフェード） -->
+        <div class="step-panels" id="step-panels">
+          {steps.map((s, i) => (
+            <div class="step-panel" data-panel={i}>
+              <div class="step-hero">
+                <img class="step-hero-bg" src={s.image} alt="" onerror="this.style.display='none'" />
+                <div class="step-hero-content">
+                  <span class="step-hero-num">{s.num} / 03</span>
+                  <h3 class="step-hero-title">{s.title}</h3>
+                  <p class="step-hero-desc">{s.desc}</p>
+                </div>
+              </div>
+              <div class="craftsman-list">
+                {s.craftsmen.length > 1 && (
+                  <div class="craftsman-tabs">
+                    {s.craftsmen.map((c, j) => (
+                      <button class="craftsman-tab" data-craftsman={j} aria-selected={j === 0 ? 'true' : 'false'}>{c.role}</button>
+                    ))}
+                  </div>
+                )}
+                {s.craftsmen.map((c, j) => (
+                  <div class="craftsman-card" data-craftsman-card={j} hidden={j !== 0}>
+                    <div class="craftsman-photo">
+                      <!-- TODO: 職人写真を差し替え（src/assets/ に配置して <Image> で読み込む） -->
+                      <div class="photo-placeholder">Photo</div>
+                    </div>
+                    <div class="craftsman-info">
+                      <p class="craftsman-role">{c.role}</p>
+                      <h3 class="craftsman-name">{c.name}</h3>
+                      <p class="craftsman-bio">{c.bio}</p>
+                      <a href={c.instagram} target="_blank" rel="noopener" class="craftsman-insta">Instagramで作品を見る →</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </li>
-          <li class="step-item">
-            <span class="step-num">STEP 2</span>
-            <div class="step-body">
-              <h3 class="step-title"><!-- TODO -->下地・漆塗り</h3>
-              <p class="step-desc"><!-- TODO: 説明を差し替え -->木地に下地を施した後、漆を何層にも重ねて塗り上げます。乾燥には数週間を要します。</p>
-            </div>
-          </li>
-          <li class="step-item">
-            <span class="step-num">STEP 3</span>
-            <div class="step-body">
-              <h3 class="step-title"><!-- TODO -->技法の施工</h3>
-              <p class="step-desc"><!-- TODO: 説明を差し替え -->蒔絵・螺鈿・ラップ塗りなど、ご選択の技法を職人が一点一点手作業で施します。</p>
-            </div>
-          </li>
-          <li class="step-item">
-            <span class="step-num">STEP 4</span>
-            <div class="step-body">
-              <h3 class="step-title"><!-- TODO -->仕上げ・検品</h3>
-              <p class="step-desc"><!-- TODO: 説明を差し替え -->金具の取り付けと最終仕上げを経て、厳格な検品を行い納品します。</p>
-            </div>
-          </li>
-        </ol>
+          ))}
+        </div>
       </section>
 
       <div class="section-divider"></div>
@@ -92,6 +152,42 @@ import ConsultNav from '../../components/ConsultNav.astro';
     const id = new URLSearchParams(location.search).get('id');
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }
+
+  // 工房ツアー：タブ切り替え（クロスフェード）
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.step-tab');
+  const panels = document.querySelectorAll<HTMLDivElement>('.step-panel');
+  const panelsWrap = document.getElementById('step-panels')!;
+
+  function syncHeight() {
+    const active = panelsWrap.querySelector<HTMLElement>('.step-panel.is-active');
+    if (active) panelsWrap.style.height = `${active.offsetHeight}px`;
+  }
+
+  function goToStep(index: number) {
+    tabs.forEach((t, i) => t.setAttribute('aria-selected', i === index ? 'true' : 'false'));
+    panels.forEach((p, i) => p.classList.toggle('is-active', i === index));
+    syncHeight();
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goToStep(i));
+  });
+
+  // 職人サブタブ：1人ずつ切り替え（ステップごとに独立）
+  document.querySelectorAll<HTMLDivElement>('.craftsman-list').forEach(list => {
+    const craftsmanTabs = list.querySelectorAll<HTMLButtonElement>('.craftsman-tab');
+    const craftsmanCards = list.querySelectorAll<HTMLDivElement>('.craftsman-card');
+    craftsmanTabs.forEach((tab, j) => {
+      tab.addEventListener('click', () => {
+        craftsmanTabs.forEach((t, k) => t.setAttribute('aria-selected', k === j ? 'true' : 'false'));
+        craftsmanCards.forEach((c, k) => { c.hidden = k !== j; });
+        syncHeight();
+      });
+    });
+  });
+
+  window.addEventListener('resize', syncHeight);
+  goToStep(0);
 
   const TECH_DESCRIPTIONS: Record<string, { title: string; subtitle: string; body: string }> = {
     none: {
@@ -175,12 +271,151 @@ import ConsultNav from '../../components/ConsultNav.astro';
     background: rgba(201,168,76,0.12);
     margin: 56px 0;
   }
+  .process-note {
+    font-size: 0.85rem;
+    line-height: 1.9;
+    letter-spacing: 0.04em;
+    color: #8a8a9a;
+    margin-bottom: 32px;
+  }
 
-  /* 職人カード */
+  /* ─── 工房ツアー：ステッパー ─── */
+  .step-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .step-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 8px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid rgba(201,168,76,0.15);
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .step-tab .tab-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: rgba(201,168,76,0.5);
+  }
+  .step-tab .tab-title {
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    color: #6a6a7a;
+    transition: color 0.25s;
+  }
+  .step-tab[aria-selected="true"] {
+    border-bottom-color: #c9a84c;
+    background: rgba(201,168,76,0.04);
+  }
+  .step-tab[aria-selected="true"] .tab-title { color: #f5f0e8; }
+  .step-tab[aria-selected="true"] .tab-num { color: #c9a84c; }
+
+  /* ─── ステップ内ヒーロー画像（クロスフェード） ─── */
+  .step-panels {
+    position: relative;
+    padding-top: 32px;
+    transition: height 0.45s ease;
+  }
+  .step-panel {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+  .step-panel.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .step-hero {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    min-height: 46vh;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    background: #0a0806;
+  }
+  .step-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+  .step-hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 40px max(24px, calc(50vw - 380px));
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, transparent 100%);
+  }
+  .step-hero-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    color: #c9a84c;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .step-hero-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 300;
+    color: #c9a84c;
+    letter-spacing: 0.15em;
+    margin-bottom: 14px;
+  }
+  .step-hero-desc {
+    font-size: 0.84rem;
+    line-height: 2;
+    color: rgba(255,255,255,0.85);
+    max-width: 480px;
+  }
+
+  /* 職人紹介：プロフィールカード */
+  .craftsman-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 40px;
+  }
+  .craftsman-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .craftsman-tab {
+    padding: 8px 16px;
+    background: none;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: #6a6a7a;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .craftsman-tab[aria-selected="true"] {
+    color: #c9a84c;
+    border-color: rgba(201,168,76,0.6);
+    background: rgba(201,168,76,0.06);
+  }
   .craftsman-card {
     display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 40px;
+    grid-template-columns: 140px 1fr;
+    gap: 28px;
     align-items: start;
   }
   .craftsman-photo { aspect-ratio: 3/4; }
@@ -192,59 +427,49 @@ import ConsultNav from '../../components/ConsultNav.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.2em;
     color: #5a5a6a;
-    min-height: 260px;
+    min-height: 180px;
   }
   .craftsman-role {
     font-size: 0.7rem;
     letter-spacing: 0.2em;
     color: rgba(201,168,76,0.6);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .craftsman-name {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 300;
     letter-spacing: 0.12em;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
   }
   .craftsman-bio {
     font-size: 0.85rem;
-    line-height: 2.0;
+    line-height: 1.9;
     color: #8a8a9a;
     letter-spacing: 0.05em;
+    margin-bottom: 16px;
   }
+  .craftsman-insta {
+    display: inline-block;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: rgba(201,168,76,0.7);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .craftsman-insta:hover { color: #c9a84c; }
 
-  /* 工程 */
-  .step-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
-  .step-item {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 24px;
-    padding: 28px 0;
-    border-bottom: 1px solid rgba(201,168,76,0.08);
-    align-items: start;
-  }
-  .step-item:last-child { border-bottom: none; }
-  .step-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    color: rgba(201,168,76,0.5);
-    padding-top: 4px;
-  }
-  .step-title {
-    font-size: 0.95rem;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-  .step-desc {
-    font-size: 0.82rem;
-    line-height: 1.8;
-    color: #8a8a9a;
-    letter-spacing: 0.04em;
+  @media (max-width: 600px) {
+    .step-hero { min-height: 40vh; }
+    .step-hero-content { padding: 24px; }
+    .step-tab .tab-title { font-size: 0.78rem; letter-spacing: 0.08em; }
+    .craftsman-card { grid-template-columns: 1fr; }
+    .craftsman-photo { max-width: 160px; }
+    .photo-placeholder { min-height: 160px; }
   }
 
   /* 素材・技法 */
@@ -292,8 +517,4 @@ import ConsultNav from '../../components/ConsultNav.astro';
     letter-spacing: 0.04em;
   }
 
-  @media (max-width: 600px) {
-    .craftsman-card { grid-template-columns: 1fr; }
-    .photo-placeholder { min-height: 200px; }
-  }
 </style>
