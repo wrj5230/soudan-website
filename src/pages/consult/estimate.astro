@@ -34,9 +34,8 @@ import ConsultNav from '../../components/ConsultNav.astro';
     location.href = `/consult${id ? '?id=' + id : ''}`;
   }
 
-  /* 基本価格：色数（1〜5色）に応じて¥390,000〜¥495,000で按分 */
-  const BASE_PRICE = 390000;
-  const COLOR_STEP = 26250;
+  /* 基本価格：色数によらず一律¥398,000 */
+  const BASE_PRICE = 398000;
 
   /* 技法パーツ単価（原価×1.6、蒔絵・彩色は振れ幅の中間値） */
   const TECH_UNIT_PRICE: Record<string, number> = {
@@ -81,10 +80,8 @@ import ConsultNav from '../../components/ConsultNav.astro';
 
     const techParts = parts.filter(p => p.tech !== 'none');
 
-    const uniqueColorCount = new Set(parts.map(p => p.hex).filter(Boolean)).size || 1;
-    const basePrice = BASE_PRICE + (uniqueColorCount - 1) * COLOR_STEP;
     const techPrice = parts.reduce((sum, p) => sum + (TECH_UNIT_PRICE[p.tech] ?? 0), 0);
-    const totalPrice = basePrice + techPrice;
+    const totalPrice = BASE_PRICE + techPrice;
 
     const makeSection = (titleJa: string, titleEn: string, step: string, body: string) => `
       <div class="est-section">
