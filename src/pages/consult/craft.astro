@@ -29,6 +29,7 @@ const steps = [
         name: '〇〇 〇〇',
         bio: '京都で〇〇年の経験を持つ塗師。伝統的な漆塗りの技法を受け継ぎながら、現代的なデザインへの対応にも定評がある。',
         instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+        techs: ['none', 'raptopaint'],
       },
     ],
   },
@@ -43,18 +44,21 @@ const steps = [
         name: '〇〇 〇〇',
         bio: '「一本一本の刷毛に、想いを込めて」をモットーに、金粉・銀粉で文様を描く蒔絵師。',
         instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+        techs: ['makie'],
       },
       {
         role: '彩色師',
         name: '〇〇 〇〇',
         bio: '京都で〇〇年の経験を持つ彩色師。岩絵具を用いて、文様に鮮やかな彩りを施す。',
         instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+        techs: ['saishiki'],
       },
       {
         role: '箔押師',
         name: '〇〇 〇〇',
         bio: '金箔を一枚一枚丁寧に押し、仏壇に荘厳な輝きを与える箔押師。',
         instagram: 'https://www.instagram.com/inoueshuho_btdn/',
+        techs: ['kinpaku'],
       },
       {
         role: '彫金師',
@@ -118,6 +122,12 @@ const steps = [
                       <h3 class="craftsman-name">{c.name}</h3>
                       <p class="craftsman-bio">{c.bio}</p>
                       <a href={c.instagram} target="_blank" rel="noopener" class="craftsman-insta">Instagramで作品を見る →</a>
+                      {c.techs && (
+                        <div class="step-tech-list" data-techs={c.techs.join(',')}>
+                          <p class="step-tech-label">素材・技法について</p>
+                          <div class="step-tech-cards"></div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -125,14 +135,6 @@ const steps = [
             </div>
           ))}
         </div>
-      </section>
-
-      <div class="section-divider"></div>
-
-      <!-- 素材・技法 -->
-      <section class="tech-section">
-        <p class="section-eyebrow">素材・技法について</p>
-        <div id="tech-list" class="tech-list"></div>
       </section>
 
     </div>
@@ -210,11 +212,22 @@ const steps = [
       subtitle: '貝殻の輝き',
       body: '夜光貝・アワビなどの貝殻を薄く削り、漆面に埋め込む技法です。光の角度によって虹色に輝き、幻想的な美しさを放ちます。',
     },
+    saishiki: {
+      title: '彩色',
+      subtitle: '岩絵具の彩り',
+      body: '岩絵具を用いて、文様に鮮やかな彩りを施す技法です。深みのある色合いが、仏壇に華やかな表情を与えます。',
+    },
+    kinpaku: {
+      title: '箔押',
+      subtitle: '金箔の輝き',
+      body: '金箔を一枚一枚丁寧に押し、荘厳な輝きを纏わせる技法です。時を経るごとに、深みのある金色へと育っていきます。',
+    },
   };
 
-  async function initTechList() {
+  async function initTechLists() {
     const id = new URLSearchParams(location.search).get('id');
-    const list = document.getElementById('tech-list')!;
+    const containers = document.querySelectorAll<HTMLDivElement>('.step-tech-list');
+    if (containers.length === 0) return;
 
     let usedTechs = new Set<string>();
     if (id) {
@@ -225,29 +238,37 @@ const steps = [
     }
     if (usedTechs.size === 0) usedTechs.add('none');
 
-    const ordered = [
-      ...Object.keys(TECH_DESCRIPTIONS).filter(k => usedTechs.has(k)),
-      ...Object.keys(TECH_DESCRIPTIONS).filter(k => !usedTechs.has(k)),
-    ];
+    containers.forEach(container => {
+      const list = container.querySelector<HTMLDivElement>('.step-tech-cards')!;
+      const techs = (container.dataset.techs ?? '').split(',').filter(Boolean);
 
-    ordered.forEach(tech => {
-      const desc = TECH_DESCRIPTIONS[tech];
-      const isUsed = usedTechs.has(tech);
-      const card = document.createElement('div');
-      card.className = `tech-card${isUsed ? ' used' : ''}`;
-      card.innerHTML = `
-        ${isUsed ? '<span class="used-badge">選択中</span>' : ''}
-        <div class="tech-header">
-          <h2 class="tech-title">${desc.title}</h2>
-          <span class="tech-subtitle">${desc.subtitle}</span>
-        </div>
-        <p class="tech-body">${desc.body}</p>
-      `;
-      list.appendChild(card);
+      const ordered = [
+        ...techs.filter(k => usedTechs.has(k)),
+        ...techs.filter(k => !usedTechs.has(k)),
+      ];
+
+      ordered.forEach(tech => {
+        const desc = TECH_DESCRIPTIONS[tech];
+        if (!desc) return;
+        const isUsed = usedTechs.has(tech);
+        const card = document.createElement('div');
+        card.className = `tech-card${isUsed ? ' used' : ''}`;
+        card.innerHTML = `
+          ${isUsed ? '<span class="used-badge">選択中</span>' : ''}
+          <div class="tech-header">
+            <h2 class="tech-title">${desc.title}</h2>
+            <span class="tech-subtitle">${desc.subtitle}</span>
+          </div>
+          <p class="tech-body">${desc.body}</p>
+        `;
+        list.appendChild(card);
+      });
     });
+
+    syncHeight();
   }
 
-  initTechList();
+  initTechLists();
 </script>
 
 <style>
@@ -261,7 +282,7 @@ const steps = [
 
   .section-eyebrow {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.68rem;
+    font-size: 0.85rem;
     letter-spacing: 0.35em;
     color: rgba(201,168,76,0.6);
     margin-bottom: 32px;
@@ -272,7 +293,7 @@ const steps = [
     margin: 56px 0;
   }
   .process-note {
-    font-size: 0.85rem;
+    font-size: 1.15rem;
     line-height: 1.9;
     letter-spacing: 0.04em;
     color: #8a8a9a;
@@ -300,12 +321,12 @@ const steps = [
   }
   .step-tab .tab-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     letter-spacing: 0.2em;
     color: rgba(201,168,76,0.5);
   }
   .step-tab .tab-title {
-    font-size: 0.9rem;
+    font-size: 1.25rem;
     letter-spacing: 0.15em;
     color: #6a6a7a;
     transition: color 0.25s;
@@ -338,8 +359,7 @@ const steps = [
   }
   .step-hero {
     position: relative;
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
+    width: 100%;
     min-height: 46vh;
     overflow: hidden;
     display: flex;
@@ -358,12 +378,12 @@ const steps = [
     position: relative;
     z-index: 1;
     width: 100%;
-    padding: 40px max(24px, calc(50vw - 380px));
+    padding: 40px 32px;
     background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, transparent 100%);
   }
   .step-hero-num {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     letter-spacing: 0.3em;
     color: #c9a84c;
     display: block;
@@ -371,17 +391,17 @@ const steps = [
   }
   .step-hero-title {
     font-family: 'Noto Serif JP', serif;
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
     font-weight: 300;
     color: #c9a84c;
     letter-spacing: 0.15em;
     margin-bottom: 14px;
   }
   .step-hero-desc {
-    font-size: 0.84rem;
+    font-size: 1.15rem;
     line-height: 2;
     color: rgba(255,255,255,0.85);
-    max-width: 480px;
+    max-width: 620px;
   }
 
   /* 職人紹介：プロフィールカード */
@@ -401,7 +421,7 @@ const steps = [
     background: none;
     border: 1px solid rgba(201,168,76,0.2);
     border-radius: 100px;
-    font-size: 0.75rem;
+    font-size: 1rem;
     letter-spacing: 0.1em;
     color: #6a6a7a;
     cursor: pointer;
@@ -411,6 +431,9 @@ const steps = [
     color: #c9a84c;
     border-color: rgba(201,168,76,0.6);
     background: rgba(201,168,76,0.06);
+  }
+  .craftsman-card[hidden] {
+    display: none;
   }
   .craftsman-card {
     display: grid;
@@ -433,19 +456,19 @@ const steps = [
     min-height: 180px;
   }
   .craftsman-role {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     letter-spacing: 0.2em;
     color: rgba(201,168,76,0.6);
     margin-bottom: 8px;
   }
   .craftsman-name {
-    font-size: 1.25rem;
+    font-size: 1.8rem;
     font-weight: 300;
     letter-spacing: 0.12em;
     margin-bottom: 14px;
   }
   .craftsman-bio {
-    font-size: 0.85rem;
+    font-size: 1.15rem;
     line-height: 1.9;
     color: #8a8a9a;
     letter-spacing: 0.05em;
@@ -453,7 +476,7 @@ const steps = [
   }
   .craftsman-insta {
     display: inline-block;
-    font-size: 0.78rem;
+    font-size: 1.02rem;
     letter-spacing: 0.12em;
     color: rgba(201,168,76,0.7);
     text-decoration: none;
@@ -472,8 +495,20 @@ const steps = [
     .photo-placeholder { min-height: 160px; }
   }
 
-  /* 素材・技法 */
-  .tech-list { display: flex; flex-direction: column; gap: 20px; }
+  /* 素材・技法（各ステップの職人紹介の下になじませて表示） */
+  .step-tech-list {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(201,168,76,0.12);
+  }
+  .step-tech-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.35em;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 24px;
+  }
+  .step-tech-cards { display: flex; flex-direction: column; gap: 20px; }
 
   :global(.tech-card) {
     position: relative;
@@ -501,17 +536,17 @@ const steps = [
     margin-bottom: 14px;
   }
   :global(.tech-title) {
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     font-weight: 300;
     letter-spacing: 0.12em;
   }
   :global(.tech-subtitle) {
-    font-size: 0.7rem;
+    font-size: 0.92rem;
     letter-spacing: 0.15em;
     color: #6a6a7a;
   }
   :global(.tech-body) {
-    font-size: 0.85rem;
+    font-size: 1.15rem;
     line-height: 2.0;
     color: #8a8a9a;
     letter-spacing: 0.04em;
